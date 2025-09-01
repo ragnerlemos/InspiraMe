@@ -18,7 +18,7 @@ export function PainelControles(props: PainelControlesProps) {
                         Customizar
                     </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-0">
                     <Tabs defaultValue="text">
                         {/* Lista de abas para alternar entre os painéis de texto e estilo. */}
                         <TabsList className="grid w-full grid-cols-2">
