@@ -24,6 +24,7 @@ function EditorSkeleton() {
 }
 
 // Página do editor de vídeo que usa Suspense para mostrar um fallback de carregamento.
+// O Suspense aguarda o carregamento dinâmico dos dados (parâmetros da URL) dentro do EditorClient.
 export default function EditorPage() {
     return (
         <Suspense fallback={<EditorSkeleton />}>
