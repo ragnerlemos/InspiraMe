@@ -10,7 +10,6 @@ import {
   Download,
   Palette,
   Share2,
-  Sparkles,
   Type,
 } from "lucide-react";
 
@@ -30,7 +29,6 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { quotes, templates } from "@/lib/data";
-import { suggestFontsAndColors } from "@/ai/flows/suggest-fonts-and-colors";
 import { useToast } from "@/hooks/use-toast";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -48,7 +46,6 @@ export function EditorClient() {
   const [textShadow, setTextShadow] = useState(true);
   const [aspectRatio, setAspectRatio] = useState("9:16");
   const [backgroundImage, setBackgroundImage] = useState("");
-  const [isAiLoading, setIsAiLoading] = useState(false);
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
@@ -74,36 +71,6 @@ export function EditorClient() {
     }
     setIsReady(true);
   }, [searchParams]);
-
-  const handleAiSuggestion = async () => {
-    setIsAiLoading(true);
-    try {
-      const result = await suggestFontsAndColors({
-        textStyle: "modern", 
-        videoTheme: "inspirational",
-      });
-      
-      const availableFonts = ["Poppins", "PT Sans", "Merriweather", "Lobster"];
-      const suggestedFont = result.suggestedFont.split(',')[0].trim();
-      const fontToUse = availableFonts.find(f => f.toLowerCase() === suggestedFont.toLowerCase()) || availableFonts[Math.floor(Math.random() * availableFonts.length)];
-      
-      setFontFamily(fontToUse);
-      setTextColor(result.suggestedColor);
-      toast({
-        title: "AI Suggestions Applied!",
-        description: `Font set to ${fontToUse} and color to ${result.suggestedColor}.`,
-      });
-    } catch (error) {
-      console.error("AI suggestion failed:", error);
-      toast({
-        variant: "destructive",
-        title: "AI Suggestion Failed",
-        description: "Could not get suggestions. Please try again.",
-      });
-    } finally {
-      setIsAiLoading(false);
-    }
-  };
 
   const aspectRatios = {
     "1:1": "aspect-square",
@@ -264,10 +231,6 @@ export function EditorClient() {
                     <Label>Text Shadow</Label>
                     <Switch checked={textShadow} onCheckedChange={setTextShadow} />
                   </div>
-
-                  <Button onClick={handleAiSuggestion} disabled={isAiLoading} className="w-full bg-accent hover:bg-accent/90">
-                    {isAiLoading ? <Skeleton className="h-5 w-20 bg-accent-foreground/20" /> : <><Sparkles className="mr-2 h-4 w-4" /> Suggest with AI</>}
-                  </Button>
                 </TabsContent>
               </Tabs>
               
