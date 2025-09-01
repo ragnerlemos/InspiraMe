@@ -99,6 +99,8 @@ export function EditorClient() {
     textAlign: textAlign,
     textShadow: textShadow ? "2px 2px 8px rgba(0,0,0,0.8)" : "none",
     lineHeight: 1.3,
+    top: `${textVerticalPosition}%`,
+    transform: 'translateY(-50%)', 
   };
   
   // Renderiza um esqueleto de carregamento enquanto o editor não está pronto.
@@ -151,16 +153,16 @@ export function EditorClient() {
               data-ai-hint="background scenery"
               priority
             />
-            <div className="absolute inset-0 p-8 bg-black/10">
+            <div className="absolute inset-0 p-8 bg-black/10 flex items-center justify-center">
               <div 
-                style={{ 
-                    top: `${textVerticalPosition}%`,
-                    transform: 'translateY(-50%)', 
-                    ...textStyle 
-                }} 
-                className="break-words w-full absolute left-0 px-8"
+                className="relative w-full h-full"
               >
-                {text}
+                <div 
+                    style={textStyle} 
+                    className="break-words w-full absolute left-0 px-8"
+                >
+                    {text}
+                </div>
               </div>
             </div>
           </div>
@@ -232,8 +234,8 @@ export function EditorClient() {
                     </div>
                     <Slider
                       id="vertical-position"
-                      min={0}
-                      max={100}
+                      min={15}
+                      max={85}
                       step={1}
                       value={[textVerticalPosition]}
                       onValueChange={(value) => setTextVerticalPosition(value[0])}
