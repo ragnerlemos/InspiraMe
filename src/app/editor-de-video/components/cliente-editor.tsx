@@ -5,9 +5,9 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { quotes, templates } from "@/lib/dados";
-import type { EstiloTexto, ProporcaoTela } from "@/components/editor/tipos";
-import { VisualizacaoEditor } from "@/components/editor/visualizacao";
-import { PainelControles } from "@/components/editor/painel-controles";
+import type { EstiloTexto, ProporcaoTela } from "./tipos";
+import { VisualizacaoEditor } from "./visualizacao";
+import { PainelControles } from "./painel-controles";
 import { Skeleton } from "@/components/ui/skeleton";
 
 // Componente que exibe um esqueleto de carregamento enquanto o editor está sendo preparado.

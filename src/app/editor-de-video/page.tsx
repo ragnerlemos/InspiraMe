@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { EditorClient } from '@/components/cliente-editor';
+import { EditorClient } from './components/cliente-editor';
 import { Skeleton } from '@/components/ui/skeleton';
 
 // Componente que exibe um esqueleto de carregamento enquanto o editor está sendo preparado.

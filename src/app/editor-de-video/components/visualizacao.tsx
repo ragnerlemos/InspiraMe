@@ -49,15 +49,18 @@ export function VisualizacaoEditor({
                     data-ai-hint="background scenery"
                     priority
                 />
-                <div className="absolute inset-0 bg-black/10">
+                <div className="absolute inset-0 bg-black/10 flex items-center justify-center p-8">
                     {/* Área que contém o texto, permitindo o posicionamento vertical. */}
                     <div
-                        className="absolute w-full p-8 transition-all duration-200"
-                        style={{ top: `${textVerticalPosition}%`, transform: 'translateY(-50%)' }}
+                        className="relative w-full h-full"
                     >
                         <div
-                            style={textStyle}
-                            className="break-words w-full"
+                            style={{
+                                ...textStyle,
+                                top: `${textVerticalPosition}%`,
+                                transform: 'translateY(-50%)',
+                             }}
+                            className="break-words w-full absolute transition-all duration-200"
                         >
                             {text}
                         </div>
