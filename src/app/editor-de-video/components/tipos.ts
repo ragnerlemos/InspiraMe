@@ -17,22 +17,7 @@ export interface VisualizacaoEditorProps {
 }
 
 // Define as propriedades para o componente que contém os painéis de controle.
-export interface PainelControlesProps {
-    text: string;
-    onTextChange: (text: string) => void;
-    fontFamily: string;
-    onFontFamilyChange: (font: string) => void;
-    fontSize: number;
-    onFontSizeChange: (size: number) => void;
-    textColor: string;
-    onTextColorChange: (color: string) => void;
-    textAlign: "left" | "center" | "right";
-    onTextAlignChange: (align: "left" | "center" | "right") => void;
-    textShadow: boolean;
-    onTextShadowChange: (shadow: boolean) => void;
-    textVerticalPosition: number;
-    onTextVerticalPositionChange: (position: number) => void;
-}
+export interface PainelControlesProps extends PainelTextoProps, PainelEstiloProps {}
 
 // Define as propriedades para o painel de edição de texto.
 export interface PainelTextoProps {
@@ -46,12 +31,20 @@ export interface PainelEstiloProps {
     onFontFamilyChange: (font: string) => void;
     fontSize: number;
     onFontSizeChange: (size: number) => void;
+    fontWeight: "normal" | "bold";
+    onFontWeightChange: (weight: "normal" | "bold") => void;
+    fontStyle: "normal" | "italic";
+    onFontStyleChange: (style: "normal" | "italic") => void;
     textColor: string;
     onTextColorChange: (color: string) => void;
     textAlign: "left" | "center" | "right";
     onTextAlignChange: (align: "left" | "center" | "right") => void;
-    textShadow: boolean;
-    onTextShadowChange: (shadow: boolean) => void;
+    textShadowBlur: number;
+    onTextShadowBlurChange: (blur: number) => void;
     textVerticalPosition: number;
     onTextVerticalPositionChange: (position: number) => void;
+    textStrokeColor: string;
+    onTextStrokeColorChange: (color: string) => void;
+    textStrokeWidth: number;
+    onTextStrokeWidthChange: (width: number) => void;
 }

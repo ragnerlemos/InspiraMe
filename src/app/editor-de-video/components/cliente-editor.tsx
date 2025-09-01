@@ -39,14 +39,18 @@ export function EditorClient() {
   // Estados para gerenciar as propriedades do vídeo/imagem.
   const [text, setText] = useState("");
   const [fontFamily, setFontFamily] = useState("Poppins");
-  const [fontSize, setFontSize] = useState(48);
+  const [fontSize, setFontSize] = useState(23);
+  const [fontWeight, setFontWeight] = useState<"normal" | "bold">("normal");
+  const [fontStyle, setFontStyle] = useState<"normal" | "italic">("normal");
   const [textColor, setTextColor] = useState("#FFFFFF");
   const [textAlign, setTextAlign] = useState<"left" | "center" | "right">("center");
-  const [textShadow, setTextShadow] = useState(true);
+  const [textShadowBlur, setTextShadowBlur] = useState(0);
   const [aspectRatio, setAspectRatio] = useState<ProporcaoTela>("9:16");
   const [backgroundImage, setBackgroundImage] = useState("");
   const [isReady, setIsReady] = useState(false); // Estado para controlar quando o editor está pronto.
   const [textVerticalPosition, setTextVerticalPosition] = useState(50); // Posição vertical do texto em porcentagem (50% = centro)
+  const [textStrokeColor, setTextStrokeColor] = useState("#000000");
+  const [textStrokeWidth, setTextStrokeWidth] = useState(0);
 
   // Efeito para inicializar o editor com base nos parâmetros da URL.
   useEffect(() => {
@@ -83,9 +87,12 @@ export function EditorClient() {
   const textStyle: EstiloTexto = {
     fontFamily: fontFamily,
     fontSize: `${fontSize}px`,
+    fontWeight: fontWeight,
+    fontStyle: fontStyle,
     color: textColor,
     textAlign: textAlign,
-    textShadow: textShadow ? "2px 2px 8px rgba(0,0,0,0.8)" : "none",
+    textShadow: textShadowBlur > 0 ? `2px 2px ${textShadowBlur}px rgba(0,0,0,0.8)` : "none",
+    WebkitTextStroke: `${textStrokeWidth}px ${textStrokeColor}`,
     lineHeight: 1.3,
   };
   
@@ -113,14 +120,22 @@ export function EditorClient() {
             onFontFamilyChange={setFontFamily}
             fontSize={fontSize}
             onFontSizeChange={setFontSize}
+            fontWeight={fontWeight}
+            onFontWeightChange={setFontWeight}
+            fontStyle={fontStyle}
+            onFontStyleChange={setFontStyle}
             textColor={textColor}
             onTextColorChange={setTextColor}
             textAlign={textAlign}
             onTextAlignChange={setTextAlign}
-            textShadow={textShadow}
-            onTextShadowChange={setTextShadow}
+            textShadowBlur={textShadowBlur}
+            onTextShadowBlurChange={setTextShadowBlur}
             textVerticalPosition={textVerticalPosition}
             onTextVerticalPositionChange={setTextVerticalPosition}
+            textStrokeColor={textStrokeColor}
+            onTextStrokeColorChange={setTextStrokeColor}
+            textStrokeWidth={textStrokeWidth}
+            onTextStrokeWidthChange={setTextStrokeWidth}
         />
       </div>
     </div>
