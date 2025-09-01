@@ -153,9 +153,9 @@ export function EditorClient() {
               data-ai-hint="background scenery"
               priority
             />
-            <div className="absolute inset-0 p-8 bg-black/10 flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/10">
               <div 
-                className="relative w-full h-full"
+                className="relative w-full h-full p-8"
               >
                 <div 
                     style={textStyle} 
