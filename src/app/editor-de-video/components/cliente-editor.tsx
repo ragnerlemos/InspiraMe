@@ -92,7 +92,9 @@ export function EditorClient() {
     color: textColor,
     textAlign: textAlign,
     textShadow: textShadowBlur > 0 ? `2px 2px ${textShadowBlur}px rgba(0,0,0,0.8)` : "none",
-    WebkitTextStroke: `${textStrokeWidth}px ${textStrokeColor}`,
+    WebkitTextStrokeWidth: `${textStrokeWidth}px`,
+    WebkitTextStrokeColor: textStrokeColor,
+    WebkitTextFillColor: textColor,
     lineHeight: 1.3,
   };
   
