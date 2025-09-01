@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { templates } from '@/lib/dados';
@@ -26,8 +27,6 @@ export default function TemplatesPage() {
                 src={template.imageUrl}
                 alt={`Modelo ${template.id}`}
                 fill
-                width={1080}
-                height={1920}
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
                 data-ai-hint={template.dataAiHint}
               />
