@@ -1,15 +1,17 @@
 
 // Componente para a aba "Fundo", permitindo o upload de imagem/vídeo ou seleção de cores/gradientes.
 
-import { useRef, useState, useMemo } from 'react';
+import { useRef, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Upload, Image as ImageIcon, Check, Palette, Layers, Redo } from 'lucide-react';
+import { Upload, Image as ImageIcon, Palette, Layers, Redo } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import type { PainelFundoProps, TipoFundo, EstiloFundo } from './tipos';
+import type { PainelFundoProps, TipoFundo } from './tipos';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { templates } from '@/lib/dados';
+
 
 // Componente para a aba de Mídia (upload)
 function PainelMidia({ onMediaUpload }: { onMediaUpload: (src: string) => void }) {
@@ -223,17 +225,18 @@ export function PainelFundo({ backgroundStyle, onBackgroundStyleChange }: Painel
 
     // Função para mudar o TIPO de fundo (mídia, cor, gradiente)
     const handleTabChange = (tab: TipoFundo) => {
+         let newStyle;
         if (tab === 'solid') {
-            onBackgroundStyleChange({ type: 'solid', value: solidColor });
+            newStyle = { type: 'solid' as const, value: solidColor };
         } else if (tab === 'gradient') {
             const gradValue = `${gradient.type}-gradient(${gradient.type === 'linear' ? `${gradient.direction}, ` : ''}${gradient.colors[0]}, ${gradient.colors[1]})`;
-            onBackgroundStyleChange({ type: 'gradient', value: gradValue });
+            newStyle = { type: 'gradient' as const, value: gradValue };
         } else {
-            // Para 'media', a mudança é tratada diretamente no upload,
-            // então apenas mudamos o tipo, o valor será o último usado ou um padrão.
-            // Para evitar voltar para um fundo vazio, não mudamos o valor aqui.
-             onBackgroundStyleChange({ type: 'media', value: backgroundStyle.type === 'media' ? backgroundStyle.value : templates[0].imageUrl });
+            // Volta para a ultima midia selecionada ou para um padrão.
+            const mediaValue = backgroundStyle.type === 'media' ? backgroundStyle.value : templates[0].imageUrl;
+            newStyle = { type: 'media' as const, value: mediaValue };
         }
+        onBackgroundStyleChange(newStyle);
     };
 
     // Funções que propagam as MUDANÇAS de valor para o componente pai
@@ -241,9 +244,8 @@ export function PainelFundo({ backgroundStyle, onBackgroundStyleChange }: Painel
         onBackgroundStyleChange({ type: 'solid', value: color });
     };
 
-    const handleGradientChange = (grad: any) => {
-        setGradient(grad);
-        const gradValue = `${grad.type}-gradient(${grad.type === 'linear' ? `${grad.direction}, ` : ''}${grad.colors[0]}, ${grad.colors[1]})`;
+    const handleGradientChange = (grad: { type: 'linear' | 'radial', colors: [string, string], direction?: string }) => {
+        const gradValue = `${grad.type}-gradient(${grad.type === 'linear' && grad.direction ? `${grad.direction}, ` : ''}${grad.colors[0]}, ${grad.colors[1]})`;
         onBackgroundStyleChange({ type: 'gradient', value: gradValue });
     };
 
@@ -273,10 +275,4 @@ export function PainelFundo({ backgroundStyle, onBackgroundStyleChange }: Painel
             </div>
         </div>
     );
-}
-
-// Adicionado a importação que faltava
-import { templates } from '@/lib/dados';
-function setGradient(grad: any) {
-    throw new Error('Function not implemented.');
 }
