@@ -100,7 +100,16 @@ export function EditorClient() {
     if (templateIdParam) {
       const template = templates.find(t => t.id === parseInt(templateIdParam));
       if (template) {
-        initialState.backgroundStyle = { type: 'media', value: template.imageUrl };
+        // Se for o modelo padrão (ID -1), aplica estilos específicos.
+        if (template.id === -1) {
+            initialState.backgroundStyle = { type: 'solid', value: '#333333' };
+            initialState.textStrokeWidth = 3.5;
+            initialState.textShadowBlur = 16;
+            initialState.textVerticalPosition = 50;
+            initialState.textAlign = 'center';
+        } else {
+            initialState.backgroundStyle = { type: 'media', value: template.imageUrl };
+        }
         initialState.aspectRatio = template.aspectRatio as ProporcaoTela;
         // Se não houver uma citação específica, escolhe uma aleatória.
         if (!quoteParam) initialState.text = quotes[Math.floor(Math.random() * quotes.length)].text;
