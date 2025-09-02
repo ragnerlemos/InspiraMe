@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -10,6 +11,7 @@ import { Search, Film, Copy, Heart, Share2 } from "lucide-react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
+import { useFavorites } from "@/hooks/use-favorites";
 
 // Página principal que exibe uma lista de frases que podem ser filtradas e selecionadas.
 export default function PhrasesPage() {
@@ -18,6 +20,8 @@ export default function PhrasesPage() {
   // Estado para armazenar a categoria de frase selecionada.
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const { toast } = useToast();
+  const { favorites, toggleFavorite } = useFavorites();
+
 
   // Filtra as frases com base no termo de busca e na categoria selecionada.
   const filteredQuotes = quotes.filter(
@@ -31,6 +35,15 @@ export default function PhrasesPage() {
     toast({
         title: "Copiado!",
         description: "A frase foi copiada para a área de transferência.",
+    })
+  }
+
+  const handleFavoriteClick = (id: number) => {
+    const isFavorited = favorites.includes(id);
+    toggleFavorite(id);
+    toast({
+        title: isFavorited ? "Removido!" : "Favoritado!",
+        description: isFavorited ? "A frase foi removida dos favoritos." : "A frase foi adicionada aos favoritos.",
     })
   }
 
@@ -84,31 +97,36 @@ export default function PhrasesPage() {
 
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredQuotes.map((quote) => (
-          <Card key={quote.id} className="group flex flex-col justify-between hover:shadow-lg transition-shadow duration-300">
-            <CardContent className="p-6 pb-4">
-              <p className="text-xl font-body italic">"{quote.text}"</p>
-              <p className="text-right text-sm font-medium text-muted-foreground mt-4">- {quote.author}</p>
-            </CardContent>
-            <div className="px-6 pb-4 flex justify-between items-center">
-                <span className="bg-muted px-2 py-1 text-xs rounded-full text-muted-foreground">{quote.category}</span>
-                <div className="flex items-center gap-1">
-                    <Button variant="ghost" size="icon" onClick={() => handleCopy(`"${quote.text}" - ${quote.author}`)}><Copy className="h-4 w-4"/></Button>
-                    <Button variant="ghost" size="icon"><Heart className="h-4 w-4"/></Button>
-                    <Button variant="ghost" size="icon"><Share2 className="h-4 w-4"/></Button>
-                </div>
-            </div>
-            <Separator />
-            <CardFooter className="p-4">
-                <Link href={`/editor-de-video?quote=${encodeURIComponent(quote.text)}`} passHref className="w-full">
-                    <Button className="w-full" variant="secondary">
-                        <Film className="mr-2 h-4 w-4"/>
-                        Criar Vídeo
-                    </Button>
-                </Link>
-            </CardFooter>
-          </Card>
-        ))}
+        {filteredQuotes.map((quote) => {
+          const isFavorited = favorites.includes(quote.id);
+          return (
+            <Card key={quote.id} className="group flex flex-col justify-between hover:shadow-lg transition-shadow duration-300">
+              <CardContent className="p-6 pb-4">
+                <p className="text-xl font-body italic">"{quote.text}"</p>
+                <p className="text-right text-sm font-medium text-muted-foreground mt-4">- {quote.author}</p>
+              </CardContent>
+              <div className="px-6 pb-4 flex justify-between items-center">
+                  <span className="bg-muted px-2 py-1 text-xs rounded-full text-muted-foreground">{quote.category}</span>
+                  <div className="flex items-center gap-1">
+                      <Button variant="ghost" size="icon" onClick={() => handleCopy(`"${quote.text}" - ${quote.author}`)}><Copy className="h-4 w-4"/></Button>
+                      <Button variant="ghost" size="icon" onClick={() => handleFavoriteClick(quote.id)}>
+                        <Heart className={`h-4 w-4 ${isFavorited ? 'text-red-500 fill-current' : ''}`}/>
+                      </Button>
+                      <Button variant="ghost" size="icon"><Share2 className="h-4 w-4"/></Button>
+                  </div>
+              </div>
+              <Separator />
+              <CardFooter className="p-4">
+                  <Link href={`/editor-de-video?quote=${encodeURIComponent(quote.text)}`} passHref className="w-full">
+                      <Button className="w-full" variant="secondary">
+                          <Film className="mr-2 h-4 w-4"/>
+                          Criar Vídeo
+                      </Button>
+                  </Link>
+              </CardFooter>
+            </Card>
+          )
+        })}
       </div>
       {filteredQuotes.length === 0 && (
         <div className="text-center py-16 text-muted-foreground">
