@@ -10,7 +10,7 @@ export function VisualizacaoPerfil({
     profileVerticalPosition,
 }: VisualizacaoPerfilProps) {
   return (
-    <div className="absolute inset-0 p-6">
+    <div className="absolute inset-0 p-5">
        {/* Container relativo para posicionar os elementos */}
       <div className="relative w-full h-full">
 
