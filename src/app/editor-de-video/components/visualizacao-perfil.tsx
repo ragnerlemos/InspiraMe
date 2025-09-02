@@ -16,7 +16,7 @@ export function VisualizacaoPerfil({
 
         {/* Cabeçalho do Perfil (Posicionável) */}
         <div 
-            className="absolute w-full flex items-start gap-4 transition-all duration-200"
+            className="absolute w-full flex items-start gap-3 transition-all duration-200"
             style={{
                 top: `${profileVerticalPosition}%`,
                 transform: 'translateY(-50%)',
@@ -28,7 +28,7 @@ export function VisualizacaoPerfil({
                 <User />
                 </AvatarFallback>
             </Avatar>
-            <div className="flex-1">
+            <div className="flex-1 pt-1">
                 <p className="font-bold text-lg" style={{ color: textStyle.color }}>{profile.username}</p>
                 <p className="text-sm" style={{ color: 'var(--muted-foreground)' }}>{profile.social}</p>
             </div>
@@ -43,7 +43,7 @@ export function VisualizacaoPerfil({
             }}
             className="break-words w-full absolute transition-all duration-200"
         >
-            <div className="pl-[68px]"> {/* 56px (avatar) + 12px (gap) */}
+            <div className="pl-[60px]"> {/* 48px (avatar) + 12px (gap) */}
                {text}
             </div>
         </div>
