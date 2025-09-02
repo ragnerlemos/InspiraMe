@@ -38,8 +38,7 @@ export default function ModelosPage() {
             <Card key={template.id} className="overflow-hidden group">
                 <div className={cn(
                     "relative", 
-                    template.aspectRatio === '9:16' ? 'aspect-[9/16]' : 'aspect-square',
-                    template.id === -1 && 'bg-muted'
+                    template.aspectRatio === '9:16' ? 'aspect-[9/16]' : 'aspect-square'
                 )}>
                 {template.imageUrl ? (
                     <Image
