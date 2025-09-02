@@ -11,10 +11,10 @@ export function VisualizacaoPerfil({
     profileVerticalPosition, 
 }: VisualizacaoPerfilProps) {
   return (
-    <div className="absolute inset-0 p-8 flex items-center justify-center">
+    <div className="absolute inset-0 flex items-center justify-center">
        {/* Container que agrupa a assinatura e o texto para garantir o alinhamento */}
       <div 
-        className="relative w-full space-y-4 transition-all duration-200"
+        className="relative w-full space-y-4 transition-all duration-200 p-8"
         style={{
             // Posicionamos o bloco inteiro. O valor de textVerticalPosition controlará o bloco.
             top: `${textVerticalPosition}%`,
