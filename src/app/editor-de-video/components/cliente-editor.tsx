@@ -37,11 +37,6 @@ function EditorSkeleton() {
         <div className="container mx-auto py-8">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 flex flex-col items-center gap-4">
-                    <div className="flex gap-2">
-                        <Skeleton className="h-10 w-20 rounded-full" />
-                        <Skeleton className="h-10 w-20 rounded-full" />
-                        <Skeleton className="h-10 w-20 rounded-full" />
-                    </div>
                     <Skeleton className="w-full max-w-2xl aspect-[9/16] rounded-lg" />
                 </div>
                 <div className="lg:col-span-1">
@@ -170,7 +165,6 @@ export function EditorClient() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <VisualizacaoEditor
             aspectRatio={currentState.aspectRatio}
-            onAspectRatioChange={(ratio) => updateState({ aspectRatio: ratio })}
             backgroundStyle={currentState.backgroundStyle}
             text={currentState.text}
             textStyle={textStyle}
@@ -202,6 +196,8 @@ export function EditorClient() {
             onTextStrokeWidthChange={(textStrokeWidth) => updateState({ textStrokeWidth })}
             backgroundStyle={currentState.backgroundStyle}
             onBackgroundStyleChange={(backgroundStyle) => updateState({ backgroundStyle })}
+            aspectRatio={currentState.aspectRatio}
+            onAspectRatioChange={(ratio) => updateState({ aspectRatio: ratio })}
             onUndo={undo}
             canUndo={canUndo}
         />

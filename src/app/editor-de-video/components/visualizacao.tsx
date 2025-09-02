@@ -2,10 +2,8 @@
 // incluindo a imagem de fundo, o texto e os controles de proporção de tela.
 
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import type { VisualizacaoEditorProps, ProporcaoTela, TipoFundo, EstiloFundo } from "./tipos";
-import { useEffect, useState } from "react";
+import type { VisualizacaoEditorProps, ProporcaoTela } from "./tipos";
 
 // Mapeia os valores de proporção de tela para as classes CSS correspondentes do Tailwind.
 const proporcoes: Record<ProporcaoTela, string> = {
@@ -35,7 +33,6 @@ const getMediaType = (src: string): 'image' | 'video' | 'unknown' => {
 
 export function VisualizacaoEditor({
     aspectRatio,
-    onAspectRatioChange,
     backgroundStyle,
     text,
     textStyle,
@@ -82,21 +79,6 @@ export function VisualizacaoEditor({
 
     return (
         <div className="lg:col-span-2 flex flex-col items-center gap-4">
-            {/* Controles para alterar a proporção da tela. */}
-            <div className="flex gap-2 bg-background/50 backdrop-blur-sm p-2 rounded-full border">
-                {(Object.keys(proporcoes) as ProporcaoTela[]).map((ar) => (
-                    <Button
-                        key={ar}
-                        variant={aspectRatio === ar ? "default" : "ghost"}
-                        size="sm"
-                        className="rounded-full"
-                        onClick={() => onAspectRatioChange(ar)}
-                    >
-                        {ar}
-                    </Button>
-                ))}
-            </div>
-
             {/* Contêiner da visualização que se ajusta à proporção de tela selecionada. */}
             <div className={cn("relative w-full max-w-2xl bg-muted rounded-lg overflow-hidden shadow-2xl", proporcoes[aspectRatio])}>
                 {renderBackground()}

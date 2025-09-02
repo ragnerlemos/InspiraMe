@@ -33,7 +33,6 @@ export interface EditorState {
 // Define as propriedades (props) para o componente de visualização do editor.
 export interface VisualizacaoEditorProps {
     aspectRatio: ProporcaoTela;
-    onAspectRatioChange: (ratio: ProporcaoTela) => void;
     backgroundStyle: EstiloFundo;
     text: string;
     textStyle: EstiloTexto;
@@ -54,6 +53,8 @@ export interface PainelTextoProps {
 
 // Define as propriedades para o painel de customização de estilo.
 export interface PainelEstiloProps {
+    aspectRatio: ProporcaoTela;
+    onAspectRatioChange: (ratio: ProporcaoTela) => void;
     fontFamily: string;
     onFontFamilyChange: (font: string) => void;
     fontSize: number;
