@@ -3,6 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import { Film, GalleryVertical, Quote, Menu, Star, Settings, User, Clapperboard } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ const navItems = [
 // Componente do cabeçalho da aplicação.
 export function AppHeader() {
   const pathname = usePathname();
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   // Função que renderiza os links de navegação.
   const navLinks = (className?: string) => (
@@ -33,6 +35,7 @@ export function AppHeader() {
             <Link
             key={item.href}
             href={item.href}
+            onClick={() => setIsSheetOpen(false)} // Fecha o menu ao clicar
             className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
                 isActive && "bg-primary/10 text-primary",
@@ -77,7 +80,7 @@ export function AppHeader() {
         </nav>
         {/* Navegação para telas menores (mobile) usando um menu lateral. */}
         <div className="md:hidden">
-          <Sheet>
+          <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon">
                 <Menu className="h-5 w-5" />
