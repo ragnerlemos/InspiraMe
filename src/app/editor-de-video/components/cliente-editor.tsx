@@ -122,7 +122,7 @@ export function EditorClient() {
             initialState.backgroundStyle = { type: 'solid', value: 'var(--card)' };
             initialState.textColor = 'var(--foreground)';
             initialState.fontFamily = 'PT Sans';
-            initialState.fontSize = 24;
+            initialState.fontSize = 20;
             initialState.textAlign = 'left';
             initialState.textShadowBlur = 0;
             initialState.textStrokeWidth = 0;
