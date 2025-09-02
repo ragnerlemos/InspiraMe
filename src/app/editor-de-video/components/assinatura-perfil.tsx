@@ -18,7 +18,7 @@ export function AssinaturaPerfil({
     showSocial = true 
 }: AssinaturaPerfilProps) {
   return (
-    <div className="flex items-center gap-3 p-3 backdrop-blur-sm bg-black/30 rounded-lg text-white">
+    <div className="flex items-center gap-3 p-2 text-white" style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.7)' }}>
         {showPhoto && (
             <Avatar className="h-10 w-10">
                 <AvatarImage src={profile.photo || ""} alt={profile.username} />
