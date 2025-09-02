@@ -5,9 +5,11 @@ import Link from "next/link";
 import { categories, quotes } from "@/lib/dados";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Search, Film } from "lucide-react";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Search, Film, Copy, Heart, Share2 } from "lucide-react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { useToast } from "@/hooks/use-toast";
+import { Separator } from "@/components/ui/separator";
 
 // Página principal que exibe uma lista de frases que podem ser filtradas e selecionadas.
 export default function PhrasesPage() {
@@ -15,13 +17,22 @@ export default function PhrasesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   // Estado para armazenar a categoria de frase selecionada.
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const { toast } = useToast();
 
   // Filtra as frases com base no termo de busca e na categoria selecionada.
   const filteredQuotes = quotes.filter(
     (quote) =>
-      quote.text.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (quote.text.toLowerCase().includes(searchTerm.toLowerCase()) || quote.author.toLowerCase().includes(searchTerm.toLowerCase())) &&
       (!selectedCategory || quote.category === selectedCategory)
   );
+  
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast({
+        title: "Copiado!",
+        description: "A frase foi copiada para a área de transferência.",
+    })
+  }
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -39,7 +50,7 @@ export default function PhrasesPage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input
             type="text"
-            placeholder="Buscar por uma frase..."
+            placeholder="Buscar por frase ou autor..."
             className="pl-10 w-full"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -75,18 +86,27 @@ export default function PhrasesPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredQuotes.map((quote) => (
           <Card key={quote.id} className="group flex flex-col justify-between hover:shadow-lg transition-shadow duration-300">
-            <CardContent className="p-6">
+            <CardContent className="p-6 pb-4">
               <p className="text-xl font-body italic">"{quote.text}"</p>
-              <span className="mt-4 inline-block bg-muted px-2 py-1 text-xs rounded-full text-muted-foreground">{quote.category}</span>
+              <p className="text-right text-sm font-medium text-muted-foreground mt-4">- {quote.author}</p>
             </CardContent>
-            <div className="p-6 pt-0">
-                <Link href={`/editor-de-video?quote=${encodeURIComponent(quote.text)}`} passHref>
+            <div className="px-6 pb-4 flex justify-between items-center">
+                <span className="bg-muted px-2 py-1 text-xs rounded-full text-muted-foreground">{quote.category}</span>
+                <div className="flex items-center gap-1">
+                    <Button variant="ghost" size="icon" onClick={() => handleCopy(`"${quote.text}" - ${quote.author}`)}><Copy className="h-4 w-4"/></Button>
+                    <Button variant="ghost" size="icon"><Heart className="h-4 w-4"/></Button>
+                    <Button variant="ghost" size="icon"><Share2 className="h-4 w-4"/></Button>
+                </div>
+            </div>
+            <Separator />
+            <CardFooter className="p-4">
+                <Link href={`/editor-de-video?quote=${encodeURIComponent(quote.text)}`} passHref className="w-full">
                     <Button className="w-full" variant="secondary">
                         <Film className="mr-2 h-4 w-4"/>
                         Criar Vídeo
                     </Button>
                 </Link>
-            </div>
+            </CardFooter>
           </Card>
         ))}
       </div>
