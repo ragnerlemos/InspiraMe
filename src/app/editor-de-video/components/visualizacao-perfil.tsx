@@ -43,7 +43,8 @@ export function VisualizacaoPerfil({
             }}
             className="break-words w-full absolute transition-all duration-200"
         >
-            <div className="pl-[60px]"> {/* 48px (avatar) + 12px (gap) */}
+            {/* O padding aqui alinha o texto com o conteúdo do perfil acima */}
+            <div className="pl-[60px]"> 
                {text}
             </div>
         </div>
