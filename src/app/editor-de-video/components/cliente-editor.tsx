@@ -103,16 +103,7 @@ export function EditorClient() {
       initialState.activeTemplateId = templateId;
 
       if (template) {
-        // Se for o modelo de Perfil (ID -2), usa os dados do perfil
-        if (template.id === -2) {
-             initialState.backgroundStyle = { type: 'solid', value: 'hsl(var(--card))' }; // Usa cor do tema
-             initialState.textColor = 'hsl(var(--card-foreground))'; // Usa cor do tema
-             initialState.textAlign = 'left';
-             initialState.fontSize = 20;
-             initialState.fontFamily = 'PT Sans';
-             initialState.textStrokeWidth = 0;
-             initialState.textShadowBlur = 0;
-        } else if (template.id === -1) { // Se for o modelo padrão (ID -1), aplica estilos específicos.
+        if (template.id === -1) { // Se for o modelo padrão (ID -1), aplica estilos específicos.
             initialState.backgroundStyle = { type: 'solid', value: '#333333' };
             initialState.textStrokeWidth = 3.5;
             initialState.textShadowBlur = 16;
@@ -184,8 +175,6 @@ export function EditorClient() {
             text={currentState.text}
             textStyle={textStyle}
             textVerticalPosition={currentState.textVerticalPosition}
-            activeTemplateId={currentState.activeTemplateId}
-            profile={profile}
         />
 
         <PainelControles

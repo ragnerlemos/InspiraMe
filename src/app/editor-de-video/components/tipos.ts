@@ -39,8 +39,6 @@ export interface VisualizacaoEditorProps {
     text: string;
     textStyle: EstiloTexto;
     textVerticalPosition: number;
-    activeTemplateId: number | null;
-    profile: ProfileData;
 }
 
 // Define as propriedades para o componente que contém os painéis de controle.
