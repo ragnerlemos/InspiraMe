@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Film, GalleryVertical, Quote, Menu, Star } from "lucide-react";
+import { Film, GalleryVertical, Quote, Menu, Star, Settings } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -14,6 +14,7 @@ const navItems = [
   { href: "/favoritos", label: "Favoritos", icon: Star },
   { href: "/galeria", label: "Galeria", icon: GalleryVertical },
   { href: "/editor-de-video", label: "Editor", icon: Film },
+  { href: "/configuracoes", label: "Configurações", icon: Settings },
 ];
 
 // Componente do cabeçalho da aplicação.
