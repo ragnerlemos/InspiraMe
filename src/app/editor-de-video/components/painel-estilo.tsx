@@ -43,6 +43,9 @@ export function PainelEstilo({
     activeTemplateId,
     profileVerticalPosition, onProfileVerticalPositionChange,
 }: PainelEstiloProps) {
+    // Para o modelo Twitter (ID -2), desativamos o controle de posição vertical.
+    const isTwitterTemplate = activeTemplateId === -2;
+
     return (
         <>
             {/* Seletor de Fonte */}
@@ -119,47 +122,27 @@ export function PainelEstilo({
             </div>
 
              <Separator />
-
-            {/* Controle de Posição Vertical do Cabeçalho do Perfil (Apenas para o modelo Twitter) */}
-            {activeTemplateId === -2 && (
-                <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                        <Label htmlFor="profile-vertical-position" className="flex items-center">
-                            <User className="mr-2 h-4 w-4" />
-                            Posição Vertical (Perfil)
-                        </Label>
-                        <span className="text-sm text-muted-foreground">{profileVerticalPosition}%</span>
-                    </div>
-                    <Slider
-                        id="profile-vertical-position"
-                        min={10}
-                        max={80}
-                        step={1}
-                        value={[profileVerticalPosition]}
-                        onValueChange={(value) => onProfileVerticalPositionChange(value[0])}
-                    />
-                     <Separator />
-                </div>
-            )}
-
-            {/* Controle de Posição Vertical do Texto */}
-            <div className="space-y-4">
+            
+            {/* Controle de Posição Vertical (desativado para o modelo Twitter) */}
+            <div className="space-y-4" style={{ opacity: isTwitterTemplate ? 0.5 : 1 }}>
                 <div className="flex justify-between items-center">
                     <Label htmlFor="vertical-position" className="flex items-center">
                         <MoveVertical className="mr-2 h-4 w-4" />
-                        Posição Vertical (Texto)
+                        Posição Vertical
                     </Label>
                     <span className="text-sm text-muted-foreground">{textVerticalPosition}%</span>
                 </div>
                 <Slider
                     id="vertical-position"
-                    min={activeTemplateId === -2 ? 10 : 15}
-                    max={activeTemplateId === -2 ? 90 : 85}
+                    min={15}
+                    max={85}
                     step={1}
                     value={[textVerticalPosition]}
                     onValueChange={(value) => onTextVerticalPositionChange(value[0])}
+                    disabled={isTwitterTemplate}
                 />
             </div>
+
 
              <Separator />
 
