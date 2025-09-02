@@ -62,12 +62,14 @@ export interface VisualizacaoEditorProps {
     showSignaturePhoto: boolean;
     showSignatureUsername: boolean;
     showSignatureSocial: boolean;
+    activeTemplateId: number | null;
 }
 
 // Define as propriedades para o componente que contém os painéis de controle.
 export interface PainelControlesProps extends PainelTextoProps, PainelEstiloProps, PainelFundoProps {
     onUndo: () => void;
     canUndo: boolean;
+    activeTemplateId: number | null;
 }
 
 // Define as propriedades para o painel de edição de texto.
@@ -118,4 +120,11 @@ export interface PainelFundoProps {
     onShowSignatureUsernameChange: (show: boolean) => void;
     showSignatureSocial: boolean;
     onShowSignatureSocialChange: (show: boolean) => void;
+}
+
+// Propriedades para o componente de visualização de perfil
+export interface VisualizacaoPerfilProps {
+  profile: ProfileData;
+  text: string;
+  textStyle: EstiloTexto;
 }

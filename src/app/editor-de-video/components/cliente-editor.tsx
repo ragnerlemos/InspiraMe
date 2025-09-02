@@ -106,9 +106,10 @@ export function EditorClient() {
       const templateId = parseInt(templateIdParam);
       const template = templates.find(t => t.id === templateId);
 
-      initialState.activeTemplateId = templateId;
-
       if (template) {
+        initialState.activeTemplateId = templateId;
+        initialState.aspectRatio = template.aspectRatio as ProporcaoTela;
+        
         if (template.id === -1) { // Se for o modelo padrão (ID -1), aplica estilos específicos.
             initialState.backgroundStyle = { type: 'solid', value: '#333333' };
             initialState.textStrokeWidth = 3.5;
@@ -116,10 +117,17 @@ export function EditorClient() {
             initialState.textVerticalPosition = 50;
             initialState.textAlign = 'center';
             initialState.textColor = '#FFFFFF';
+        } else if (template.id === -2) { // Modelo Twitter (do Perfil)
+            initialState.backgroundStyle = { type: 'solid', value: '#FFFFFF' };
+            initialState.textColor = '#0D1419';
+            initialState.fontFamily = 'PT Sans';
+            initialState.fontSize = 24;
+            initialState.textAlign = 'left';
+            initialState.textShadowBlur = 0;
+            initialState.textStrokeWidth = 0;
         } else {
             initialState.backgroundStyle = { type: 'media', value: template.imageUrl };
         }
-        initialState.aspectRatio = template.aspectRatio as ProporcaoTela;
       }
     }
     
@@ -188,6 +196,7 @@ export function EditorClient() {
             showSignaturePhoto={currentState.showSignaturePhoto}
             showSignatureUsername={currentState.showSignatureUsername}
             showSignatureSocial={currentState.showSignatureSocial}
+            activeTemplateId={currentState.activeTemplateId}
         />
 
         <PainelControles
@@ -231,6 +240,7 @@ export function EditorClient() {
             onShowSignatureUsernameChange={(show) => updateState({ showSignatureUsername: show })}
             showSignatureSocial={currentState.showSignatureSocial}
             onShowSignatureSocialChange={(show) => updateState({ showSignatureSocial: show })}
+            activeTemplateId={currentState.activeTemplateId}
         />
       </div>
     </div>
