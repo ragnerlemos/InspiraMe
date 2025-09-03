@@ -187,7 +187,7 @@ export function EditorClient() {
   return (
     <div className="flex flex-col md:flex-row h-full w-full overflow-hidden">
       {/* Área de visualização */}
-      <div className="flex-1 flex justify-center items-center bg-muted/40 overflow-hidden">
+      <div className="flex-1 flex justify-center items-center bg-muted/40 p-4 md:p-8 relative overflow-hidden">
         <VisualizacaoEditor
             aspectRatio={currentState.aspectRatio}
             backgroundStyle={currentState.backgroundStyle}
@@ -207,7 +207,7 @@ export function EditorClient() {
       </div>
       
       {/* Painel de Controles */}
-      <div className="w-full md:w-96 border-t md:border-t-0 md:border-l bg-background overflow-y-auto">
+      <div className="w-full md:w-96 border-t md:border-t-0 md:border-l bg-background">
         <PainelControles
             text={currentState.text}
             onTextChange={(text) => updateState({ text })}
