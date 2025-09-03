@@ -57,12 +57,15 @@ export function VisualizacaoEditor({
   useLayoutEffect(() => {
     const el = viewportRef.current;
     if (!el) return;
+    
+    // Recalcula as dimensões base dentro do efeito para garantir que está usando o valor mais recente
+    const currentBase = getBaseDims(aspectRatio);
 
     const update = () => {
       const vw = el.clientWidth;
       const vh = el.clientHeight;
       if (!vw || !vh) return;
-      const s = Math.min(vw / base.width, vh / base.height);
+      const s = Math.min(vw / currentBase.width, vh / currentBase.height);
       setScale(s > 0 ? s : 1);
     };
 
@@ -76,7 +79,7 @@ export function VisualizacaoEditor({
       ro.disconnect();
       window.removeEventListener("resize", update);
     };
-  }, [base.width, base.height, aspectRatio]);
+  }, [aspectRatio]);
 
   const renderBackground = () => {
     const { type, value } = backgroundStyle;
