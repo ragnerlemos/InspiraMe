@@ -185,27 +185,25 @@ export function EditorClient() {
   }
 
   return (
-    <div className="flex flex-col md:flex-row w-full bg-background h-full">
+    <div className="flex flex-col md:flex-row w-full bg-background" style={{ height: 'calc(100vh - 64px)' }}>
       {/* Área de visualização */}
-      <div className="flex-1 flex justify-center items-center p-4 md:p-8 bg-muted/40 relative min-h-0">
-        <div className="w-full h-full flex items-center justify-center">
-            <VisualizacaoEditor
-                aspectRatio={currentState.aspectRatio}
-                backgroundStyle={currentState.backgroundStyle}
-                text={currentState.text}
-                textStyle={textStyle}
-                textVerticalPosition={currentState.textVerticalPosition}
-                showProfileSignature={currentState.showProfileSignature}
-                profile={profile}
-                signaturePositionX={currentState.signaturePositionX}
-                signaturePositionY={currentState.signaturePositionY}
-                showSignaturePhoto={currentState.showSignaturePhoto}
-                showSignatureUsername={currentState.showSignatureUsername}
-                showSignatureSocial={currentState.showSignatureSocial}
-                activeTemplateId={currentState.activeTemplateId}
-                profileVerticalPosition={currentState.profileVerticalPosition}
-            />
-        </div>
+      <div className="flex-1 flex justify-center items-center p-4 md:p-8 bg-muted/40 relative overflow-hidden">
+        <VisualizacaoEditor
+            aspectRatio={currentState.aspectRatio}
+            backgroundStyle={currentState.backgroundStyle}
+            text={currentState.text}
+            textStyle={textStyle}
+            textVerticalPosition={currentState.textVerticalPosition}
+            showProfileSignature={currentState.showProfileSignature}
+            profile={profile}
+            signaturePositionX={currentState.signaturePositionX}
+            signaturePositionY={currentState.signaturePositionY}
+            showSignaturePhoto={currentState.showSignaturePhoto}
+            showSignatureUsername={currentState.showSignatureUsername}
+            showSignatureSocial={currentState.showSignatureSocial}
+            activeTemplateId={currentState.activeTemplateId}
+            profileVerticalPosition={currentState.profileVerticalPosition}
+        />
       </div>
       
       {/* Painel de Controles */}

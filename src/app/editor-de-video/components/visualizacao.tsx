@@ -142,7 +142,7 @@ export function VisualizacaoEditor({
 
     return (
       <div className={cn(
-          "relative w-full bg-black rounded-lg overflow-hidden shadow-2xl max-h-full",
+          "relative w-full max-w-full max-h-full bg-black rounded-lg overflow-hidden shadow-2xl",
           proporcoes[aspectRatio]
         )}
       >
