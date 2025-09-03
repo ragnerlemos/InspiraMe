@@ -117,8 +117,6 @@ export function VisualizacaoEditor(props: VisualizacaoEditorProps) {
       )}
       style={{
         aspectRatio: aspectRatio.replace(":", "/"),
-        width: "auto",
-        height: "auto",
       }}
     >
       {renderBackground(backgroundStyle)}
