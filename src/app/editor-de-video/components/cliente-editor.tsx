@@ -185,9 +185,9 @@ export function EditorClient() {
   }
 
   return (
-    <div className="flex flex-col md:flex-row w-full bg-background" style={{ height: 'calc(100vh - 64px)' }}>
+    <div className="flex flex-col md:flex-row w-full h-full min-h-0">
       {/* Área de visualização */}
-      <div className="flex-1 flex justify-center items-center p-4 md:p-8 bg-muted/40 relative overflow-hidden">
+      <div className="flex-1 flex justify-center items-center p-4 md:p-8 bg-muted/40 relative">
         <VisualizacaoEditor
             aspectRatio={currentState.aspectRatio}
             backgroundStyle={currentState.backgroundStyle}
