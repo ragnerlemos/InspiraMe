@@ -1,8 +1,8 @@
 
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
+import type { CSSProperties } from "react";
 import type { VisualizacaoEditorProps, ProporcaoTela } from "./tipos";
 import { AssinaturaPerfil } from "./assinatura-perfil";
 import { VisualizacaoPerfil } from "./visualizacao-perfil";
@@ -22,16 +22,6 @@ const getMediaType = (src: string): "image" | "video" | "unknown" => {
   return "unknown";
 };
 
-// Dimensões base por proporção (em px).
-function getBaseDims(ratio: ProporcaoTela) {
-  switch (ratio) {
-    case "9:16":  return { width: 900,  height: 1600 };
-    case "16:9":  return { width: 1600, height: 900  };
-    case "1:1":   return { width: 1200, height: 1200 };
-    default:      return { width: 900,  height: 1600 };
-  }
-}
-
 export function VisualizacaoEditor({
   aspectRatio,
   backgroundStyle,
@@ -48,38 +38,36 @@ export function VisualizacaoEditor({
   activeTemplateId,
   profileVerticalPosition,
 }: VisualizacaoEditorProps) {
-  const viewportRef = useRef<HTMLDivElement | null>(null);
-  const [scale, setScale] = useState(1);
 
-  const base = getBaseDims(aspectRatio);
-
-  // Escala o canvas para SEMPRE caber no viewport (contain)
-  useLayoutEffect(() => {
-    const el = viewportRef.current;
-    if (!el) return;
-    
-    // Recalcula as dimensões base dentro do efeito para garantir que está usando o valor mais recente
-    const currentBase = getBaseDims(aspectRatio);
-
-    const update = () => {
-      const vw = el.clientWidth;
-      const vh = el.clientHeight;
-      if (!vw || !vh) return;
-      const s = Math.min(vw / currentBase.width, vh / currentBase.height);
-      setScale(s > 0 ? s : 1);
-    };
-
-    update();
-
-    const ro = new ResizeObserver(update);
-    ro.observe(el);
-    window.addEventListener("resize", update);
-
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", update);
-    };
-  }, [aspectRatio]);
+  const getCanvasStyle = (ratio: ProporcaoTela): CSSProperties => {
+    switch(ratio) {
+        case '9:16':
+            return {
+                aspectRatio: "9 / 16",
+                width: "100%",
+                maxWidth: "min(100%, 56.25vh)",
+                maxHeight: "min(100%, 177.77vw)",
+            };
+        case '16:9':
+            return {
+                aspectRatio: "16 / 9",
+                width: "100%",
+                maxWidth: "min(100%, 177.77vh)",
+                maxHeight: "min(100%, 56.25vw)",
+            };
+        case '1:1':
+            return {
+                aspectRatio: "1 / 1",
+                width: "100%",
+                maxWidth: "min(100%, 100vh)",
+                maxHeight: "min(100%, 100vw)",
+            };
+        default:
+            return {};
+    }
+  }
+  
+  const canvasStyle = getCanvasStyle(aspectRatio);
 
   const renderBackground = () => {
     const { type, value } = backgroundStyle;
@@ -169,26 +157,12 @@ export function VisualizacaoEditor({
   };
 
   return (
-    // Viewport que mede o espaço disponível
     <div
-      ref={viewportRef}
-      className="absolute inset-0 flex items-center justify-center p-4 md:p-8 min-w-0 min-h-0 overflow-hidden"
-    >
-      {/* Canvas com tamanho base, escalado para caber */}
-      <div
-        className="relative rounded-lg overflow-hidden shadow-2xl"
-        style={{
-          width: `${base.width}px`,
-          height: `${base.height}px`,
-          transform: `scale(${scale})`,
-          transformOrigin: "center center",
-          background: "#000",
-          willChange: "transform",
-        }}
+        className="relative @container rounded-lg overflow-hidden shadow-2xl bg-black"
+        style={canvasStyle}
       >
         {renderBackground()}
         {renderContent()}
-      </div>
     </div>
   );
 }

@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { quotes, templates } from "@/lib/dados";
-import type { EstiloTexto, ProporcaoTela, EstiloFundo, EditorState } from "./tipos";
+import type { EstiloTexto, ProporcaoTela, EditorState } from "./tipos";
 import { VisualizacaoEditor } from "./visualizacao";
 import { PainelControles } from "./painel-controles";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -15,7 +15,7 @@ import { useProfile } from "@/hooks/use-profile";
 const getInitialState = (): EditorState => ({
     text: "",
     fontFamily: "Poppins",
-    fontSize: 5, // Agora representa um percentual da largura base
+    fontSize: 5, // Agora representa um percentual da largura do container (cqw)
     fontWeight: "normal",
     fontStyle: "normal",
     textColor: "#FFFFFF",
@@ -54,17 +54,6 @@ function EditorSkeleton() {
         </div>
     );
 }
-
-// Helper local
-function getBaseDims(aspectRatio: ProporcaoTela) {
-  switch (aspectRatio) {
-    case "9:16":  return { width: 900,  height: 1600 };
-    case "16:9":  return { width: 1600, height: 900  };
-    case "1:1":   return { width: 1200, height: 1200 };
-    default:      return { width: 900,  height: 1600 };
-  }
-}
-
 
 // Componente principal do cliente do editor de vídeo.
 export function EditorClient() {
@@ -153,21 +142,15 @@ export function EditorClient() {
     setIsReady(true);
   }, [searchParams, isProfileLoaded]);
 
-  const base = getBaseDims(currentState.aspectRatio);
-
-  // Interpreta currentState.fontSize como **percentual da largura do canvas**
-  const rawPx = (currentState.fontSize / 100) * base.width;
-  // Limites de segurança para não ficar ilegível nem gigante
-  const fontSizePx = Math.max(12, Math.min(256, Math.round(rawPx)));
 
   const createTextStrokeShadow = (width: number, color: string): string => {
     if (width === 0) return "none";
-    const responsiveWidth = (width / 1000) * base.width; // Proporcional à largura base
+    const responsiveWidth = width * 0.1; // Ajustado para cqw
     const shadows = [];
-    for (let x = -responsiveWidth; x <= responsiveWidth; x += 0.5) {
-      for (let y = -responsiveWidth; y <= responsiveWidth; y += 0.5) {
+    for (let x = -responsiveWidth; x <= responsiveWidth; x += 0.05) {
+      for (let y = -responsiveWidth; y <= responsiveWidth; y += 0.05) {
         if (Math.sqrt(x * x + y * y) <= responsiveWidth) {
-          shadows.push(`${x}px ${y}px 0 ${color}`);
+          shadows.push(`${x}cqw ${y}cqw 0 ${color}`);
         }
       }
     }
@@ -175,8 +158,8 @@ export function EditorClient() {
   };
   
   const textStrokeShadow = createTextStrokeShadow(currentState.textStrokeWidth, currentState.textStrokeColor);
-  const shadowBlurPx = (currentState.textShadowBlur / 1000) * base.width;
-  const mainTextShadow = currentState.textShadowBlur > 0 ? `1px 1px ${shadowBlurPx}px rgba(0,0,0,0.8)` : "none";
+  const shadowBlurCqw = currentState.textShadowBlur * 0.1;
+  const mainTextShadow = currentState.textShadowBlur > 0 ? `0.1cqw 0.1cqw ${shadowBlurCqw}cqw rgba(0,0,0,0.8)` : "none";
   
   const combinedTextShadow = 
     textStrokeShadow !== "none" && mainTextShadow !== "none"
@@ -187,7 +170,7 @@ export function EditorClient() {
 
   const textStyle: EstiloTexto = {
     fontFamily: currentState.fontFamily,
-    fontSize: `${fontSizePx}px`,
+    fontSize: `clamp(12px, ${currentState.fontSize}cqw, 200px)`,
     fontWeight: currentState.fontWeight,
     fontStyle: currentState.fontStyle,
     color: currentState.textColor,
@@ -203,7 +186,7 @@ export function EditorClient() {
   return (
     <div className="flex flex-col md:flex-row h-full w-full overflow-hidden">
       {/* Área de visualização */}
-      <div className="flex-1 flex justify-center items-center bg-muted/40 overflow-hidden relative">
+      <div className="flex-1 flex justify-center items-center bg-muted/40 p-4 md:p-8 relative overflow-hidden">
         <VisualizacaoEditor
             aspectRatio={currentState.aspectRatio}
             backgroundStyle={currentState.backgroundStyle}
