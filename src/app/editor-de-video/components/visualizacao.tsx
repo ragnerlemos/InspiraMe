@@ -1,9 +1,8 @@
-
 import Image from "next/image";
 import type { EstiloFundo, VisualizacaoEditorProps, ProporcaoTela } from "./tipos";
 import { AssinaturaPerfil } from "./assinatura-perfil";
 import { VisualizacaoPerfil } from "./visualizacao-perfil";
-
+import { cn } from "@/lib/utils";
 
 const getMediaType = (src: string): 'image' | 'video' | 'unknown' => {
     if (src.startsWith('data:')) {
@@ -106,7 +105,6 @@ const renderContent = (props: VisualizacaoEditorProps) => {
     );
 };
 
-
 export function VisualizacaoEditor(props: VisualizacaoEditorProps) {
   const { aspectRatio, backgroundStyle } = props;
 
@@ -121,13 +119,15 @@ export function VisualizacaoEditor(props: VisualizacaoEditorProps) {
   return (
     <div className="absolute inset-0 flex justify-center items-center p-4 md:p-8">
       <div
-        className="relative rounded-lg overflow-hidden shadow-2xl bg-black m-auto"
+        className={cn(
+            "relative rounded-lg overflow-hidden shadow-2xl bg-black m-auto @container",
+        )}
         style={{
-          width: "100%",
-          height: "100%",
-          maxWidth: `min(100%, calc((100vh - 128px) * ${proporcaoNumerica}))`, 
-          maxHeight: `min(100%, calc((100vw - 450px) / ${proporcaoNumerica}))`,
           aspectRatio: aspectRatio.replace(":", "/"),
+          maxWidth: "100%",
+          maxHeight: "100%",
+          width: `min(100%, calc((100vh - 128px - 4rem) * ${proporcaoNumerica}))`,
+          height: `min(100%, calc((100vw - 384px - 4rem) / ${proporcaoNumerica}))`,
         }}
       >
         {renderBackground(backgroundStyle)}

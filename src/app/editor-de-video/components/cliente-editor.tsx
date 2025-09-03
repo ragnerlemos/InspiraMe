@@ -15,7 +15,7 @@ import { useProfile } from "@/hooks/use-profile";
 const getInitialState = (): EditorState => ({
     text: "",
     fontFamily: "Poppins",
-    fontSize: 5, // Ajustado para a nova escala vw
+    fontSize: 5, // Ajustado para a nova escala cqw
     fontWeight: "normal",
     fontStyle: "normal",
     textColor: "#FFFFFF",
@@ -109,8 +109,8 @@ export function EditorClient() {
         
         if (template.id === -1) { // Se for o modelo padrão (ID -1), aplica estilos específicos.
             initialState.backgroundStyle = { type: 'solid', value: '#000000' };
-            initialState.textStrokeWidth = 0.2; // Ajustado para vw
-            initialState.textShadowBlur = 1; // Ajustado para vw
+            initialState.textStrokeWidth = 0.2; // Ajustado para cqw
+            initialState.textShadowBlur = 1; // Ajustado para cqw
             initialState.textVerticalPosition = 50;
             initialState.textAlign = 'center';
             initialState.textColor = '#FFFFFF';
@@ -118,7 +118,7 @@ export function EditorClient() {
             initialState.backgroundStyle = { type: 'solid', value: 'var(--card)' };
             initialState.textColor = 'var(--foreground)';
             initialState.fontFamily = 'PT Sans';
-            initialState.fontSize = 4; // Ajustado para vw
+            initialState.fontSize = 4; // Ajustado para cqw
             initialState.textAlign = 'left';
             initialState.textShadowBlur = 0;
             initialState.textStrokeWidth = 0;
@@ -149,7 +149,7 @@ export function EditorClient() {
     for (let x = -responsiveWidth; x <= responsiveWidth; x += 0.5) {
       for (let y = -responsiveWidth; y <= responsiveWidth; y += 0.5) {
         if (Math.sqrt(x * x + y * y) <= responsiveWidth) {
-          shadows.push(`${x}vw ${y}vw 0 ${color}`);
+          shadows.push(`${x}cqw ${y}cqw 0 ${color}`);
         }
       }
     }
@@ -157,7 +157,7 @@ export function EditorClient() {
   };
   
   const textStrokeShadow = createTextStrokeShadow(currentState.textStrokeWidth, currentState.textStrokeColor);
-  const mainTextShadow = currentState.textShadowBlur > 0 ? `0.1vw 0.1vw ${currentState.textShadowBlur / 10}vw rgba(0,0,0,0.8)` : "none";
+  const mainTextShadow = currentState.textShadowBlur > 0 ? `0.1cqw 0.1cqw ${currentState.textShadowBlur / 10}cqw rgba(0,0,0,0.8)` : "none";
   
   const combinedTextShadow = 
     textStrokeShadow !== "none" && mainTextShadow !== "none"
@@ -170,7 +170,7 @@ export function EditorClient() {
   // Estilos CSS para o texto, aplicados dinamicamente.
   const textStyle: EstiloTexto = {
     fontFamily: currentState.fontFamily,
-    fontSize: `clamp(12px, ${currentState.fontSize}vw, 128px)`,
+    fontSize: `clamp(12px, ${currentState.fontSize}cqw, 128px)`,
     fontWeight: currentState.fontWeight,
     fontStyle: currentState.fontStyle,
     color: currentState.textColor,
@@ -187,7 +187,7 @@ export function EditorClient() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-[1fr_384px] h-full w-full">
       {/* Área de visualização */}
-      <div className="relative bg-muted/40">
+      <div className="relative bg-muted/40 overflow-hidden">
         <VisualizacaoEditor
             aspectRatio={currentState.aspectRatio}
             backgroundStyle={currentState.backgroundStyle}
