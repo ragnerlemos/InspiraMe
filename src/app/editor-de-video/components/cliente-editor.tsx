@@ -185,8 +185,9 @@ export function EditorClient() {
   }
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex-1 flex justify-center items-center p-12">
+    <div className="flex flex-col h-full w-full">
+      {/* Área de visualização que ocupa o espaço disponível, menos a altura da barra de ferramentas */}
+      <div className="flex-1 flex justify-center items-center p-12 overflow-hidden mb-[152px]">
         <VisualizacaoEditor
             aspectRatio={currentState.aspectRatio}
             backgroundStyle={currentState.backgroundStyle}
@@ -204,6 +205,8 @@ export function EditorClient() {
             profileVerticalPosition={currentState.profileVerticalPosition}
         />
       </div>
+      
+      {/* Painel de Controles fixado na parte inferior */}
       <PainelControles
           text={currentState.text}
           onTextChange={(text) => updateState({ text })}
@@ -241,13 +244,13 @@ export function EditorClient() {
           onSignaturePositionYChange={(y) => updateState({ signaturePositionY: y })}
           showSignaturePhoto={currentState.showSignaturePhoto}
           onShowSignaturePhotoChange={(show) => updateState({ showSignaturePhoto: show })}
-      showSignatureUsername={currentState.showSignatureUsername}
-      onShowSignatureUsernameChange={(show) => updateState({ showSignatureUsername: show })}
-      showSignatureSocial={currentState.showSignatureSocial}
-      onShowSignatureSocialChange={(show) => updateState({ showSignatureSocial: show })}
-      activeTemplateId={currentState.activeTemplateId}
-      profileVerticalPosition={currentState.profileVerticalPosition}
-      onProfileVerticalPositionChange={(profileVerticalPosition) => updateState({ profileVerticalPosition })}
+          showSignatureUsername={currentState.showSignatureUsername}
+          onShowSignatureUsernameChange={(show) => updateState({ showSignatureUsername: show })}
+          showSignatureSocial={currentState.showSignatureSocial}
+          onShowSignatureSocialChange={(show) => updateState({ showSignatureSocial: show })}
+          activeTemplateId={currentState.activeTemplateId}
+          profileVerticalPosition={currentState.profileVerticalPosition}
+          onProfileVerticalPositionChange={(profileVerticalPosition) => updateState({ profileVerticalPosition })}
       />
     </div>
   );

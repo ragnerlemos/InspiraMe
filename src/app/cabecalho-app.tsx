@@ -15,7 +15,7 @@ const navItems = [
   { href: "/favoritos", label: "Favoritos", icon: Star },
   { href: "/modelos", label: "Modelos", icon: GalleryVertical },
   { href: "/meus-videos", label: "Meus Vídeos", icon: Clapperboard },
-  // { href: "/editor-de-video", label: "Editor", icon: Film },
+  { href: "/editor-de-video", label: "Editor", icon: Film },
   { href: "/perfil", label: "Perfil", icon: User },
   { href: "/configuracoes", label: "Configurações", icon: Settings },
 ];
@@ -24,10 +24,9 @@ function EditorHeader() {
     return (
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-sm px-4">
             <div className="flex h-16 items-center justify-between">
-                <Link href="/" passHref>
+                <Link href="/" legacyBehavior passHref>
                     <Button variant="ghost">
                         <X className="h-5 w-5" />
-                         <span className="sr-only">Fechar Editor</span>
                     </Button>
                 </Link>
                 <h1 className="text-lg font-bold">Editor</h1>
@@ -46,9 +45,9 @@ export function AppHeader() {
   
   const isEditorPage = pathname.startsWith('/editor-de-video');
 
-  // Renderiza um cabeçalho específico para a página do editor.
+  // Não renderiza o header se estiver na página do editor
   if (isEditorPage) {
-      return <EditorHeader />;
+      return null;
   }
 
   // Função que renderiza os links de navegação.

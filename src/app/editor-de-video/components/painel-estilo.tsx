@@ -4,7 +4,7 @@
 
 import {
   AlignCenter, AlignLeft, AlignRight, MoveVertical, Bold, Italic,
-  Baseline, Paintbrush, User, Text, Pipette, Type, SlidersHorizontal, CaseSensitive
+  Baseline, Paintbrush, Text, Pipette, Type, CaseSensitive
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import type { PainelEstiloProps } from "./tipos";
-import { Separator } from "@/components/ui/separator";
 import { BotaoRecurso } from "./botao-recurso";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
@@ -38,7 +37,7 @@ export function PainelEstilo(props: PainelEstiloProps) {
         if (!controleAtivo) return null;
 
         return (
-             <div className="p-4 space-y-4 h-[200px]">
+             <div className="p-4 space-y-4 h-[200px] bg-background">
                 {controleAtivo === 'fonte' && (
                     <div className="space-y-2">
                         <Label htmlFor="font-family">Fonte</Label>
@@ -142,22 +141,23 @@ export function PainelEstilo(props: PainelEstiloProps) {
 
     return (
        <div className="w-full">
-            <div className="border-b">
-                {renderControle()}
-            </div>
-            <ScrollArea className="w-full whitespace-nowrap">
-                <div className="flex h-24 items-center justify-around px-2 gap-2">
-                     <BotaoRecurso icon={Type} label="Fonte" onClick={() => setControleAtivo('fonte')} isActive={controleAtivo === 'fonte'} />
-                     <BotaoRecurso icon={CaseSensitive} label="Tamanho" onClick={() => setControleAtivo('tamanho')} isActive={controleAtivo === 'tamanho'} />
-                     <BotaoRecurso icon={Pipette} label="Cor" onClick={() => setControleAtivo('cor')} isActive={controleAtivo === 'cor'} />
-                     <BotaoRecurso icon={AlignLeft} label="Alinhar" onClick={() => setControleAtivo('alinhamento')} isActive={controleAtivo === 'alinhamento'} />
-                     <BotaoRecurso icon={Bold} label="Estilo" onClick={() => setControleAtivo('estilo')} isActive={controleAtivo === 'estilo'} />
-                     <BotaoRecurso icon={MoveVertical} label="Posição" onClick={() => setControleAtivo('posicao')} isActive={controleAtivo === 'posicao'} />
-                     <BotaoRecurso icon={Baseline} label="Contorno" onClick={() => setControleAtivo('contorno')} isActive={controleAtivo === 'contorno'} />
-                     <BotaoRecurso icon={Paintbrush} label="Sombra" onClick={() => setControleAtivo('sombra')} isActive={controleAtivo === 'sombra'} />
-                </div>
-                <ScrollBar orientation="horizontal" />
-            </ScrollArea>
+            {controleAtivo ? (
+                renderControle()
+            ) : (
+                <ScrollArea className="w-full whitespace-nowrap bg-background border-t">
+                    <div className="flex h-24 items-center justify-start px-2 gap-2">
+                        <BotaoRecurso icon={Type} label="Fonte" onClick={() => setControleAtivo('fonte')} />
+                        <BotaoRecurso icon={CaseSensitive} label="Tamanho" onClick={() => setControleAtivo('tamanho')} />
+                        <BotaoRecurso icon={Pipette} label="Cor" onClick={() => setControleAtivo('cor')} />
+                        <BotaoRecurso icon={AlignLeft} label="Alinhar" onClick={() => setControleAtivo('alinhamento')} />
+                        <BotaoRecurso icon={Bold} label="Estilo" onClick={() => setControleAtivo('estilo')} />
+                        <BotaoRecurso icon={MoveVertical} label="Posição" onClick={() => setControleAtivo('posicao')} />
+                        <BotaoRecurso icon={Baseline} label="Contorno" onClick={() => setControleAtivo('contorno')} />
+                        <BotaoRecurso icon={Paintbrush} label="Sombra" onClick={() => setControleAtivo('sombra')} />
+                    </div>
+                    <ScrollBar orientation="horizontal" />
+                </ScrollArea>
+            )}
        </div>
     );
 }
