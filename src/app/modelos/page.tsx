@@ -6,8 +6,7 @@ import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import { templates } from '@/lib/dados';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Eye, FilePlus } from 'lucide-react';
+import { FilePlus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // Página que exibe uma galeria de modelos de vídeo que os usuários podem utilizar.
@@ -35,39 +34,32 @@ export default function ModelosPage() {
           }
           
           return (
-            <Card key={template.id} className="overflow-hidden group flex flex-col">
-              <div className={cn(
-                  "relative", 
-                  template.aspectRatio === '9:16' ? 'aspect-[9/16]' : 'aspect-square'
-              )}>
-                {template.imageUrl ? (
-                    <Image
-                        src={template.imageUrl}
-                        alt={template.name}
-                        fill
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
-                        data-ai-hint={template.dataAiHint}
-                    />
-                ) : (
-                    <div className="flex items-center justify-center h-full bg-muted">
-                        <FilePlus className="h-16 w-16 text-muted-foreground/50" />
-                    </div>
-                )}
-                
-                <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <Link href={`/editor-de-video?${editorUrl.toString()}`} passHref>
-                        <Button size="sm">
-                            <Eye className="mr-2 h-4 w-4" />
-                            Usar Modelo
-                        </Button>
-                    </Link>
+            <Link key={template.id} href={`/editor-de-video?${editorUrl.toString()}`} passHref className="group">
+                <Card className="overflow-hidden flex flex-col h-full">
+                <div className={cn(
+                    "relative", 
+                    template.aspectRatio === '9:16' ? 'aspect-[9/16]' : 'aspect-square'
+                )}>
+                    {template.imageUrl ? (
+                        <Image
+                            src={template.imageUrl}
+                            alt={template.name}
+                            fill
+                            className="object-cover transition-transform duration-300 group-hover:scale-105"
+                            data-ai-hint={template.dataAiHint}
+                        />
+                    ) : (
+                        <div className="flex items-center justify-center h-full bg-muted transition-colors group-hover:bg-muted/80">
+                            <FilePlus className="h-16 w-16 text-muted-foreground/50" />
+                        </div>
+                    )}
                 </div>
-              </div>
-              <CardContent className="p-2 bg-card">
-                  <p className="font-normal text-[11px]">{template.name}</p>
-                  <p className="text-[11px] text-muted-foreground">Proporção: {template.aspectRatio}</p>
-              </CardContent>
-            </Card>
+                <CardContent className="p-2 bg-card">
+                    <p className="font-normal text-[11px]">{template.name}</p>
+                    <p className="text-[11px] text-muted-foreground">Proporção: {template.aspectRatio}</p>
+                </CardContent>
+                </Card>
+            </Link>
           )
         })}
       </div>
