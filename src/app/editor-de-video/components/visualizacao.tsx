@@ -1,155 +1,138 @@
 
-// Componente responsável por renderizar a área de visualização do editor, 
-// incluindo a imagem de fundo, o texto e os controles de proporção de tela.
-
 import Image from "next/image";
-import { cn } from "@/lib/utils";
-import type { VisualizacaoEditorProps, ProporcaoTela } from "./tipos";
+import type { EstiloFundo, VisualizacaoEditorProps, ProporcaoTela } from "./tipos";
 import { AssinaturaPerfil } from "./assinatura-perfil";
 import { VisualizacaoPerfil } from "./visualizacao-perfil";
 
 
-// Mapeia os valores de proporção de tela para as classes CSS correspondentes do Tailwind.
-const proporcoes: Record<ProporcaoTela, string> = {
-    "1:1": "aspect-square",
-    "9:16": "aspect-[9/16]",
-    "16:9": "aspect-[16/9]",
-};
-
-// Função para verificar o tipo de mídia com base no seu conteúdo (Data URL ou URL normal)
 const getMediaType = (src: string): 'image' | 'video' | 'unknown' => {
     if (src.startsWith('data:')) {
         if (src.startsWith('data:image')) return 'image';
         if (src.startsWith('data:video')) return 'video';
     }
-    // Lógica para URLs externas, se necessário. Aqui, assumimos imagem por padrão.
     const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
     const videoExtensions = ['.mp4', '.webm', '.ogg'];
     
     if (imageExtensions.some(ext => src.toLowerCase().includes(ext))) return 'image';
     if (videoExtensions.some(ext => src.toLowerCase().includes(ext))) return 'video';
     
-    // Fallback para as URLs do picsum que não têm extensão
     if(src.includes('picsum.photos')) return 'image';
 
     return 'unknown';
 }
 
-export function VisualizacaoEditor({
-    aspectRatio,
-    backgroundStyle,
-    text,
-    textStyle,
-    textVerticalPosition,
-    showProfileSignature,
-    profile,
-    signaturePositionX,
-    signaturePositionY,
-    showSignaturePhoto,
-    showSignatureUsername,
-    showSignatureSocial,
-    activeTemplateId,
-    profileVerticalPosition,
-}: VisualizacaoEditorProps) {
-
-    const renderBackground = () => {
-        const { type, value } = backgroundStyle;
-        if (type === 'media' && value) {
-            const mediaType = getMediaType(value);
-            if (mediaType === 'image') {
-                return (
-                    <Image
-                        src={value}
-                        alt="Background"
-                        fill
-                        className="object-cover"
-                        key={value} // Força a recriação quando a imagem muda
-                        data-ai-hint="background scenery"
-                        priority
-                    />
-                );
-            }
-            if (mediaType === 'video') {
-                return (
-                    <video
-                        src={value}
-                        autoPlay
-                        loop
-                        muted
-                        className="absolute inset-0 w-full h-full object-cover"
-                        key={value} // Força a recriação quando o vídeo muda
-                    />
-                );
-            }
-        } else if (type === 'solid') {
-             return <div className="absolute inset-0" style={{ backgroundColor: value }} />;
-        } else if (type === 'gradient') {
-             return <div className="absolute inset-0" style={{ background: value }} />;
-        }
-        return null; // ou um placeholder de carregamento/erro
-    };
-
-     const renderContent = () => {
-        // Se o modelo "Twitter" (id -2) estiver ativo, renderiza a visualização especial.
-        if (activeTemplateId === -2) {
+const renderBackground = (backgroundStyle: EstiloFundo) => {
+    const { type, value } = backgroundStyle;
+    if (type === 'media' && value) {
+        const mediaType = getMediaType(value);
+        if (mediaType === 'image') {
             return (
-                <VisualizacaoPerfil 
-                    profile={profile}
-                    text={text}
-                    textStyle={textStyle}
-                    textVerticalPosition={textVerticalPosition}
-                    profileVerticalPosition={profileVerticalPosition}
+                <Image
+                    src={value}
+                    alt="Background"
+                    fill
+                    className="object-cover"
+                    key={value}
+                    data-ai-hint="background scenery"
+                    priority
                 />
-            )
+            );
         }
-        
-        // Renderização padrão para os outros modelos.
+        if (mediaType === 'video') {
+            return (
+                <video
+                    src={value}
+                    autoPlay
+                    loop
+                    muted
+                    className="absolute inset-0 w-full h-full object-cover"
+                    key={value}
+                />
+            );
+        }
+    } else if (type === 'solid') {
+         return <div className="absolute inset-0" style={{ backgroundColor: value }} />;
+    } else if (type === 'gradient') {
+         return <div className="absolute inset-0" style={{ background: value }} />;
+    }
+    return null;
+};
+
+const renderContent = (props: VisualizacaoEditorProps) => {
+    if (props.activeTemplateId === -2) {
         return (
-            <div className="absolute inset-0 flex items-center justify-center p-8">
-                <div className="relative w-full h-full">
-                    <div
-                        style={{
-                            ...textStyle,
-                            top: `${textVerticalPosition}%`,
-                            transform: 'translateY(-50%)',
-                        }}
-                        className="break-words w-full absolute transition-all duration-200"
-                    >
-                        {text}
-                    </div>
-                </div>
-                 {showProfileSignature && (
-                    <div 
-                        className="absolute"
-                        style={{
-                            top: `${signaturePositionY}%`,
-                            left: `${signaturePositionX}%`,
-                            transform: `translate(-50%, -50%)`,
-                        }}
-                    >
-                        <AssinaturaPerfil 
-                            profile={profile} 
-                            showPhoto={showSignaturePhoto}
-                            showUsername={showSignatureUsername}
-                            showSocial={showSignatureSocial}
-                        />
-                    </div>
-                )}
-            </div>
-        );
-    };
-
-
+            <VisualizacaoPerfil 
+                profile={props.profile}
+                text={props.text}
+                textStyle={props.textStyle}
+                textVerticalPosition={props.textVerticalPosition}
+                profileVerticalPosition={props.profileVerticalPosition}
+            />
+        )
+    }
+    
     return (
-      <div className="absolute inset-0 flex justify-center items-center p-4 md:p-8">
-        <div className={cn(
-            "relative w-full max-w-full max-h-full bg-black rounded-lg overflow-hidden shadow-2xl",
-            proporcoes[aspectRatio]
+        <div className="absolute inset-0 flex items-center justify-center p-8">
+            <div className="relative w-full h-full">
+                <div
+                    style={{
+                        ...props.textStyle,
+                        top: `${props.textVerticalPosition}%`,
+                        transform: 'translateY(-50%)',
+                    }}
+                    className="break-words w-full absolute transition-all duration-200"
+                >
+                    {props.text}
+                </div>
+            </div>
+             {props.showProfileSignature && (
+                <div 
+                    className="absolute"
+                    style={{
+                        top: `${props.signaturePositionY}%`,
+                        left: `${props.signaturePositionX}%`,
+                        transform: `translate(-50%, -50%)`,
+                    }}
+                >
+                    <AssinaturaPerfil 
+                        profile={props.profile} 
+                        showPhoto={props.showSignaturePhoto}
+                        showUsername={props.showSignatureUsername}
+                        showSocial={props.showSignatureSocial}
+                    />
+                </div>
             )}
-        >
-            {renderBackground()}
-            {renderContent()}
         </div>
-      </div>
     );
+};
+
+
+export function VisualizacaoEditor(props: VisualizacaoEditorProps) {
+  const { aspectRatio, backgroundStyle } = props;
+
+  const proporcoes: Record<ProporcaoTela, number> = {
+    "1:1": 1,
+    "9:16": 9 / 16,
+    "16:9": 16 / 9,
+  };
+
+  const proporcaoNumerica = proporcoes[aspectRatio];
+
+  return (
+    <div className="absolute inset-0 flex justify-center items-center p-4 md:p-8">
+      <div
+        className="relative rounded-lg overflow-hidden shadow-2xl bg-black m-auto"
+        style={{
+          width: "100%",
+          height: "100%",
+          maxWidth: `min(100%, calc((100vh - 128px) * ${proporcaoNumerica}))`, 
+          maxHeight: `min(100%, calc((100vw - 450px) / ${proporcaoNumerica}))`,
+          aspectRatio: aspectRatio.replace(":", "/"),
+        }}
+      >
+        {renderBackground(backgroundStyle)}
+        {renderContent(props)}
+      </div>
+    </div>
+  );
 }
