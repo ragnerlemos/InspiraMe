@@ -76,7 +76,7 @@ export function VisualizacaoEditor({
       ro.disconnect();
       window.removeEventListener("resize", update);
     };
-  }, [base.width, base.height]);
+  }, [base.width, base.height, aspectRatio]);
 
   const renderBackground = () => {
     const { type, value } = backgroundStyle;
