@@ -1,6 +1,7 @@
 // Componente que agrupa os painéis de controle para customização do vídeo/imagem.
 // Ele usa um sistema de abas para organizar as opções de "Texto" e "Estilo".
 
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Type, Palette, Download, Share2, ImagePlus, Undo2 } from "lucide-react";
@@ -10,9 +11,8 @@ import { PainelFundo } from "./painel-fundo";
 import type { PainelControlesProps } from "./tipos";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { BotaoRecurso } from "./botao-recurso";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { ScrollArea } from "@/components/ui/scroll-area";
+
 
 export function PainelControles(props: PainelControlesProps) {
     const { toast } = useToast();
@@ -46,101 +46,49 @@ export function PainelControles(props: PainelControlesProps) {
         }
     };
     
-    const renderPainelTexto = () => (
-        <>
-            <SheetHeader>
-                <SheetTitle className="flex items-center gap-2"><Type /> Opções de Texto</SheetTitle>
-            </SheetHeader>
-            <div className="py-4">
-                <PainelTexto
-                    text={props.text}
-                    onTextChange={props.onTextChange}
-                />
-            </div>
-        </>
-    );
-
-     const renderPainelEstilo = () => (
-        <>
-            <SheetHeader>
-                <SheetTitle className="flex items-center gap-2"><Palette /> Opções de Estilo</SheetTitle>
-            </SheetHeader>
-            <ScrollArea className="h-full">
-                <div className="space-y-6 p-4">
-                    <PainelEstilo {...props} />
-                </div>
-            </ScrollArea>
-        </>
-    );
-
-    const renderPainelFundo = () => (
-         <>
-            <SheetHeader>
-                <SheetTitle className="flex items-center gap-2"><ImagePlus /> Opções de Fundo</SheetTitle>
-            </SheetHeader>
-            <ScrollArea className="h-full">
-                <div className="space-y-4 p-4">
-                     <PainelFundo {...props} />
-                </div>
-            </ScrollArea>
-        </>
-    );
-
     return (
-        <Card className="w-full max-w-4xl sticky bottom-4">
-            <CardContent className="p-2">
-                <ScrollArea className="w-full whitespace-nowrap">
-                    <div className="flex items-center gap-2">
-                        <Sheet>
-                            <SheetTrigger asChild>
-                                <BotaoRecurso icon={Type} label="Texto" />
-                            </SheetTrigger>
-                            <SheetContent side="bottom" className="h-[40vh]">
-                                {renderPainelTexto()}
-                            </SheetContent>
-                        </Sheet>
-                        
-                        <Sheet>
-                             <SheetTrigger asChild>
-                                <BotaoRecurso icon={Palette} label="Estilo" />
-                            </SheetTrigger>
-                            <SheetContent side="bottom" className="h-[80vh]">
-                                {renderPainelEstilo()}
-                            </SheetContent>
-                        </Sheet>
-                        
-                        <Sheet>
-                             <SheetTrigger asChild>
-                                <BotaoRecurso icon={ImagePlus} label="Fundo" />
-                            </SheetTrigger>
-                             <SheetContent side="bottom" className="h-[80vh]">
-                                {renderPainelFundo()}
-                            </SheetContent>
-                        </Sheet>
-                         <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <div className="flex flex-col items-center">
-                                    <Button variant="ghost" size="icon" onClick={props.onUndo} disabled={!props.canUndo} className="w-14 h-14">
-                                        <Undo2 className="h-6 w-6" />
-                                        <span className="sr-only">Desfazer</span>
-                                    </Button>
-                                    </div>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    <p>Desfazer</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
-                    </div>
-                     <ScrollBar orientation="horizontal" />
-                </ScrollArea>
-
-                 <div className="flex gap-2 mt-2">
+        <Card className="w-full max-w-md sticky-top">
+             <div className="p-2">
+                <Tabs defaultValue="texto" className="w-full">
+                    <TabsList className="grid w-full grid-cols-3">
+                        <TabsTrigger value="texto"><Type className="mr-1 h-4 w-4" /> Texto</TabsTrigger>
+                        <TabsTrigger value="estilo"><Palette className="mr-1 h-4 w-4" /> Estilo</TabsTrigger>
+                        <TabsTrigger value="fundo"><ImagePlus className="mr-1 h-4 w-4" /> Fundo</TabsTrigger>
+                    </TabsList>
+                    <ScrollArea className="h-[calc(100vh-22rem)] w-full">
+                        <CardContent>
+                            <TabsContent value="texto" className="pt-4">
+                                <PainelTexto
+                                    text={props.text}
+                                    onTextChange={props.onTextChange}
+                                />
+                            </TabsContent>
+                            <TabsContent value="estilo" className="pt-4">
+                                <PainelEstilo {...props} />
+                            </TabsContent>
+                            <TabsContent value="fundo" className="pt-4">
+                                <PainelFundo {...props} />
+                            </TabsContent>
+                        </CardContent>
+                    </ScrollArea>
+                </Tabs>
+                <div className="flex gap-2 mt-2 px-2 pb-2">
                     <Button className="flex-1"><Download className="mr-2 h-4 w-4" /> Baixar</Button>
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button variant="secondary" size="icon" onClick={props.onUndo} disabled={!props.canUndo}>
+                                    <Undo2 className="h-4 w-4" />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Desfazer</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
                     <Button variant="secondary" className="flex-1" onClick={handleShare}><Share2 className="mr-2 h-4 w-4" /> Compartilhar</Button>
                 </div>
-            </CardContent>
+            </div>
         </Card>
     );
 }

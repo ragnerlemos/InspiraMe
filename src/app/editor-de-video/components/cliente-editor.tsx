@@ -44,9 +44,13 @@ const getInitialState = (): EditorState => ({
 function EditorSkeleton() {
     return (
         <div className="container mx-auto py-8">
-            <div className="flex flex-col items-center gap-8">
-                <Skeleton className="w-full max-w-md aspect-[9/16] rounded-lg" />
-                <Skeleton className="w-full max-w-md h-24 rounded-lg" />
+            <div className="grid md:grid-cols-2 gap-8 items-start">
+                <div className="flex justify-center items-start">
+                    <Skeleton className="w-full max-w-md aspect-[9/16] rounded-lg" />
+                </div>
+                <div className="w-full max-w-md mx-auto">
+                    <Skeleton className="h-96 w-full rounded-lg" />
+                </div>
             </div>
         </div>
     );
@@ -181,7 +185,7 @@ export function EditorClient() {
 
   return (
     <div className="container mx-auto py-4 md:py-8 h-full">
-      <div className="flex flex-col items-center justify-between h-full gap-4">
+      <div className="grid md:grid-cols-2 gap-8 items-start h-full">
         <VisualizacaoEditor
             aspectRatio={currentState.aspectRatio}
             backgroundStyle={currentState.backgroundStyle}
