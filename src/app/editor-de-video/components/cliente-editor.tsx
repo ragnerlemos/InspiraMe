@@ -181,7 +181,7 @@ export function EditorClient() {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 flex justify-center items-center p-4">
+      <div className="flex-1 flex justify-center items-center p-8">
         <VisualizacaoEditor
             aspectRatio={currentState.aspectRatio}
             backgroundStyle={currentState.backgroundStyle}
