@@ -1,7 +1,8 @@
+
 // Componente da barra de ferramentas inferior que gerencia os painéis deslizantes.
 
 import { useState } from 'react';
-import { Type, Palette, ImagePlus, Undo2, Download, Share2 } from "lucide-react";
+import { Type, Palette, ImagePlus, Undo2, Download, Share2, X } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
@@ -16,7 +17,7 @@ import { BotaoRecurso } from './botao-recurso';
 
 export function PainelControles(props: PainelControlesProps) {
     const { toast } = useToast();
-    const [activeSheet, setActiveSheet] = useState<'texto' | 'estilo' | 'fundo' | null>(null);
+    const [activeToolbar, setActiveToolbar] = useState<'main' | 'text' | 'style' | 'background'>('main');
 
     const handleShare = async () => {
         const shareData = {
@@ -45,52 +46,42 @@ export function PainelControles(props: PainelControlesProps) {
             }
         }
     };
+
+    const renderToolbarContent = () => {
+        switch (activeToolbar) {
+            case 'text':
+                return <PainelTexto text={props.text} onTextChange={props.onTextChange} />;
+            case 'style':
+                return <PainelEstilo {...props} />;
+            case 'background':
+                 return <PainelFundo {...props} />;
+            default:
+                return (
+                    <div className="flex h-24 items-center justify-around px-2">
+                        <BotaoRecurso icon={Type} label="Texto" onClick={() => setActiveToolbar('text')} />
+                        <BotaoRecurso icon={Palette} label="Estilo" onClick={() => setActiveToolbar('style')} />
+                        <BotaoRecurso icon={ImagePlus} label="Fundo" onClick={() => setActiveToolbar('background')} />
+                    </div>
+                );
+        }
+    }
     
     return (
-        <div className="w-full border-t bg-background">
-            {/* Barra de Ferramentas com Ícones */}
-            <div className="flex h-24 items-center justify-around px-2">
-                <Sheet onOpenChange={(open) => setActiveSheet(open ? 'texto' : null)}>
-                    <SheetTrigger asChild>
-                        <BotaoRecurso icon={Type} label="Texto" onClick={() => {}} isActive={activeSheet === 'texto'} />
-                    </SheetTrigger>
-                    <SheetContent side="bottom" className="h-[85vh]">
-                        <SheetHeader>
-                            <SheetTitle>Editar Texto</SheetTitle>
-                        </SheetHeader>
-                        <div className="p-4">
-                            <PainelTexto text={props.text} onTextChange={props.onTextChange} />
-                        </div>
-                    </SheetContent>
-                </Sheet>
-
-                <Sheet onOpenChange={(open) => setActiveSheet(open ? 'estilo' : null)}>
-                    <SheetTrigger asChild>
-                         <BotaoRecurso icon={Palette} label="Estilo" onClick={() => {}} isActive={activeSheet === 'estilo'} />
-                    </SheetTrigger>
-                    <SheetContent side="bottom" className="h-[85vh]">
-                        <SheetHeader>
-                            <SheetTitle>Customizar Estilo</SheetTitle>
-                        </SheetHeader>
-                        <ScrollArea className="h-full w-full p-4">
-                            <PainelEstilo {...props} />
-                        </ScrollArea>
-                    </SheetContent>
-                </Sheet>
-                
-                <Sheet onOpenChange={(open) => setActiveSheet(open ? 'fundo' : null)}>
-                    <SheetTrigger asChild>
-                        <BotaoRecurso icon={ImagePlus} label="Fundo" onClick={() => {}} isActive={activeSheet === 'fundo'} />
-                    </SheetTrigger>
-                     <SheetContent side="bottom" className="h-[85vh]">
-                        <SheetHeader>
-                            <SheetTitle>Alterar Fundo</SheetTitle>
-                        </SheetHeader>
-                        <ScrollArea className="h-full w-full p-4">
-                            <PainelFundo {...props} />
-                        </ScrollArea>
-                    </SheetContent>
-                </Sheet>
+        <div className="w-full border-t bg-background flex flex-col">
+            <div className="relative">
+                {activeToolbar !== 'main' && (
+                     <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="absolute top-1/2 left-2 -translate-y-1/2 z-10"
+                        onClick={() => setActiveToolbar('main')}
+                    >
+                        <X className="h-5 w-5" />
+                    </Button>
+                )}
+                 <div className="w-full">
+                    {renderToolbarContent()}
+                 </div>
             </div>
             
             {/* Barra de Ações (Baixar, Desfazer, Compartilhar) */}

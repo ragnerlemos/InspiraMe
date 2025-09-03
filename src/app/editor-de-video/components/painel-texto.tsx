@@ -6,14 +6,15 @@ import type { PainelTextoProps } from "./tipos";
 
 export function PainelTexto({ text, onTextChange }: PainelTextoProps) {
     return (
-        <div className="space-y-2">
-            <Label htmlFor="text-input">Texto da Frase</Label>
+        <div className="p-4">
+            <Label htmlFor="text-input" className="sr-only">Texto da Frase</Label>
             <Textarea
                 id="text-input"
                 value={text}
                 onChange={(e) => onTextChange(e.target.value)}
-                rows={5}
+                rows={4}
                 placeholder="Digite sua frase aqui..."
+                className="text-base"
             />
         </div>
     );
