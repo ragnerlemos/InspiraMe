@@ -26,7 +26,7 @@ const getInitialState = (): EditorState => ({
     textStrokeWidth: 0,
     backgroundStyle: {
         type: 'media',
-        value: templates[0].imageUrl,
+        value: "",
     },
     aspectRatio: "9:16",
     activeTemplateId: null,
@@ -108,7 +108,7 @@ export function EditorClient() {
         initialState.aspectRatio = template.aspectRatio as ProporcaoTela;
         
         if (template.id === -1) { // Se for o modelo padrão (ID -1), aplica estilos específicos.
-            initialState.backgroundStyle = { type: 'solid', value: '#333333' };
+            initialState.backgroundStyle = { type: 'solid', value: '#000000' };
             initialState.textStrokeWidth = 3.5;
             initialState.textShadowBlur = 16;
             initialState.textVerticalPosition = 50;
@@ -125,7 +125,7 @@ export function EditorClient() {
             initialState.textVerticalPosition = 45;
             initialState.profileVerticalPosition = 25;
         } else {
-            initialState.backgroundStyle = { type: 'media', value: template.imageUrl };
+            initialState.backgroundStyle = { type: 'media', value: template.imageUrl || '' };
         }
       }
     }

@@ -54,7 +54,7 @@ export function VisualizacaoEditor({
 
     const renderBackground = () => {
         const { type, value } = backgroundStyle;
-        if (type === 'media') {
+        if (type === 'media' && value) {
             const mediaType = getMediaType(value);
             if (mediaType === 'image') {
                 return (
