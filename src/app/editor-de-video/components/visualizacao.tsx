@@ -71,7 +71,7 @@ const renderContent = (props: VisualizacaoEditorProps) => {
     }
     
     return (
-        <div className="absolute inset-0 flex items-center justify-center p-8">
+        <div className="absolute inset-0 flex items-center justify-center p-8 @container">
             <div className="relative w-full h-full">
                 <div
                     style={{
@@ -117,22 +117,20 @@ export function VisualizacaoEditor(props: VisualizacaoEditorProps) {
   const proporcaoNumerica = proporcoes[aspectRatio];
 
   return (
-    <div className="absolute inset-0 flex justify-center items-center p-4 md:p-8">
-      <div
-        className={cn(
-            "relative rounded-lg overflow-hidden shadow-2xl bg-black m-auto @container",
-        )}
-        style={{
-          aspectRatio: aspectRatio.replace(":", "/"),
-          maxWidth: "100%",
-          maxHeight: "100%",
-          width: `min(100%, calc((100vh - 128px - 4rem) * ${proporcaoNumerica}))`,
-          height: `min(100%, calc((100vw - 384px - 4rem) / ${proporcaoNumerica}))`,
-        }}
-      >
-        {renderBackground(backgroundStyle)}
-        {renderContent(props)}
-      </div>
+    <div
+      className={cn(
+          "relative rounded-lg overflow-hidden shadow-2xl bg-black m-auto",
+      )}
+      style={{
+        aspectRatio: aspectRatio.replace(":", "/"),
+        maxWidth: "100%",
+        maxHeight: "100%",
+        width: `min(100%, calc((100vh - 128px - 4rem) * ${proporcaoNumerica}))`,
+        height: `min(100%, calc((100vw - 384px - 4rem) / ${proporcaoNumerica}))`,
+      }}
+    >
+      {renderBackground(backgroundStyle)}
+      {renderContent(props)}
     </div>
   );
 }
