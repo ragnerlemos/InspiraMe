@@ -24,12 +24,11 @@ function EditorSkeleton() {
 }
 
 // Página do editor de vídeo que usa Suspense para mostrar um fallback de carregamento.
-// O Suspense aguarda o carregamento dinâmico dos dados (parâmetros da URL) dentro do EditorClient.
 export default function EditorPage() {
     return (
-         <div className="w-full flex flex-col h-screen bg-background">
+         <div className="grid grid-rows-[auto_1fr] h-screen w-full bg-background">
             <AppHeader />
-            <main className="flex-1 min-h-0">
+            <main className="overflow-hidden">
                 <Suspense fallback={<EditorSkeleton />}>
                     <EditorClient />
                 </Suspense>
