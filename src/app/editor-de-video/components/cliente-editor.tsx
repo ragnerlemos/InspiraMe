@@ -15,7 +15,7 @@ import { useProfile } from "@/hooks/use-profile";
 const getInitialState = (): EditorState => ({
     text: "",
     fontFamily: "Poppins",
-    fontSize: 5, // Ajustado para a nova escala cqw
+    fontSize: 5, // Unidade cqw
     fontWeight: "normal",
     fontStyle: "normal",
     textColor: "#FFFFFF",
@@ -43,11 +43,14 @@ const getInitialState = (): EditorState => ({
 // Componente que exibe um esqueleto de carregamento enquanto o editor está sendo preparado.
 function EditorSkeleton() {
     return (
-        <div className="container mx-auto py-8 flex flex-col items-center h-full">
-            <Skeleton className="w-full max-w-sm aspect-[9/16] rounded-lg" />
-            <div className="w-full max-w-sm mt-4">
-                <Skeleton className="h-24 w-full rounded-lg" />
+        <div className="flex flex-col md:flex-row h-full w-full overflow-hidden">
+            <div className="flex-1 flex justify-center items-center bg-muted/40 p-4 md:p-8 relative overflow-hidden">
+                 <Skeleton className="w-full h-full max-w-sm aspect-[9/16] rounded-lg" />
             </div>
+             <div className="w-full md:w-96 border-t md:border-t-0 md:border-l bg-background">
+                <Skeleton className="h-24 w-full" />
+                <Skeleton className="h-full w-full" />
+             </div>
         </div>
     );
 }
@@ -109,8 +112,8 @@ export function EditorClient() {
         
         if (template.id === -1) { // Se for o modelo padrão (ID -1), aplica estilos específicos.
             initialState.backgroundStyle = { type: 'solid', value: '#000000' };
-            initialState.textStrokeWidth = 0.2; // Ajustado para cqw
-            initialState.textShadowBlur = 1; // Ajustado para cqw
+            initialState.textStrokeWidth = 0.2;
+            initialState.textShadowBlur = 1;
             initialState.textVerticalPosition = 50;
             initialState.textAlign = 'center';
             initialState.textColor = '#FFFFFF';
@@ -118,7 +121,7 @@ export function EditorClient() {
             initialState.backgroundStyle = { type: 'solid', value: 'var(--card)' };
             initialState.textColor = 'var(--foreground)';
             initialState.fontFamily = 'PT Sans';
-            initialState.fontSize = 4; // Ajustado para cqw
+            initialState.fontSize = 4;
             initialState.textAlign = 'left';
             initialState.textShadowBlur = 0;
             initialState.textStrokeWidth = 0;
@@ -139,11 +142,8 @@ export function EditorClient() {
     setIsReady(true);
   }, [searchParams, isProfileLoaded]);
 
-  // Gera a sombra do texto para simular um contorno.
-  // Isso cria um contorno mais suave e que não sobrepõe o texto.
   const createTextStrokeShadow = (width: number, color: string): string => {
     if (width === 0) return "none";
-    // Ajusta a largura do contorno para ser responsiva
     const responsiveWidth = width / 10;
     const shadows = [];
     for (let x = -responsiveWidth; x <= responsiveWidth; x += 0.5) {
@@ -166,8 +166,6 @@ export function EditorClient() {
       ? textStrokeShadow
       : mainTextShadow;
 
-
-  // Estilos CSS para o texto, aplicados dinamicamente.
   const textStyle: EstiloTexto = {
     fontFamily: currentState.fontFamily,
     fontSize: `${currentState.fontSize}cqw`,
@@ -179,7 +177,6 @@ export function EditorClient() {
     lineHeight: 1.3,
   };
   
-  // Renderiza um esqueleto de carregamento enquanto o editor não está pronto.
   if (!isReady || !isProfileLoaded) {
      return <EditorSkeleton />;
   }
