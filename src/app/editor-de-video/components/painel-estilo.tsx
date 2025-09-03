@@ -77,13 +77,13 @@ export function PainelEstilo({
             <div className="space-y-2">
                 <div className="flex justify-between items-center">
                     <Label htmlFor="font-size">Tamanho da Fonte</Label>
-                    <span className="text-sm text-muted-foreground">{fontSize}px</span>
+                    <span className="text-sm text-muted-foreground">{fontSize.toFixed(1)}</span>
                 </div>
                 <Slider
                     id="font-size"
-                    min={12}
-                    max={128}
-                    step={1}
+                    min={1}
+                    max={15}
+                    step={0.1}
                     value={[fontSize]}
                     onValueChange={(value) => onFontSizeChange(value[0])}
                 />
@@ -172,13 +172,13 @@ export function PainelEstilo({
                 <div className="space-y-2">
                     <div className="flex justify-between items-center">
                         <Label htmlFor="stroke-width" className="text-xs text-muted-foreground">Espessura do Contorno</Label>
-                        <span className="text-xs text-muted-foreground">{textStrokeWidth}px</span>
+                        <span className="text-xs text-muted-foreground">{textStrokeWidth.toFixed(1)}</span>
                     </div>
                     <Slider
                         id="stroke-width"
                         min={0}
                         max={10}
-                        step={0.5}
+                        step={0.1}
                         value={[textStrokeWidth]}
                         onValueChange={(value) => onTextStrokeWidthChange(value[0])}
                     />
@@ -191,13 +191,13 @@ export function PainelEstilo({
                 <div className="space-y-2">
                     <div className="flex justify-between items-center">
                         <Label htmlFor="shadow-blur" className="text-xs text-muted-foreground">Desfoque da Sombra</Label>
-                        <span className="text-xs text-muted-foreground">{textShadowBlur}px</span>
+                        <span className="text-xs text-muted-foreground">{textShadowBlur.toFixed(1)}</span>
                     </div>
                     <Slider
                         id="shadow-blur"
                         min={0}
-                        max={32}
-                        step={1}
+                        max={10}
+                        step={0.1}
                         value={[textShadowBlur]}
                         onValueChange={(value) => onTextShadowBlurChange(value[0])}
                     />

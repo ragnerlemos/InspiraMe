@@ -15,7 +15,7 @@ import { useProfile } from "@/hooks/use-profile";
 const getInitialState = (): EditorState => ({
     text: "",
     fontFamily: "Poppins",
-    fontSize: 23,
+    fontSize: 5, // Ajustado para a nova escala vw
     fontWeight: "normal",
     fontStyle: "normal",
     textColor: "#FFFFFF",
@@ -109,8 +109,8 @@ export function EditorClient() {
         
         if (template.id === -1) { // Se for o modelo padrão (ID -1), aplica estilos específicos.
             initialState.backgroundStyle = { type: 'solid', value: '#000000' };
-            initialState.textStrokeWidth = 3.5;
-            initialState.textShadowBlur = 16;
+            initialState.textStrokeWidth = 0.2; // Ajustado para vw
+            initialState.textShadowBlur = 1; // Ajustado para vw
             initialState.textVerticalPosition = 50;
             initialState.textAlign = 'center';
             initialState.textColor = '#FFFFFF';
@@ -118,7 +118,7 @@ export function EditorClient() {
             initialState.backgroundStyle = { type: 'solid', value: 'var(--card)' };
             initialState.textColor = 'var(--foreground)';
             initialState.fontFamily = 'PT Sans';
-            initialState.fontSize = 20;
+            initialState.fontSize = 4; // Ajustado para vw
             initialState.textAlign = 'left';
             initialState.textShadowBlur = 0;
             initialState.textStrokeWidth = 0;
@@ -128,6 +128,9 @@ export function EditorClient() {
             initialState.backgroundStyle = { type: 'media', value: template.imageUrl || '' };
         }
       }
+    } else {
+         // Se nenhum template for selecionado, usa um fundo preto como padrão.
+         initialState.backgroundStyle = { type: 'solid', value: '#000000' };
     }
     
     setHistory([initialState]);
@@ -140,11 +143,13 @@ export function EditorClient() {
   // Isso cria um contorno mais suave e que não sobrepõe o texto.
   const createTextStrokeShadow = (width: number, color: string): string => {
     if (width === 0) return "none";
+    // Ajusta a largura do contorno para ser responsiva
+    const responsiveWidth = width / 10;
     const shadows = [];
-    for (let x = -width; x <= width; x++) {
-      for (let y = -width; y <= width; y++) {
-        if (Math.sqrt(x * x + y * y) <= width) {
-          shadows.push(`${x}px ${y}px 0 ${color}`);
+    for (let x = -responsiveWidth; x <= responsiveWidth; x += 0.5) {
+      for (let y = -responsiveWidth; y <= responsiveWidth; y += 0.5) {
+        if (Math.sqrt(x * x + y * y) <= responsiveWidth) {
+          shadows.push(`${x}vw ${y}vw 0 ${color}`);
         }
       }
     }
@@ -152,7 +157,7 @@ export function EditorClient() {
   };
   
   const textStrokeShadow = createTextStrokeShadow(currentState.textStrokeWidth, currentState.textStrokeColor);
-  const mainTextShadow = currentState.textShadowBlur > 0 ? `2px 2px ${currentState.textShadowBlur}px rgba(0,0,0,0.8)` : "none";
+  const mainTextShadow = currentState.textShadowBlur > 0 ? `0.1vw 0.1vw ${currentState.textShadowBlur / 10}vw rgba(0,0,0,0.8)` : "none";
   
   const combinedTextShadow = 
     textStrokeShadow !== "none" && mainTextShadow !== "none"
@@ -165,7 +170,7 @@ export function EditorClient() {
   // Estilos CSS para o texto, aplicados dinamicamente.
   const textStyle: EstiloTexto = {
     fontFamily: currentState.fontFamily,
-    fontSize: `${currentState.fontSize}px`,
+    fontSize: `clamp(12px, ${currentState.fontSize}vw, 128px)`,
     fontWeight: currentState.fontWeight,
     fontStyle: currentState.fontStyle,
     color: currentState.textColor,
