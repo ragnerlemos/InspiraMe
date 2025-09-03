@@ -1,11 +1,11 @@
+
 // Componente da barra de ferramentas inferior que gerencia os painéis deslizantes.
 
 import { useState } from 'react';
-import { Type, Palette, ImagePlus, Undo2, Download, Share2, ArrowLeft } from "lucide-react";
+import { Type, Palette, ImagePlus, Undo2, ArrowLeft } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { useToast } from "@/hooks/use-toast";
 import type { PainelControlesProps } from "./tipos";
 import { PainelTexto } from "./painel-texto";
 import { PainelEstilo } from "./painel-estilo";
@@ -15,38 +15,9 @@ import { useWindowSize } from 'react-use';
 
 
 export function PainelControles(props: PainelControlesProps) {
-    const { toast } = useToast();
     const [activePanel, setActivePanel] = useState<'text' | 'style' | 'background' | null>('text');
     const { width } = useWindowSize();
     const isDesktop = width >= 768; // Tailwind's md breakpoint
-
-    const handleShare = async () => {
-        const shareData = {
-          title: "Frase de QuoteVid",
-          text: `Confira esta frase que editei no QuoteVid:\n\n"${props.text}"`,
-          url: window.location.href,
-        };
-        try {
-          if (navigator.share) {
-            await navigator.share(shareData);
-            toast({ title: "Conteúdo compartilhado com sucesso!" });
-          } else {
-            await navigator.clipboard.writeText(shareData.url);
-            toast({
-              title: "Link copiado!",
-              description: "A API de compartilhamento não está disponível neste navegador. O link foi copiado para a área de transferência.",
-            });
-          }
-        } catch (err) {
-            if ((err as Error).name !== 'AbortError') {
-                toast({
-                    variant: "destructive",
-                    title: "Erro ao compartilhar",
-                    description: "Não foi possível compartilhar o conteúdo.",
-                });
-            }
-        }
-    };
     
     const handlePanelChange = (panel: 'text' | 'style' | 'background' | null) => {
         if (isDesktop) {
@@ -100,8 +71,7 @@ export function PainelControles(props: PainelControlesProps) {
     );
 
     const actionToolbar = (
-        <div className="flex gap-2 p-2 border-t">
-            <Button className="flex-1"><Download className="mr-2 h-4 w-4" /> Baixar</Button>
+        <div className="flex justify-center p-2 border-t">
             <TooltipProvider>
                 <Tooltip>
                     <TooltipTrigger asChild>
@@ -114,7 +84,6 @@ export function PainelControles(props: PainelControlesProps) {
                     </TooltipContent>
                 </Tooltip>
             </TooltipProvider>
-            <Button variant="secondary" className="flex-1" onClick={handleShare}><Share2 className="mr-2 h-4 w-4" /> Compartilhar</Button>
         </div>
     );
 
