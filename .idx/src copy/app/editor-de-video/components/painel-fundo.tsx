@@ -3,13 +3,14 @@
 // Componente para a aba "Fundo", permitindo o upload de imagem/vídeo ou seleção de cores/gradientes.
 
 import { useRef, useMemo, useState } from 'react';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Upload, Image as ImageIcon, Palette, Layers, Redo, UserCheck, MoveVertical, MoveHorizontal, CaseSensitive, AtSign, RectangleHorizontal, Check, Edit, Edit2, LayoutTemplate, RectangleVertical, Square, ZoomIn } from 'lucide-react';
+import { Upload, Image as ImageIcon, Palette, Layers, Redo, UserCheck, MoveVertical, MoveHorizontal, CaseSensitive, AtSign, RectangleHorizontal, Check, Edit, Edit2, LayoutTemplate, RectangleVertical, Square, ZoomIn, ImageUp, BadgePercent, User } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import type { PainelFundoProps, TipoFundo, ProporcaoTela } from './tipos';
+import type { PainelFundoProps, ProporcaoTela } from './tipos';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { templates } from '@/lib/dados';
 import { Slider } from '@/components/ui/slider';
@@ -23,7 +24,7 @@ const proporcoes: { ratio: ProporcaoTela; icon: React.ElementType }[] = [
     { ratio: "16:9", icon: RectangleHorizontal },
 ];
 
-type ControleAtivo = 'proporcao' | 'tipo' | 'assinatura' | null;
+type ControleAtivo = 'proporcao' | 'tipo' | 'assinatura' | 'logo' | null;
 type TipoFundoAtivo = 'media' | 'solid' | 'gradient';
 
 
@@ -167,7 +168,7 @@ function ControleTipoFundo(props: {
             )}
             
             {activeTab === 'gradient' && (
-                <div className="space-y-4">
+                 <div className="space-y-4">
                     <div className="space-y-2">
                         <Label>Tipo</Label>
                         <div className="grid grid-cols-2 gap-2">
@@ -198,21 +199,20 @@ function ControleTipoFundo(props: {
                             </Select>
                         </div>
                     )}
-
                     <div className="space-y-2">
-                        <Label>Cores</Label>
-                        <div className="grid grid-cols-2 gap-2">
-                            {[0, 1].map(index => (
+                        <Label>Cores do Gradiente</Label>
+                        <div className="grid grid-cols-2 gap-4">
+                            {[0, 1].map((index) => (
                                 <Popover key={index}>
                                     <PopoverTrigger asChild>
-                                        <Button variant="outline" className="w-full h-10 border-2" style={{ background: gradient.colors[index as 0 | 1] }}/>
+                                        <div className="w-full h-10 rounded-md border-2" style={{ backgroundColor: gradient.colors[index as 0 | 1] }} />
                                     </PopoverTrigger>
                                     <PopoverContent className="w-auto p-0 border-none">
-                                        <input 
-                                            type="color" 
-                                            value={gradient.colors[index as 0 | 1]} 
-                                            onChange={e => handleGradientColorChange(index as 0 | 1, e.target.value)} 
-                                            className="w-16 h-16 cursor-pointer" 
+                                        <input
+                                            type="color"
+                                            value={gradient.colors[index as 0 | 1]}
+                                            onChange={(e) => handleGradientColorChange(index as 0 | 1, e.target.value)}
+                                            className="w-16 h-16 cursor-pointer"
                                         />
                                     </PopoverContent>
                                 </Popover>
@@ -226,7 +226,7 @@ function ControleTipoFundo(props: {
 }
 
 
-function ControleAssinatura(props: Omit<PainelFundoProps, 'backgroundStyle' | 'onBackgroundStyleChange' | 'aspectRatio' | 'onAspectRatioChange'>) {
+function ControleAssinatura(props: Omit<PainelFundoProps, 'backgroundStyle' | 'onBackgroundStyleChange' | 'aspectRatio' | 'onAspectRatioChange' | 'showLogo' | 'onShowLogoChange' | 'logoPositionX' | 'onLogoPositionXChange' | 'logoPositionY' | 'onLogoPositionYChange' | 'logoScale' | 'onLogoScaleChange' | 'logoOpacity' | 'onLogoOpacityChange' >) {
     const { 
         showProfileSignature, onShowProfileSignatureChange,
         signaturePositionX, onSignaturePositionXChange,
@@ -235,8 +235,11 @@ function ControleAssinatura(props: Omit<PainelFundoProps, 'backgroundStyle' | 'o
         showSignaturePhoto, onShowSignaturePhotoChange,
         showSignatureUsername, onShowSignatureUsernameChange,
         showSignatureSocial, onShowSignatureSocialChange,
+        profile,
     } = props;
     
+    const isProfileConfigured = profile.username && profile.username !== 'Seu Nome' && profile.social && profile.social !== '@seuusario';
+
      return (
         <div className="space-y-4">
             <Button 
@@ -248,6 +251,15 @@ function ControleAssinatura(props: Omit<PainelFundoProps, 'backgroundStyle' | 'o
                 {showProfileSignature ? 'Assinatura Ativada' : 'Ativar Assinatura'}
             </Button>
             
+            {!isProfileConfigured && !showProfileSignature && (
+                <Link href="/perfil" passHref>
+                    <Button variant="link" className="w-full text-center">
+                        <User className="mr-2 h-4 w-4" />
+                        Configurar Assinatura no Perfil
+                    </Button>
+                </Link>
+            )}
+
             {showProfileSignature && (
                 <div className="space-y-4 pt-2 border-t mt-4">
                     <Label>Elementos Visíveis</Label>
@@ -289,6 +301,74 @@ function ControleAssinatura(props: Omit<PainelFundoProps, 'backgroundStyle' | 'o
      )
 }
 
+function ControleLogo(props: Pick<PainelFundoProps, 'showLogo' | 'onShowLogoChange' | 'logoPositionX' | 'onLogoPositionXChange' | 'logoPositionY' | 'onLogoPositionYChange' | 'logoScale' | 'onLogoScaleChange' | 'logoOpacity' | 'onLogoOpacityChange' | 'profile'>) {
+    const {
+        showLogo, onShowLogoChange,
+        logoPositionX, onLogoPositionXChange,
+        logoPositionY, onLogoPositionYChange,
+        logoScale, onLogoScaleChange,
+        logoOpacity, onLogoOpacityChange,
+        profile
+    } = props;
+    
+    const isLogoConfigured = !!profile.logo;
+
+    return (
+        <div className="space-y-4">
+            <Button
+                variant={showLogo ? 'secondary' : 'outline'}
+                onClick={() => onShowLogoChange(!showLogo)}
+                className="w-full"
+            >
+                {showLogo ? <Check className="mr-2 h-4 w-4" /> : <Edit className="mr-2 h-4 w-4" />}
+                {showLogo ? 'Logomarca Ativada' : 'Ativar Logomarca'}
+            </Button>
+            
+             {!isLogoConfigured && !showLogo && (
+                <Link href="/perfil" passHref>
+                    <Button variant="link" className="w-full text-center">
+                        <ImageUp className="mr-2 h-4 w-4" />
+                        Adicionar Logomarca no Perfil
+                    </Button>
+                </Link>
+            )}
+
+            {showLogo && (
+                <div className="space-y-4 pt-2 border-t mt-4">
+                    <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                            <Label htmlFor="logo-position-x" className="text-xs flex items-center"><MoveHorizontal className="mr-2 h-3 w-3" />Posição Horizontal</Label>
+                            <span className="text-xs text-muted-foreground">{logoPositionX}%</span>
+                        </div>
+                        <Slider id="logo-position-x" min={0} max={100} step={1} value={[logoPositionX]} onValueChange={(v) => onLogoPositionXChange(v[0])} />
+                    </div>
+                    <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                            <Label htmlFor="logo-position-y" className="text-xs flex items-center"><MoveVertical className="mr-2 h-3 w-3" />Posição Vertical</Label>
+                            <span className="text-xs text-muted-foreground">{logoPositionY}%</span>
+                        </div>
+                        <Slider id="logo-position-y" min={0} max={100} step={1} value={[logoPositionY]} onValueChange={(v) => onLogoPositionYChange(v[0])} />
+                    </div>
+                    <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                            <Label htmlFor="logo-scale" className="text-xs flex items-center"><ZoomIn className="mr-2 h-3 w-3" />Escala</Label>
+                            <span className="text-xs text-muted-foreground">{logoScale}%</span>
+                        </div>
+                        <Slider id="logo-scale" min={10} max={200} step={1} value={[logoScale]} onValueChange={(v) => onLogoScaleChange(v[0])} />
+                    </div>
+                    <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                            <Label htmlFor="logo-opacity" className="text-xs flex items-center"><BadgePercent className="mr-2 h-3 w-3" />Opacidade</Label>
+                            <span className="text-xs text-muted-foreground">{logoOpacity}%</span>
+                        </div>
+                        <Slider id="logo-opacity" min={0} max={100} step={1} value={[logoOpacity]} onValueChange={(v) => onLogoOpacityChange(v[0])} />
+                    </div>
+                </div>
+            )}
+        </div>
+    )
+}
+
 
 export function PainelFundo(props: PainelFundoProps & { onClose: () => void }) {
     const [controleAtivo, setControleAtivo] = useState<ControleAtivo>(null);
@@ -303,6 +383,8 @@ export function PainelFundo(props: PainelFundoProps & { onClose: () => void }) {
                 return <ControleTipoFundo backgroundStyle={props.backgroundStyle} onBackgroundStyleChange={props.onBackgroundStyleChange} />
             case 'assinatura':
                 return <ControleAssinatura {...props} />
+             case 'logo':
+                return <ControleLogo {...props} />
             default:
                 return null;
         }
@@ -314,6 +396,7 @@ export function PainelFundo(props: PainelFundoProps & { onClose: () => void }) {
                 <BotaoRecurso icon={RectangleHorizontal} label="Proporção" onClick={() => setControleAtivo('proporcao')} isActive={controleAtivo === 'proporcao'}/>
                 <BotaoRecurso icon={LayoutTemplate} label="Fundo" onClick={() => setControleAtivo('tipo')} isActive={controleAtivo === 'tipo'}/>
                 <BotaoRecurso icon={UserCheck} label="Assinatura" onClick={() => setControleAtivo('assinatura')} isActive={controleAtivo === 'assinatura'}/>
+                 <BotaoRecurso icon={ImageUp} label="Logo" onClick={() => setControleAtivo('logo')} isActive={controleAtivo === 'logo'}/>
             </div>
             <ScrollBar orientation="horizontal" />
         </ScrollArea>
