@@ -234,7 +234,7 @@ export function PainelFundo(props: PainelFundoProps & { onClose: () => void }) {
     }
 
     const subMenu = (
-        <ScrollArea className="w-full whitespace-nowrap">
+        <ScrollArea className="w-full whitespace-nowrap border-t">
             <div className="flex h-24 items-center justify-start px-2 gap-2">
                 <BotaoRecurso icon={RectangleHorizontal} label="Proporção" onClick={() => setControleAtivo('proporcao')} isActive={controleAtivo === 'proporcao'}/>
                 <BotaoRecurso icon={LayoutTemplate} label="Fundo" onClick={() => setControleAtivo('tipo')} isActive={controleAtivo === 'tipo'}/>
@@ -246,12 +246,11 @@ export function PainelFundo(props: PainelFundoProps & { onClose: () => void }) {
 
     return (
         <div className="w-full h-full flex flex-col">
-            {subMenu}
-            <Separator />
             <div className="flex-1 p-4 overflow-y-auto">
                 {renderControle()}
-                {!controleAtivo && <p className="text-muted-foreground text-center pt-8">Selecione uma opção acima para editar.</p>}
+                {!controleAtivo && <p className="text-muted-foreground text-center pt-8">Selecione uma opção abaixo para editar.</p>}
             </div>
+            {subMenu}
         </div>
     );
 }

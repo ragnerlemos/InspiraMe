@@ -140,7 +140,7 @@ export function PainelEstilo(props: PainelEstiloProps & { onClose: () => void })
     }
 
     const subMenu = (
-         <ScrollArea className="w-full whitespace-nowrap">
+         <ScrollArea className="w-full whitespace-nowrap border-t">
             <div className="flex h-24 items-center justify-start px-2 gap-2">
                 <BotaoRecurso icon={Type} label="Fonte" onClick={() => setControleAtivo('fonte')} isActive={controleAtivo === 'fonte'}/>
                 <BotaoRecurso icon={CaseSensitive} label="Tamanho" onClick={() => setControleAtivo('tamanho')} isActive={controleAtivo === 'tamanho'}/>
@@ -157,11 +157,11 @@ export function PainelEstilo(props: PainelEstiloProps & { onClose: () => void })
 
     return (
        <div className="w-full h-full flex flex-col">
-           {subMenu}
-           <Separator/>
             <div className="flex-1 p-4 overflow-y-auto">
                 {renderControle()}
+                {!controleAtivo && <p className="text-muted-foreground text-center pt-8">Selecione uma opção abaixo para editar.</p>}
             </div>
+            {subMenu}
        </div>
     );
 }
