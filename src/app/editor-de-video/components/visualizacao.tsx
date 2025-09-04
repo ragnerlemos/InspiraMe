@@ -150,7 +150,7 @@ export function VisualizacaoEditor({
   return (
     <div
       id="editor-preview"
-      className="relative @container w-full h-full rounded-lg overflow-hidden shadow-2xl"
+      className="relative @container w-full h-full max-w-full max-h-full md:max-w-md lg:max-w-lg rounded-lg overflow-hidden shadow-2xl"
       style={{ 
         aspectRatio: aspectRatio.replace(":", " / "),
       }}
@@ -160,3 +160,5 @@ export function VisualizacaoEditor({
     </div>
   );
 }
+
+    
