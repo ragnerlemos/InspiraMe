@@ -4,19 +4,18 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Film, GalleryVertical, Quote, Menu, Star, Settings, User, Clapperboard, X, Undo2 } from "lucide-react";
+import { Film, GalleryVertical, Quote, Menu, Star, Settings, User, Clapperboard, X, Undo2, GalleryHorizontal } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { useEditor } from "@/app/editor-de-video/contexts/editor-context";
-
 
 // Itens de navegação exibidos no cabeçalho.
 const navItems = [
   { href: "/", label: "Frases", icon: Quote },
   { href: "/favoritos", label: "Favoritos", icon: Star },
   { href: "/modelos", label: "Modelos", icon: GalleryVertical },
+  { href: "/galeria", label: "Galeria", icon: GalleryHorizontal },
   { href: "/meus-videos", label: "Meus Vídeos", icon: Clapperboard },
   { href: "/editor-de-video", label: "Editor", icon: Film },
   { href: "/perfil", label: "Perfil", icon: User },
@@ -24,34 +23,9 @@ const navItems = [
 ];
 
 export function EditorHeader() {
-    const { canUndo, undo } = useEditor();
-
-    return (
-        <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-sm px-4">
-            <div className="flex h-16 items-center justify-between">
-                <Link href="/" passHref>
-                    <Button variant="ghost" size="icon">
-                        <X className="h-5 w-5" />
-                         <span className="sr-only">Fechar Editor</span>
-                    </Button>
-                </Link>
-                <h1 className="text-lg font-bold">Editor</h1>
-                <TooltipProvider>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" onClick={undo} disabled={!canUndo}>
-                                <Undo2 className="h-5 w-5" />
-                                <span className="sr-only">Desfazer</span>
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>Desfazer</p>
-                        </TooltipContent>
-                    </Tooltip>
-                </TooltipProvider>
-            </div>
-        </header>
-    )
+    // Este componente agora é renderizado diretamente na página do editor
+    // para garantir que ele esteja dentro do EditorProvider.
+    return null;
 }
 
 // Componente do cabeçalho da aplicação.
