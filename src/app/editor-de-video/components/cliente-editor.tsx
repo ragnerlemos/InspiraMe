@@ -168,11 +168,11 @@ export function EditorClient() {
     
     const handleExportJPG = useCallback(() => captureCanvas('jpeg'), [captureCanvas]);
     const handleExportPNG = useCallback(() => captureCanvas('png'), [captureCanvas]);
+
     const handleExportMP4 = useCallback(() => {
         // Lógica de exportação de vídeo será implementada aqui
         toast({ title: 'Em breve!', description: 'A exportação de vídeo MP4 estará disponível em futuras atualizações.' });
     }, [toast]);
-
     
     useEffect(() => {
         setSaveActions({
