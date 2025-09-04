@@ -148,7 +148,9 @@ export function VisualizacaoEditor({
   };
   
   const [width, height] = aspectRatio.split(':').map(Number);
-  const calculatedMaxWidth = `min(100%, calc((100vh - 4rem) * (${width} / ${height})))`;
+  // No mobile, a altura do viewport precisa descontar o cabeçalho (4rem) e a barra de ferramentas inferior (4rem).
+  const calculatedMaxHeight = 'calc(100vh - 8rem)'; 
+  const calculatedMaxWidth = `min(100%, calc((${calculatedMaxHeight}) * (${width} / ${height})))`;
 
 
   return (
@@ -159,7 +161,7 @@ export function VisualizacaoEditor({
         aspectRatio: aspectRatio.replace(":", " / "),
         width: '100%',
         maxWidth: calculatedMaxWidth,
-        maxHeight: 'calc(100vh - 4rem)', // Desconta apenas o cabeçalho
+        maxHeight: calculatedMaxHeight,
       }}
     >
       {renderBackground()}
