@@ -148,7 +148,7 @@ export function VisualizacaoEditor({
   };
   
   const [width, height] = aspectRatio.split(':').map(Number);
-  const calculatedMaxWidth = `min(100%, calc((100vh - 8rem) * (${width} / ${height})))`;
+  const calculatedMaxWidth = `min(100%, calc((100vh - 4rem) * (${width} / ${height})))`;
 
 
   return (
@@ -158,7 +158,7 @@ export function VisualizacaoEditor({
         aspectRatio: aspectRatio.replace(":", " / "),
         width: '100%',
         maxWidth: calculatedMaxWidth,
-        maxHeight: 'calc(100vh - 8rem)', // 4rem de padding superior/inferior no container
+        maxHeight: 'calc(100vh - 4rem)', // Desconta apenas o cabeçalho
       }}
     >
       {renderBackground()}
