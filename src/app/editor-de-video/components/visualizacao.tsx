@@ -130,7 +130,7 @@ export function VisualizacaoEditor({
 
   return (
     <div
-      className="relative @container rounded-lg overflow-hidden shadow-2xl h-full w-full"
+      className="relative @container rounded-lg overflow-hidden shadow-2xl w-full max-w-full max-h-full"
       style={{ aspectRatio: aspectRatio.replace(":", " / ") }}
     >
       {renderBackground()}
