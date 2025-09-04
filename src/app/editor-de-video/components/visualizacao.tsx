@@ -157,6 +157,7 @@ export function VisualizacaoEditor({
       style={{ 
         aspectRatio: aspectRatio.replace(":", " / "),
         width: '100%',
+        maxWidth: calculatedMaxWidth,
         maxHeight: 'calc(100vh - 4rem)', // Desconta apenas o cabeçalho
       }}
     >
