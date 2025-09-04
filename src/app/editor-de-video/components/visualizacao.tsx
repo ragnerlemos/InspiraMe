@@ -146,14 +146,25 @@ export function VisualizacaoEditor({
       </>
     );
   };
+  
+  const [width, height] = aspectRatio.split(':').map(Number);
+  const calculatedMaxWidth = `min(100%, calc((100vh - 8rem) * (${width} / ${height})))`;
+
 
   return (
     <div
-      className="relative w-full @container mx-auto my-auto max-w-full max-h-full rounded-lg overflow-hidden shadow-2xl"
-      style={{ aspectRatio: aspectRatio.replace(":", " / ") }}
+      className="relative @container mx-auto my-auto rounded-lg overflow-hidden shadow-2xl"
+      style={{ 
+        aspectRatio: aspectRatio.replace(":", " / "),
+        width: '100%',
+        maxWidth: calculatedMaxWidth,
+        maxHeight: 'calc(100vh - 8rem)', // 4rem de padding superior/inferior no container
+      }}
     >
       {renderBackground()}
       {renderContent()}
     </div>
   );
 }
+
+    
