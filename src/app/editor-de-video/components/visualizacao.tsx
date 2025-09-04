@@ -147,21 +147,12 @@ export function VisualizacaoEditor({
     );
   };
   
-  const [width, height] = aspectRatio.split(':').map(Number);
-  // No mobile, a altura do viewport precisa descontar o cabeçalho (4rem) e a barra de ferramentas inferior (4rem).
-  const calculatedMaxHeight = 'calc(100vh - 8rem)'; 
-  const calculatedMaxWidth = `min(100%, calc((${calculatedMaxHeight}) * (${width} / ${height})))`;
-
-
   return (
     <div
       id="editor-preview"
-      className="relative @container mx-auto my-auto rounded-lg overflow-hidden shadow-2xl"
+      className="relative @container w-full h-full rounded-lg overflow-hidden shadow-2xl"
       style={{ 
         aspectRatio: aspectRatio.replace(":", " / "),
-        width: '100%',
-        maxWidth: calculatedMaxWidth,
-        maxHeight: calculatedMaxHeight,
       }}
     >
       {renderBackground()}
