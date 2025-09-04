@@ -19,6 +19,7 @@ import { Separator } from '@/components/ui/separator';
 const proporcoes: { ratio: ProporcaoTela; icon: React.ElementType }[] = [
     { ratio: "9:16", icon: RectangleVertical },
     { ratio: "1:1", icon: Square },
+    { ratio: "16:9", icon: RectangleHorizontal },
 ];
 
 type ControleAtivo = 'proporcao' | 'tipo' | 'assinatura' | null;
@@ -58,7 +59,7 @@ function ControleTipoFundo(props: {
      const { activeTab, solidColor, gradient } = useMemo(() => {
         const activeTab: TipoFundoAtivo = backgroundStyle.type === 'media' ? 'media' : backgroundStyle.type === 'solid' ? 'solid' : 'gradient';
         let solidColor = '#A06CD5';
-        let gradient = { type: 'linear' as 'linear'|'radial', colors: ['#A06CD5', '#45B8AC'] as [string,string], direction: 'to right' };
+        let gradient = { type: 'linear' as 'linear'|'radial', colors: ['#A06CD5', '#45B8AC'] as [string, string], direction: 'to right' };
 
         if (activeTab === 'solid') {
             solidColor = backgroundStyle.value;
