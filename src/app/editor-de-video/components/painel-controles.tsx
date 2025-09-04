@@ -98,7 +98,7 @@ export function PainelControles(props: PainelControlesProps) {
 
             <SheetContent 
                 side="bottom" 
-                className="h-auto max-h-[80vh] flex flex-col bg-background/60"
+                className="h-auto max-h-[80vh] flex flex-col bg-background/70"
                 onInteractOutside={(e) => {
                     // Impede o fechamento do seletor de cores ao interagir com ele.
                     if (e.target instanceof HTMLElement && e.target.getAttribute('type') === 'color') {
