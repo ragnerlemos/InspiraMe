@@ -1,3 +1,4 @@
+
 // Componente para a aba "Fundo", permitindo o upload de imagem/vídeo ou seleção de cores/gradientes.
 
 import { useRef, useMemo, useState } from 'react';
@@ -5,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Upload, Image as ImageIcon, Palette, Layers, Redo, UserCheck, MoveVertical, MoveHorizontal, CaseSensitive, AtSign, RectangleHorizontal, Check, Edit, Edit2, LayoutTemplate, RectangleVertical, Square } from 'lucide-react';
+import { Upload, Image as ImageIcon, Palette, Layers, Redo, UserCheck, MoveVertical, MoveHorizontal, CaseSensitive, AtSign, RectangleHorizontal, Check, Edit, Edit2, LayoutTemplate, RectangleVertical, Square, ZoomIn } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import type { PainelFundoProps, TipoFundo, ProporcaoTela } from './tipos';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -164,6 +165,7 @@ function ControleAssinatura(props: Omit<PainelFundoProps, 'backgroundStyle' | 'o
         showProfileSignature, onShowProfileSignatureChange,
         signaturePositionX, onSignaturePositionXChange,
         signaturePositionY, onSignaturePositionYChange,
+        signatureScale, onSignatureScaleChange,
         showSignaturePhoto, onShowSignaturePhotoChange,
         showSignatureUsername, onShowSignatureUsernameChange,
         showSignatureSocial, onShowSignatureSocialChange,
@@ -207,6 +209,13 @@ function ControleAssinatura(props: Omit<PainelFundoProps, 'backgroundStyle' | 'o
                             <span className="text-xs text-muted-foreground">{signaturePositionY}%</span>
                         </div>
                         <Slider id="signature-position-y" min={0} max={100} step={1} value={[signaturePositionY]} onValueChange={(value) => onSignaturePositionYChange(value[0])}/>
+                    </div>
+                    <div className="space-y-2">
+                         <div className="flex justify-between items-center">
+                            <Label htmlFor="signature-scale" className="text-xs flex items-center"><ZoomIn className="mr-2 h-3 w-3" />Escala</Label>
+                            <span className="text-xs text-muted-foreground">{signatureScale}%</span>
+                        </div>
+                        <Slider id="signature-scale" min={50} max={150} step={1} value={[signatureScale]} onValueChange={(value) => onSignatureScaleChange(value[0])}/>
                     </div>
                 </div>
             )}

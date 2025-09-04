@@ -34,6 +34,7 @@ const getInitialState = (): EditorState => ({
     showProfileSignature: false,
     signaturePositionX: 50,
     signaturePositionY: 90,
+    signatureScale: 100,
     showSignaturePhoto: true,
     showSignatureUsername: true,
     showSignatureSocial: true,
@@ -218,6 +219,7 @@ export function EditorClient() {
             profile={profile}
             signaturePositionX={currentState.signaturePositionX}
             signaturePositionY={currentState.signaturePositionY}
+            signatureScale={currentState.signatureScale}
             showSignaturePhoto={currentState.showSignaturePhoto}
             showSignatureUsername={currentState.showSignatureUsername}
             showSignatureSocial={currentState.showSignatureSocial}
@@ -263,6 +265,8 @@ export function EditorClient() {
             onSignaturePositionXChange={(x) => updateState({ signaturePositionX: x })}
             signaturePositionY={currentState.signaturePositionY}
             onSignaturePositionYChange={(y) => updateState({ signaturePositionY: y })}
+            signatureScale={currentState.signatureScale}
+            onSignatureScaleChange={(scale) => updateState({ signatureScale: scale })}
             showSignaturePhoto={currentState.showSignaturePhoto}
             onShowSignaturePhotoChange={(show) => updateState({ showSignaturePhoto: show })}
             showSignatureUsername={currentState.showSignatureUsername}

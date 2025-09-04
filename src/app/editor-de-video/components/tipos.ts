@@ -34,6 +34,7 @@ export interface EditorState {
     showProfileSignature: boolean;
     signaturePositionX: number;
     signaturePositionY: number;
+    signatureScale: number;
     showSignaturePhoto: boolean;
     showSignatureUsername: boolean;
     showSignatureSocial: boolean;
@@ -60,6 +61,7 @@ export interface VisualizacaoEditorProps {
     profile: ProfileData;
     signaturePositionX: number;
     signaturePositionY: number;
+    signatureScale: number;
     showSignaturePhoto: boolean;
     showSignatureUsername: boolean;
     showSignatureSocial: boolean;
@@ -118,6 +120,8 @@ export interface PainelFundoProps {
     onSignaturePositionXChange: (x: number) => void;
     signaturePositionY: number;
     onSignaturePositionYChange: (y: number) => void;
+    signatureScale: number;
+    onSignatureScaleChange: (scale: number) => void;
     showSignaturePhoto: boolean;
     onShowSignaturePhotoChange: (show: boolean) => void;
     showSignatureUsername: boolean;

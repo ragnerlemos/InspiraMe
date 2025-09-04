@@ -31,6 +31,7 @@ export function VisualizacaoEditor({
   profile,
   signaturePositionX,
   signaturePositionY,
+  signatureScale,
   showSignaturePhoto,
   showSignatureUsername,
   showSignatureSocial,
@@ -111,7 +112,8 @@ export function VisualizacaoEditor({
               style={{
                 top: `${signaturePositionY}%`,
                 left: `${signaturePositionX}%`,
-                transform: "translate(-50%, -50%)",
+                transform: `translate(-50%, -50%) scale(${signatureScale / 100})`,
+                transformOrigin: 'center center',
               }}
             >
               <AssinaturaPerfil
@@ -136,4 +138,3 @@ export function VisualizacaoEditor({
     </div>
   );
 }
-
