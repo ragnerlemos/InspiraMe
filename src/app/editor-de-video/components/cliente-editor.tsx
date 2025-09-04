@@ -145,7 +145,7 @@ export function EditorClient() {
             const canvas = await html2canvas(previewElement, {
                 useCORS: true,
                 backgroundColor: null, 
-                scale: 2, // Aumenta a resolução para melhor qualidade
+                scale: 4, // Aumenta a resolução para melhor qualidade
             });
 
             const image = canvas.toDataURL(`image/${format}`, format === 'png' ? 1.0 : 0.9);
@@ -181,7 +181,7 @@ export function EditorClient() {
             onExportPNG: handleExportPNG,
             onExportMP4: handleExportMP4,
         });
-    }, [handleSaveAsTemplate, setSaveActions, captureCanvas]);
+    }, [handleSaveAsTemplate, handleExportJPG, handleExportPNG, handleExportMP4, setSaveActions]);
 
   // Efeito para inicializar o editor com base nos parâmetros da URL.
   useEffect(() => {
