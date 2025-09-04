@@ -18,7 +18,6 @@ import { Separator } from '@/components/ui/separator';
 const proporcoes: { ratio: ProporcaoTela; icon: React.ElementType }[] = [
     { ratio: "9:16", icon: RectangleVertical },
     { ratio: "1:1", icon: Square },
-    { ratio: "16:9", icon: RectangleHorizontal },
 ];
 
 type ControleAtivo = 'proporcao' | 'tipo' | 'assinatura' | null;
