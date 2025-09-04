@@ -4,14 +4,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Film, GalleryVertical, Menu, Star, Settings, User, Clapperboard, GalleryHorizontal } from "lucide-react";
+import { Film, GalleryVertical, Menu, Star, Settings, User, Clapperboard, GalleryHorizontal, Quote } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 // Itens de navegação exibidos no cabeçalho.
 const navItems = [
-  { href: "/", label: "Frases", icon: Clapperboard },
+  { href: "/", label: "Frases", icon: Quote },
   { href: "/favoritos", label: "Favoritos", icon: Star },
   { href: "/modelos", label: "Modelos", icon: GalleryVertical },
   { href: "/galeria", label: "Galeria", icon: GalleryHorizontal },
@@ -69,7 +69,7 @@ export function AppHeader() {
       <div className="container flex h-16 items-center justify-between">
         {/* Logo e link para a página inicial. */}
         <Link href="/" className="flex items-center gap-2">
-          <Clapperboard className="h-6 w-6 text-primary" />
+          <Quote className="h-6 w-6 text-primary" />
           <span className="font-headline text-xl font-bold">QuoteVid</span>
         </Link>
         {/* Navegação para telas maiores (desktop). */}
