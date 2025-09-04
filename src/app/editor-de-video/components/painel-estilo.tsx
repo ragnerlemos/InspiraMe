@@ -56,7 +56,7 @@ export function PainelEstilo(props: PainelEstiloProps & { onClose: () => void })
                     <div className="space-y-2">
                         <div className="flex justify-between items-center">
                             <Label htmlFor="font-size">Tamanho da Fonte</Label>
-                            <span className="text-sm text-muted-foreground">{props.fontSize.toFixed(1)}</span>
+                            <span className="text-sm text-muted-foreground">{props.fontSize.toFixed(1)} pt</span>
                         </div>
                         <Slider id="font-size" min={1} max={20} step={0.1} value={[props.fontSize]} onValueChange={(v) => props.onFontSizeChange(v[0])} />
                     </div>
