@@ -120,7 +120,7 @@ export function PainelEstilo(props: PainelEstiloProps & { onClose: () => void })
                         <div className="space-y-2">
                             <div className="flex justify-between items-center">
                                 <Label htmlFor="stroke-width" className="text-xs text-muted-foreground">Espessura</Label>
-                                <span className="text-xs text-muted-foreground">{props.textStrokeWidth.toFixed(1)}</span>
+                                <span className="text-xs text-muted-foreground">{props.textStrokeWidth.toFixed(1)} pt</span>
                             </div>
                             <Slider id="stroke-width" min={0} max={10} step={0.1} value={[props.textStrokeWidth]} onValueChange={(v) => props.onTextStrokeWidthChange(v[0])} />
                         </div>
@@ -130,7 +130,7 @@ export function PainelEstilo(props: PainelEstiloProps & { onClose: () => void })
                      <div className="space-y-2">
                         <div className="flex justify-between items-center">
                             <Label htmlFor="shadow-blur" className="text-xs text-muted-foreground">Desfoque</Label>
-                            <span className="text-xs text-muted-foreground">{props.textShadowBlur.toFixed(1)}</span>
+                            <span className="text-xs text-muted-foreground">{props.textShadowBlur.toFixed(1)} pt</span>
                         </div>
                         <Slider id="shadow-blur" min={0} max={10} step={0.1} value={[props.textShadowBlur]} onValueChange={(v) => props.onTextShadowBlurChange(v[0])} />
                     </div>
