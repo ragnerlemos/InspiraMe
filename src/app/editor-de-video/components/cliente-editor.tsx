@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { quotes, templates } from "@/lib/dados";
@@ -10,6 +10,7 @@ import { VisualizacaoEditor } from "./visualizacao";
 import { PainelControles } from "./painel-controles";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useProfile } from "@/hooks/use-profile";
+import { useEditor } from "../contexts/editor-context";
 
 // Estado inicial para o editor.
 const getInitialState = (): EditorState => ({
@@ -20,10 +21,10 @@ const getInitialState = (): EditorState => ({
     fontStyle: "normal",
     textColor: "#FFFFFF",
     textAlign: "center",
-    textShadowBlur: 0,
+    textShadowBlur: 1,
     textVerticalPosition: 50,
     textStrokeColor: "#000000",
-    textStrokeWidth: 0,
+    textStrokeWidth: 0.2,
     backgroundStyle: {
         type: 'media',
         value: "",
@@ -44,7 +45,7 @@ const getInitialState = (): EditorState => ({
 function EditorSkeleton() {
     return (
         <div className="flex flex-col md:flex-row h-full w-full overflow-hidden">
-            <div className="flex-1 flex justify-center items-center bg-muted/40 relative overflow-hidden p-4 md:p-8">
+            <div className="flex-1 flex justify-center items-center bg-muted/40 relative overflow-hidden">
                  <Skeleton className="w-full h-full max-w-sm aspect-[9/16] rounded-lg" />
             </div>
              <div className="w-full md:w-96 border-t md:border-t-0 md:border-l bg-background">
@@ -60,6 +61,8 @@ export function EditorClient() {
   const searchParams = useSearchParams();
   const { toast } = useToast();
   const { profile, isLoaded: isProfileLoaded } = useProfile();
+  const { setUndoState } = useEditor();
+
 
   // Histórico de estados para a funcionalidade de desfazer.
   const [history, setHistory] = useState<EditorState[]>([getInitialState()]);
@@ -84,6 +87,10 @@ export function EditorClient() {
   }, [currentStateIndex]);
 
   const canUndo = currentStateIndex > 0;
+  
+  useEffect(() => {
+    setUndoState({ canUndo, undo });
+  }, [canUndo, undo, setUndoState]);
 
   // Efeito para inicializar o editor com base nos parâmetros da URL.
   useEffect(() => {
@@ -142,47 +149,45 @@ export function EditorClient() {
     setIsReady(true);
   }, [searchParams, isProfileLoaded]);
 
-  const createTextStrokeShadow = (width: number, color: string): string => {
+  const createTextStrokeShadow = useCallback((width: number, color: string): string => {
     if (width === 0) return "none";
-    const step = width * 0.1; // Ajusta o espaçamento dos pontos
     const shadows = [];
     const numPoints = 12; // Número de pontos ao redor
     for (let i = 0; i < numPoints; i++) {
         const angle = (i / numPoints) * 2 * Math.PI;
-        const x = Math.cos(angle) * step;
-        const y = Math.sin(angle) * step;
+        const x = Math.cos(angle) * (width * 0.1);
+        const y = Math.sin(angle) * (width * 0.1);
         shadows.push(`${x.toFixed(2)}cqw ${y.toFixed(2)}cqw 0 ${color}`);
     }
     return shadows.join(', ');
-  };
+  }, []);
   
-  const createMainShadow = (blur: number): string => {
+  const createMainShadow = useCallback((blur: number): string => {
     if (blur === 0) return "none";
-    const step = blur * 0.1; // Espaçamento dos pontos
     const shadows = [];
     const numPoints = 8; // Menos pontos para um efeito mais sutil
     const opacity = 0.5; // Opacidade da sombra
 
     for (let i = 0; i < numPoints; i++) {
         const angle = (i / numPoints) * 2 * Math.PI;
-        // Adiciona um pequeno desfoque (blur radius) para suavizar os pontos
-        const blurRadius = step * 0.5; 
-        const x = Math.cos(angle) * step;
-        const y = Math.sin(angle) * step;
+        const blurRadius = blur * 0.05; 
+        const x = Math.cos(angle) * (blur * 0.1);
+        const y = Math.sin(angle) * (blur * 0.1);
         shadows.push(`${x.toFixed(2)}cqw ${y.toFixed(2)}cqw ${blurRadius.toFixed(2)}cqw rgba(0,0,0,${opacity})`);
     }
     return shadows.join(', ');
-  };
-  
-  const textStrokeShadow = createTextStrokeShadow(currentState.textStrokeWidth, currentState.textStrokeColor);
-  const mainTextShadow = createMainShadow(currentState.textShadowBlur);
-  
-  const combinedTextShadow = 
-    textStrokeShadow !== "none" && mainTextShadow !== "none"
-      ? `${textStrokeShadow}, ${mainTextShadow}`
-      : textStrokeShadow !== "none"
-      ? textStrokeShadow
-      : mainTextShadow;
+  }, []);
+
+  const combinedTextShadow = useMemo(() => {
+    const textStrokeShadow = createTextStrokeShadow(currentState.textStrokeWidth, currentState.textStrokeColor);
+    const mainTextShadow = createMainShadow(currentState.textShadowBlur);
+    
+    if (textStrokeShadow !== "none" && mainTextShadow !== "none") {
+      return `${textStrokeShadow}, ${mainTextShadow}`;
+    }
+    return textStrokeShadow !== "none" ? textStrokeShadow : mainTextShadow;
+  }, [currentState.textStrokeWidth, currentState.textStrokeColor, currentState.textShadowBlur, createTextStrokeShadow, createMainShadow]);
+
 
   const textStyle: EstiloTexto = {
     fontFamily: currentState.fontFamily,

@@ -2,10 +2,9 @@
 // Componente da barra de ferramentas inferior que gerencia os painéis deslizantes.
 
 import { useState } from 'react';
-import { Type, Palette, ImagePlus, Undo2, ArrowLeft } from "lucide-react";
+import { Type, Palette, ImagePlus, ArrowLeft } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import type { PainelControlesProps } from "./tipos";
 import { PainelTexto } from "./painel-texto";
 import { PainelEstilo } from "./painel-estilo";
@@ -70,24 +69,6 @@ export function PainelControles(props: PainelControlesProps) {
         </div>
     );
 
-    const actionToolbar = (
-        <div className="flex justify-center p-2 border-t">
-            <TooltipProvider>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button variant="secondary" size="icon" onClick={props.onUndo} disabled={!props.canUndo}>
-                            <Undo2 className="h-4 w-4" />
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p>Desfazer</p>
-                    </TooltipContent>
-                </Tooltip>
-            </TooltipProvider>
-        </div>
-    );
-
-
     // Layout para Desktop
     if (isDesktop) {
         return (
@@ -96,7 +77,6 @@ export function PainelControles(props: PainelControlesProps) {
                 <div className="flex-1 overflow-y-auto">
                     {renderPanelContent()}
                 </div>
-                {actionToolbar}
             </div>
         )
     }
@@ -106,7 +86,6 @@ export function PainelControles(props: PainelControlesProps) {
         <Sheet open={!!activePanel} onOpenChange={(open) => !open && setActivePanel(null)}>
             <div className="w-full border-t bg-background flex flex-col fixed bottom-0 left-0 md:hidden">
                 {mainToolbar}
-                {actionToolbar}
             </div>
 
             <SheetContent 
