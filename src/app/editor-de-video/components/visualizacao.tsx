@@ -166,5 +166,3 @@ export function VisualizacaoEditor({
     </div>
   );
 }
-
-    
