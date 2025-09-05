@@ -1,3 +1,4 @@
+
 // Componente para a aba "Estilo", que agrupa todos os controles de customização visual do texto.
 
 import {
@@ -153,7 +154,6 @@ export function PainelEstilo(props: PainelEstiloProps & { onClose: () => void })
     return (
        <div className="w-full h-full flex flex-col" onClick={() => setControleAtivo(null)}>
             {renderControle()}
-            <div className="flex-1" />
             {subMenu}
        </div>
     );

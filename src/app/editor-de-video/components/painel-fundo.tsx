@@ -1,3 +1,4 @@
+
 // Componente para a aba "Fundo", permitindo o upload de imagem/vídeo ou seleção de cores/gradientes.
 
 import { useRef, useMemo, useState } from 'react';
@@ -420,7 +421,6 @@ export function PainelFundo(props: PainelFundoProps & { onClose: () => void }) {
     return (
         <div className="w-full h-full flex flex-col" onClick={() => setControleAtivo(null)}>
             {renderControle()}
-            <div className="flex-1" />
             {subMenu}
         </div>
     );
