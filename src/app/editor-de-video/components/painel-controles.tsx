@@ -93,7 +93,7 @@ export function PainelControles(props: PainelControlesProps) {
     return (
         <Sheet open={!!activePanel} onOpenChange={(open) => !open && setActivePanel(null)}>
             {/* O toolbar agora está embutido e será controlado pelo layout flex */}
-            <div className="w-full border-t bg-background md:hidden">
+            <div className="fixed bottom-0 left-0 z-10 w-full border-t bg-background md:hidden">
                 {mainToolbar}
             </div>
 
