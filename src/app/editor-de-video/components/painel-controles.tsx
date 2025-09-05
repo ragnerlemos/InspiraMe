@@ -14,20 +14,12 @@ import { useWindowSize } from 'react-use';
 
 
 export function PainelControles(props: PainelControlesProps) {
-    const [activePanel, setActivePanel] = useState<'text' | 'style' | 'background' | null>(null);
+    const [activePanel, setActivePanel] = useState<'text' | 'style' | 'background' | null>('text');
     const { width } = useWindowSize();
     const isDesktop = width >= 768; // Tailwind's md breakpoint
     
     const handlePanelChange = (panel: 'text' | 'style' | 'background' | null) => {
-        if (isDesktop) {
-            setActivePanel(panel);
-        } else {
-            // No mobile, se o painel já estiver ativo, não faz nada, 
-            // se for diferente, abre o novo painel.
-            if (activePanel !== panel) {
-                setActivePanel(panel);
-            }
-        }
+        setActivePanel(panel);
     };
 
 
@@ -38,17 +30,12 @@ export function PainelControles(props: PainelControlesProps) {
         
         switch (activePanel) {
             case 'text':
-                // O painel de texto no desktop não é um painel separado, é sempre visível
-                if (!isDesktop) {
-                    return <PainelTexto {...props} />;
-                }
-                return null;
+                 return <PainelTexto {...props} />;
             case 'style':
                 return <PainelEstilo {...props} {...commonProps} />;
             case 'background':
                  return <PainelFundo {...props} {...commonProps} />;
             default:
-                // No desktop, renderiza um placeholder se nenhum painel estiver ativo
                 if (isDesktop) {
                     return <div className="p-4 text-center text-muted-foreground">Selecione uma ferramenta para começar a editar.</div>;
                 }
@@ -77,10 +64,6 @@ export function PainelControles(props: PainelControlesProps) {
     if (isDesktop) {
         return (
             <div className="flex flex-col h-full">
-                {/* O painel de texto é renderizado diretamente aqui no desktop */}
-                <div className="border-b">
-                    <PainelTexto {...props} />
-                </div>
                 {mainToolbar}
                 <div className="flex-1 overflow-y-auto">
                     {renderPanelContent()}
