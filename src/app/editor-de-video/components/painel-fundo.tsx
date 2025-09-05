@@ -419,8 +419,8 @@ export function PainelFundo(props: PainelFundoProps & { onClose: () => void }) {
 
     return (
         <div className="w-full h-full flex flex-col" onClick={() => setControleAtivo(null)}>
-            <div className="flex-1" />
             {renderControle()}
+            <div className="flex-1" />
             {subMenu}
         </div>
     );
