@@ -285,7 +285,7 @@ export function EditorClient() {
   return (
     <div className="flex flex-col md:flex-row w-full h-full">
       {/* Área de visualização */}
-      <div className="flex-1 flex justify-center items-center bg-muted/40 p-4 md:p-8 overflow-hidden">
+      <div className="flex-1 flex justify-center items-center bg-muted/40 p-4 md:p-8 overflow-hidden md:max-w-md">
         <VisualizacaoEditor
             aspectRatio={currentState.aspectRatio}
             backgroundStyle={currentState.backgroundStyle}
