@@ -13,6 +13,8 @@ import { useProfile } from "@/hooks/use-profile";
 import { useEditor } from "../contexts/editor-context";
 import { useTemplates } from "@/hooks/use-templates";
 import html2canvas from 'html2canvas';
+import { Panel, PanelGroup, PanelResizeHandle } from "@/components/ui/resizable";
+import { useWindowSize } from "react-use";
 
 
 // Estado inicial para o editor.
@@ -72,6 +74,8 @@ export function EditorClient() {
   const { profile, isLoaded: isProfileLoaded } = useProfile();
   const { setUndoState, setSaveActions } = useEditor();
   const { templates: allTemplates, isLoaded: areTemplatesLoaded, addTemplate } = useTemplates();
+  const { width } = useWindowSize();
+  const isDesktop = width >= 768;
 
 
   // Histórico de estados para a funcionalidade de desfazer.
@@ -282,95 +286,199 @@ export function EditorClient() {
      return <EditorSkeleton />;
   }
 
+  const editorLayout = (
+    <>
+        {/* Área de visualização */}
+        <div className="flex-1 flex justify-center items-center bg-muted/40 p-4 md:p-8 overflow-hidden py-4">
+            <VisualizacaoEditor
+                aspectRatio={currentState.aspectRatio}
+                backgroundStyle={currentState.backgroundStyle}
+                text={currentState.text}
+                textStyle={textStyle}
+                textVerticalPosition={currentState.textVerticalPosition}
+                showProfileSignature={currentState.showProfileSignature}
+                profile={profile}
+                signaturePositionX={currentState.signaturePositionX}
+                signaturePositionY={currentState.signaturePositionY}
+                signatureScale={currentState.signatureScale}
+                showSignaturePhoto={currentState.showSignaturePhoto}
+                showSignatureUsername={currentState.showSignatureUsername}
+                showSignatureSocial={currentState.showSignatureSocial}
+                activeTemplateId={typeof currentState.activeTemplateId === 'number' ? currentState.activeTemplateId : null}
+                profileVerticalPosition={currentState.profileVerticalPosition}
+                showLogo={currentState.showLogo}
+                logoPositionX={currentState.logoPositionX}
+                logoPositionY={currentState.logoPositionY}
+                logoScale={currentState.logoScale}
+                logoOpacity={currentState.logoOpacity}
+            />
+        </div>
+        
+        {/* Painel de Controles */}
+        <div className="w-full md:w-96 border-t md:border-t-0 md:border-l bg-background">
+            <PainelControles
+                text={currentState.text}
+                onTextChange={(text) => updateState({ text })}
+                fontFamily={currentState.fontFamily}
+                onFontFamilyChange={(fontFamily) => updateState({ fontFamily })}
+                fontSize={currentState.fontSize}
+                onFontSizeChange={(fontSize) => updateState({ fontSize })}
+                fontWeight={currentState.fontWeight}
+                onFontWeightChange={(fontWeight) => updateState({ fontWeight })}
+                fontStyle={currentState.fontStyle}
+                onFontStyleChange={(fontStyle) => updateState({ fontStyle })}
+                textColor={currentState.textColor}
+                onTextColorChange={(textColor) => updateState({ textColor })}
+                textAlign={currentState.textAlign}
+                onTextAlignChange={(textAlign) => updateState({ textAlign })}
+                textShadowBlur={currentState.textShadowBlur}
+                onTextShadowBlurChange={(textShadowBlur) => updateState({ textShadowBlur })}
+                textVerticalPosition={currentState.textVerticalPosition}
+                onTextVerticalPositionChange={(textVerticalPosition) => updateState({ textVerticalPosition })}
+                textStrokeColor={currentState.textStrokeColor}
+                onTextStrokeColorChange={(textStrokeColor) => updateState({ textStrokeColor })}
+                textStrokeWidth={currentState.textStrokeWidth}
+                onTextStrokeWidthChange={(textStrokeWidth) => updateState({ textStrokeWidth })}
+                backgroundStyle={currentState.backgroundStyle}
+                onBackgroundStyleChange={(backgroundStyle) => updateState({ backgroundStyle })}
+                aspectRatio={currentState.aspectRatio}
+                onAspectRatioChange={(ratio) => updateState({ aspectRatio: ratio })}
+                onUndo={undo}
+                canUndo={canUndo}
+                showProfileSignature={currentState.showProfileSignature}
+                onShowProfileSignatureChange={(show) => updateState({ showProfileSignature: show })}
+                signaturePositionX={currentState.signaturePositionX}
+                onSignaturePositionXChange={(x) => updateState({ signaturePositionX: x })}
+                signaturePositionY={currentState.signaturePositionY}
+                onSignaturePositionYChange={(y) => updateState({ signaturePositionY: y })}
+                signatureScale={currentState.signatureScale}
+                onSignatureScaleChange={(scale) => updateState({ signatureScale: scale })}
+                showSignaturePhoto={currentState.showSignaturePhoto}
+                onShowSignaturePhotoChange={(show) => updateState({ showSignaturePhoto: show })}
+                showSignatureUsername={currentState.showSignatureUsername}
+                onShowSignatureUsernameChange={(show) => updateState({ showSignatureUsername: show })}
+                showSignatureSocial={currentState.showSignatureSocial}
+                onShowSignatureSocialChange={(show) => updateState({ showSignatureSocial: show })}
+                activeTemplateId={typeof currentState.activeTemplateId === 'number' ? currentState.activeTemplateId : null}
+                profileVerticalPosition={currentState.profileVerticalPosition}
+                onProfileVerticalPositionChange={(profileVerticalPosition) => updateState({ profileVerticalPosition })}
+                showLogo={currentState.showLogo}
+                onShowLogoChange={(show) => updateState({ showLogo: show })}
+                logoPositionX={currentState.logoPositionX}
+                onLogoPositionXChange={(x) => updateState({ logoPositionX: x })}
+                logoPositionY={currentState.logoPositionY}
+                onLogoPositionYChange={(y) => updateState({ logoPositionY: y })}
+                logoScale={currentState.logoScale}
+                onLogoScaleChange={(scale) => updateState({ logoScale: scale })}
+                logoOpacity={currentState.logoOpacity}
+                onLogoOpacityChange={(opacity) => updateState({ logoOpacity: opacity })}
+                profile={profile}
+            />
+        </div>
+    </>
+  );
+
+  if (!isDesktop) {
+    return (
+      <div className="flex flex-col h-full w-full">
+        {editorLayout}
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col md:flex-row w-full h-full">
-      {/* Área de visualização */}
-      <div className="flex-1 flex justify-center items-center bg-muted/40 p-4 md:p-8 overflow-hidden md:max-w-md">
-        <VisualizacaoEditor
-            aspectRatio={currentState.aspectRatio}
-            backgroundStyle={currentState.backgroundStyle}
-            text={currentState.text}
-            textStyle={textStyle}
-            textVerticalPosition={currentState.textVerticalPosition}
-            showProfileSignature={currentState.showProfileSignature}
-            profile={profile}
-            signaturePositionX={currentState.signaturePositionX}
-            signaturePositionY={currentState.signaturePositionY}
-            signatureScale={currentState.signatureScale}
-            showSignaturePhoto={currentState.showSignaturePhoto}
-            showSignatureUsername={currentState.showSignatureUsername}
-            showSignatureSocial={currentState.showSignatureSocial}
-            activeTemplateId={typeof currentState.activeTemplateId === 'number' ? currentState.activeTemplateId : null}
-            profileVerticalPosition={currentState.profileVerticalPosition}
-            showLogo={currentState.showLogo}
-            logoPositionX={currentState.logoPositionX}
-            logoPositionY={currentState.logoPositionY}
-            logoScale={currentState.logoScale}
-            logoOpacity={currentState.logoOpacity}
-        />
-      </div>
-      
-      {/* Painel de Controles */}
-      <div className="w-full md:w-96 border-t md:border-t-0 md:border-l bg-background">
-        <PainelControles
-            text={currentState.text}
-            onTextChange={(text) => updateState({ text })}
-            fontFamily={currentState.fontFamily}
-            onFontFamilyChange={(fontFamily) => updateState({ fontFamily })}
-            fontSize={currentState.fontSize}
-            onFontSizeChange={(fontSize) => updateState({ fontSize })}
-            fontWeight={currentState.fontWeight}
-            onFontWeightChange={(fontWeight) => updateState({ fontWeight })}
-            fontStyle={currentState.fontStyle}
-            onFontStyleChange={(fontStyle) => updateState({ fontStyle })}
-            textColor={currentState.textColor}
-            onTextColorChange={(textColor) => updateState({ textColor })}
-            textAlign={currentState.textAlign}
-            onTextAlignChange={(textAlign) => updateState({ textAlign })}
-            textShadowBlur={currentState.textShadowBlur}
-            onTextShadowBlurChange={(textShadowBlur) => updateState({ textShadowBlur })}
-            textVerticalPosition={currentState.textVerticalPosition}
-            onTextVerticalPositionChange={(textVerticalPosition) => updateState({ textVerticalPosition })}
-            textStrokeColor={currentState.textStrokeColor}
-            onTextStrokeColorChange={(textStrokeColor) => updateState({ textStrokeColor })}
-            textStrokeWidth={currentState.textStrokeWidth}
-            onTextStrokeWidthChange={(textStrokeWidth) => updateState({ textStrokeWidth })}
-            backgroundStyle={currentState.backgroundStyle}
-            onBackgroundStyleChange={(backgroundStyle) => updateState({ backgroundStyle })}
-            aspectRatio={currentState.aspectRatio}
-            onAspectRatioChange={(ratio) => updateState({ aspectRatio: ratio })}
-            onUndo={undo}
-            canUndo={canUndo}
-            showProfileSignature={currentState.showProfileSignature}
-            onShowProfileSignatureChange={(show) => updateState({ showProfileSignature: show })}
-            signaturePositionX={currentState.signaturePositionX}
-            onSignaturePositionXChange={(x) => updateState({ signaturePositionX: x })}
-            signaturePositionY={currentState.signaturePositionY}
-            onSignaturePositionYChange={(y) => updateState({ signaturePositionY: y })}
-            signatureScale={currentState.signatureScale}
-            onSignatureScaleChange={(scale) => updateState({ signatureScale: scale })}
-            showSignaturePhoto={currentState.showSignaturePhoto}
-            onShowSignaturePhotoChange={(show) => updateState({ showSignaturePhoto: show })}
-            showSignatureUsername={currentState.showSignatureUsername}
-            onShowSignatureUsernameChange={(show) => updateState({ showSignatureUsername: show })}
-            showSignatureSocial={currentState.showSignatureSocial}
-            onShowSignatureSocialChange={(show) => updateState({ showSignatureSocial: show })}
-            activeTemplateId={typeof currentState.activeTemplateId === 'number' ? currentState.activeTemplateId : null}
-            profileVerticalPosition={currentState.profileVerticalPosition}
-            onProfileVerticalPositionChange={(profileVerticalPosition) => updateState({ profileVerticalPosition })}
-            showLogo={currentState.showLogo}
-            onShowLogoChange={(show) => updateState({ showLogo: show })}
-            logoPositionX={currentState.logoPositionX}
-            onLogoPositionXChange={(x) => updateState({ logoPositionX: x })}
-            logoPositionY={currentState.logoPositionY}
-            onLogoPositionYChange={(y) => updateState({ logoPositionY: y })}
-            logoScale={currentState.logoScale}
-            onLogoScaleChange={(scale) => updateState({ logoScale: scale })}
-            logoOpacity={currentState.logoOpacity}
-            onLogoOpacityChange={(opacity) => updateState({ logoOpacity: opacity })}
-            profile={profile}
-        />
-      </div>
-    </div>
+    <PanelGroup direction="horizontal" className="h-full w-full">
+        <Panel defaultSize={65} minSize={40}>
+           {/* Área de visualização */}
+            <div className="flex-1 flex h-full justify-center items-center bg-muted/40 p-4 md:p-8 overflow-hidden py-4">
+                <VisualizacaoEditor
+                    aspectRatio={currentState.aspectRatio}
+                    backgroundStyle={currentState.backgroundStyle}
+                    text={currentState.text}
+                    textStyle={textStyle}
+                    textVerticalPosition={currentState.textVerticalPosition}
+                    showProfileSignature={currentState.showProfileSignature}
+                    profile={profile}
+                    signaturePositionX={currentState.signaturePositionX}
+                    signaturePositionY={currentState.signaturePositionY}
+                    signatureScale={currentState.signatureScale}
+                    showSignaturePhoto={currentState.showSignaturePhoto}
+                    showSignatureUsername={currentState.showSignatureUsername}
+                    showSignatureSocial={currentState.showSignatureSocial}
+                    activeTemplateId={typeof currentState.activeTemplateId === 'number' ? currentState.activeTemplateId : null}
+                    profileVerticalPosition={currentState.profileVerticalPosition}
+                    showLogo={currentState.showLogo}
+                    logoPositionX={currentState.logoPositionX}
+                    logoPositionY={currentState.logoPositionY}
+                    logoScale={currentState.logoScale}
+                    logoOpacity={currentState.logoOpacity}
+                />
+            </div>
+        </Panel>
+        <PanelResizeHandle />
+        <Panel defaultSize={35} minSize={30} maxSize={45}>
+             {/* Painel de Controles */}
+            <div className="h-full w-full border-l bg-background">
+                 <PainelControles
+                    text={currentState.text}
+                    onTextChange={(text) => updateState({ text })}
+                    fontFamily={currentState.fontFamily}
+                    onFontFamilyChange={(fontFamily) => updateState({ fontFamily })}
+                    fontSize={currentState.fontSize}
+                    onFontSizeChange={(fontSize) => updateState({ fontSize })}
+                    fontWeight={currentState.fontWeight}
+                    onFontWeightChange={(fontWeight) => updateState({ fontWeight })}
+                    fontStyle={currentState.fontStyle}
+                    onFontStyleChange={(fontStyle) => updateState({ fontStyle })}
+                    textColor={currentState.textColor}
+                    onTextColorChange={(textColor) => updateState({ textColor })}
+                    textAlign={currentState.textAlign}
+                    onTextAlignChange={(textAlign) => updateState({ textAlign })}
+                    textShadowBlur={currentState.textShadowBlur}
+                    onTextShadowBlurChange={(textShadowBlur) => updateState({ textShadowBlur })}
+                    textVerticalPosition={currentState.textVerticalPosition}
+                    onTextVerticalPositionChange={(textVerticalPosition) => updateState({ textVerticalPosition })}
+                    textStrokeColor={currentState.textStrokeColor}
+                    onTextStrokeColorChange={(textStrokeColor) => updateState({ textStrokeColor })}
+                    textStrokeWidth={currentState.textStrokeWidth}
+                    onTextStrokeWidthChange={(textStrokeWidth) => updateState({ textStrokeWidth })}
+                    backgroundStyle={currentState.backgroundStyle}
+                    onBackgroundStyleChange={(backgroundStyle) => updateState({ backgroundStyle })}
+                    aspectRatio={currentState.aspectRatio}
+                    onAspectRatioChange={(ratio) => updateState({ aspectRatio: ratio })}
+                    onUndo={undo}
+                    canUndo={canUndo}
+                    showProfileSignature={currentState.showProfileSignature}
+                    onShowProfileSignatureChange={(show) => updateState({ showProfileSignature: show })}
+                    signaturePositionX={currentState.signaturePositionX}
+                    onSignaturePositionXChange={(x) => updateState({ signaturePositionX: x })}
+                    signaturePositionY={currentState.signaturePositionY}
+                    onSignaturePositionYChange={(y) => updateState({ signaturePositionY: y })}
+                    signatureScale={currentState.signatureScale}
+                    onSignatureScaleChange={(scale) => updateState({ signatureScale: scale })}
+                    showSignaturePhoto={currentState.showSignaturePhoto}
+                    onShowSignaturePhotoChange={(show) => updateState({ showSignaturePhoto: show })}
+                    showSignatureUsername={currentState.showSignatureUsername}
+                    onShowSignatureUsernameChange={(show) => updateState({ showSignatureUsername: show })}
+                    showSignatureSocial={currentState.showSignatureSocial}
+                    onShowSignatureSocialChange={(show) => updateState({ showSignatureSocial: show })}
+                    activeTemplateId={typeof currentState.activeTemplateId === 'number' ? currentState.activeTemplateId : null}
+                    profileVerticalPosition={currentState.profileVerticalPosition}
+                    onProfileVerticalPositionChange={(profileVerticalPosition) => updateState({ profileVerticalPosition })}
+                    showLogo={currentState.showLogo}
+                    onShowLogoChange={(show) => updateState({ showLogo: show })}
+                    logoPositionX={currentState.logoPositionX}
+                    onLogoPositionXChange={(x) => updateState({ logoPositionX: x })}
+                    logoPositionY={currentState.logoPositionY}
+                    onLogoPositionYChange={(y) => updateState({ logoPositionY: y })}
+                    logoScale={currentState.logoScale}
+                    onLogoScaleChange={(scale) => updateState({ logoScale: scale })}
+                    logoOpacity={currentState.logoOpacity}
+                    onLogoOpacityChange={(opacity) => updateState({ logoOpacity: opacity })}
+                    profile={profile}
+                />
+            </div>
+        </Panel>
+    </PanelGroup>
   );
 }
