@@ -5,6 +5,7 @@ import Image from "next/image";
 import type { VisualizacaoEditorProps } from "./tipos";
 import { AssinaturaPerfil } from "./assinatura-perfil";
 import { VisualizacaoPerfil } from "./visualizacao-perfil";
+import { cn } from "@/lib/utils";
 
 // Detecta tipo de mídia
 const getMediaType = (src: string): "image" | "video" | "unknown" => {
@@ -150,10 +151,14 @@ export function VisualizacaoEditor({
   return (
     <div
       id="editor-preview"
-      className="relative @container w-full h-full max-w-full max-h-full md:max-w-md lg:max-w-lg rounded-lg overflow-hidden shadow-2xl"
-      style={{ 
-        aspectRatio: aspectRatio.replace(':', ' / '),
-      }}
+      className={cn(
+        "relative @container w-full h-full max-w-full max-h-full md:max-w-md lg:max-w-lg rounded-lg overflow-hidden shadow-2xl",
+        {
+          "aspect-square": aspectRatio === "1:1",
+          "aspect-video": aspectRatio === "16:9",
+          "aspect-[9/16]": aspectRatio === "9:16",
+        }
+      )}
     >
       {renderBackground()}
       {renderContent()}
