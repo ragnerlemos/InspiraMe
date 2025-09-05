@@ -150,20 +150,22 @@ export function VisualizacaoEditor({
   
   return (
     <div
-      id="editor-preview"
       className={cn(
-        "relative @container w-full h-full max-w-full rounded-lg overflow-hidden shadow-2xl",
+        "relative w-full max-w-full rounded-lg overflow-hidden shadow-2xl @container",
         {
-          "aspect-square": aspectRatio === "1:1",
-          "aspect-video": aspectRatio === "16:9",
-          "aspect-[9/16]": aspectRatio === "9:16",
+          "pb-[100%]": aspectRatio === "1:1", // 1:1 aspect ratio
+          "pb-[56.25%]": aspectRatio === "16:9", // 16:9 aspect ratio
+          "pb-[177.77%]": aspectRatio === "9:16", // 9:16 aspect ratio
         }
       )}
     >
-      {renderBackground()}
-      {renderContent()}
+      <div id="editor-preview" className="absolute inset-0">
+        {renderBackground()}
+        {renderContent()}
+      </div>
     </div>
   );
 }
 
     
+
