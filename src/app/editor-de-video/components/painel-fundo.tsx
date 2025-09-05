@@ -1,4 +1,3 @@
-
 // Componente para a aba "Fundo", permitindo o upload de imagem/vídeo ou seleção de cores/gradientes.
 
 import { useRef, useMemo, useState } from 'react';
@@ -409,7 +408,7 @@ export function PainelFundo(props: PainelFundoProps & { onClose: () => void }) {
 
     const subMenu = (
         <div className="w-full whitespace-nowrap border-t">
-            <div className="flex h-14 items-center justify-start flex-wrap bg-background/90 backdrop-blur-sm px-2">
+            <div className="flex h-14 items-center justify-around flex-wrap bg-background/90 backdrop-blur-sm px-2">
                 <BotaoRecurso icon={RectangleHorizontal} label="Proporção" onClick={() => handleSetControleAtivo('proporcao')} isActive={controleAtivo === 'proporcao'}/>
                 <BotaoRecurso icon={LayoutTemplate} label="Fundo" onClick={() => handleSetControleAtivo('tipo')} isActive={controleAtivo === 'tipo'}/>
                 <BotaoRecurso icon={UserCheck} label="Assinatura" onClick={() => handleSetControleAtivo('assinatura')} isActive={controleAtivo === 'assinatura'}/>

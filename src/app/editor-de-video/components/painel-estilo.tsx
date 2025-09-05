@@ -1,4 +1,3 @@
-
 // Componente para a aba "Estilo", que agrupa todos os controles de customização visual do texto.
 
 import {
@@ -138,7 +137,7 @@ export function PainelEstilo(props: PainelEstiloProps & { onClose: () => void })
 
     const subMenu = (
          <div className="w-full whitespace-nowrap border-t">
-            <div className="flex h-14 items-center justify-start flex-wrap bg-background/90 backdrop-blur-sm px-2">
+            <div className="flex h-14 items-center justify-around flex-wrap bg-background/90 backdrop-blur-sm px-2">
                 <BotaoRecurso icon={Type} label="Fonte" onClick={() => handleSetControleAtivo('fonte')} isActive={controleAtivo === 'fonte'}/>
                 <BotaoRecurso icon={CaseSensitive} label="Tamanho" onClick={() => handleSetControleAtivo('tamanho')} isActive={controleAtivo === 'tamanho'}/>
                 <BotaoRecurso icon={Pipette} label="Cor" onClick={() => handleSetControleAtivo('cor')} isActive={controleAtivo === 'cor'}/>
