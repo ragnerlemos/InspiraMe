@@ -113,7 +113,7 @@ export function EditorClient() {
   const handleSaveAsTemplate = useCallback(async () => {
         const templateName = prompt("Digite um nome para o novo modelo:");
         if (!templateName) return;
-        const previewElement = document.getElementById('editor-preview-content');
+        const previewElement = document.getElementById('editor-preview');
         if (previewElement) {
             try {
                 const canvas = await html2canvas(previewElement, {
@@ -141,7 +141,7 @@ export function EditorClient() {
     }, [addTemplate, currentState, toast]);
 
     const captureCanvas = useCallback(async (format: 'jpeg' | 'png') => {
-        const previewElement = document.getElementById('editor-preview-content');
+        const previewElement = document.getElementById('editor-preview');
         if (!previewElement) {
             toast({ variant: 'destructive', title: 'Erro', description: 'Não foi possível encontrar a área de visualização.' });
             return;
@@ -362,7 +362,7 @@ export function EditorClient() {
             onShowLogoChange={(show) => updateState({ showLogo: show })}
             logoPositionX={currentState.logoPositionX}
             onLogoPositionXChange={(x) => updateState({ logoPositionX: x })}
-logoPositionY={currentState.logoPositionY}
+            logoPositionY={currentState.logoPositionY}
             onLogoPositionYChange={(y) => updateState({ logoPositionY: y })}
             logoScale={currentState.logoScale}
             onLogoScaleChange={(scale) => updateState({ logoScale: scale })}
