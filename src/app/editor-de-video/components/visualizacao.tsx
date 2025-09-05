@@ -152,7 +152,7 @@ export function VisualizacaoEditor({
       id="editor-preview"
       className="relative @container w-full h-full max-w-full max-h-full md:max-w-md lg:max-w-lg rounded-lg overflow-hidden shadow-2xl"
       style={{ 
-        aspectRatio: aspectRatio.replace(":", " / "),
+        aspectRatio: aspectRatio.replace(':', ' / '),
       }}
     >
       {renderBackground()}
@@ -160,5 +160,3 @@ export function VisualizacaoEditor({
     </div>
   );
 }
-
-    
