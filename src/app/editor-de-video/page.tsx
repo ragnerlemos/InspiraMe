@@ -31,7 +31,7 @@ export default function EditorPage() {
         <EditorProvider>
             <div className="flex flex-col h-screen w-full bg-background">
                 <EditorHeader />
-                <main className="flex-1 flex flex-col min-h-0">
+                <main className="flex-1 flex flex-col md:h-[calc(100vh-4rem)]">
                     <Suspense fallback={<EditorSkeleton />}>
                         <EditorClient />
                     </Suspense>
@@ -40,5 +40,7 @@ export default function EditorPage() {
         </EditorProvider>
     )
 }
+
+    
 
     
