@@ -151,12 +151,12 @@ export function VisualizacaoEditor({
   return (
     <div
       id="editor-preview"
-      className="w-full h-full max-w-full max-h-full flex items-center justify-center"
+      className="max-w-full max-h-full"
     >
       <div
         id="editor-preview-content"
         className={cn(
-          "relative overflow-hidden shadow-2xl @container bg-black w-full h-full",
+          "relative overflow-hidden shadow-2xl @container bg-black w-full",
           {
             "aspect-square": aspectRatio === "1:1",
             "aspect-[9/16]": aspectRatio === "9:16",
