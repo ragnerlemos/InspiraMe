@@ -135,7 +135,7 @@ export function VisualizacaoEditor({
               className="absolute"
               style={{
                 top: `${logoPositionY}%`,
-                left: `${logoX}%`,
+                left: `${logoPositionX}%`,
                 transform: `translate(-50%, -50%) scale(${logoScale / 100})`,
                 opacity: logoOpacity / 100,
                 transformOrigin: 'center center',
@@ -168,5 +168,7 @@ export function VisualizacaoEditor({
 
     
 
+
+    
 
     
