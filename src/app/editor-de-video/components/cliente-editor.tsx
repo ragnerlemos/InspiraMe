@@ -285,7 +285,7 @@ export function EditorClient() {
   return (
     <div className="flex flex-col md:flex-row w-full h-full overflow-hidden">
       {/* Área de visualização */}
-      <div className="w-full h-full flex justify-center items-center bg-muted/40 p-4 md:p-8 pb-16">
+      <div className="md:h-full w-full h-[calc(100%-4rem)] flex justify-center items-center bg-muted/40 p-4 md:p-8">
         <VisualizacaoEditor
             aspectRatio={currentState.aspectRatio}
             backgroundStyle={currentState.backgroundStyle}
@@ -362,7 +362,7 @@ export function EditorClient() {
             onShowLogoChange={(show) => updateState({ showLogo: show })}
             logoPositionX={currentState.logoPositionX}
             onLogoPositionXChange={(x) => updateState({ logoPositionX: x })}
-            logoPositionY={currentState.logoPositionY}
+logoPositionY={currentState.logoPositionY}
             onLogoPositionYChange={(y) => updateState({ logoPositionY: y })}
             logoScale={currentState.logoScale}
             onLogoScaleChange={(scale) => updateState({ logoScale: scale })}
@@ -379,3 +379,6 @@ export function EditorClient() {
 
     
 
+
+
+    
