@@ -92,13 +92,14 @@ export function PainelControles(props: PainelControlesProps) {
     // Layout para Mobile com Sheet
     return (
         <Sheet open={!!activePanel} onOpenChange={(open) => !open && setActivePanel(null)}>
-            <div className="w-full border-t bg-background flex flex-col fixed bottom-0 left-0 md:hidden">
+            {/* O toolbar agora está embutido e será controlado pelo layout flex */}
+            <div className="w-full border-t bg-background md:hidden">
                 {mainToolbar}
             </div>
 
             <SheetContent 
                 side="bottom" 
-                className="h-auto max-h-[80vh] flex flex-col bg-background/70"
+                className="h-auto max-h-[80vh] flex flex-col bg-background/70 backdrop-blur-sm"
                 onInteractOutside={(e) => {
                     // Impede o fechamento do seletor de cores ao interagir com ele.
                     if (e.target instanceof HTMLElement && e.target.getAttribute('type') === 'color') {
