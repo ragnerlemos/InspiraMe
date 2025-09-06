@@ -159,3 +159,5 @@ export interface VisualizacaoPerfilProps {
   textVerticalPosition: number;
   profileVerticalPosition: number;
 }
+
+    
