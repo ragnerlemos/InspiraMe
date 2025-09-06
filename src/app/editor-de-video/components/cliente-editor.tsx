@@ -153,42 +153,6 @@ export function EditorClient() {
         }
 
         toast({ title: 'Exportando...', description: `Gerando imagem ${format.toUpperCase()}.` });
-        
-        const signatureElement = document.getElementById('signature-wrapper') as HTMLElement | null;
-        const logoElement = document.getElementById('logo-wrapper') as HTMLElement | null;
-        
-        const originalStyles = {
-            signature: signatureElement?.style.cssText,
-            logo: logoElement?.style.cssText
-        };
-
-        // Aplica estilos temporários para garantir a captura correta
-        if (previewElement && (signatureElement || logoElement)) {
-            const rect = previewElement.getBoundingClientRect();
-
-            if (signatureElement && currentState.showProfileSignature) {
-                const leftPos = (rect.width * currentState.signaturePositionX) / 100 - (signatureElement.offsetWidth / 2);
-                const topPos = (rect.height * currentState.signaturePositionY) / 100 - (signatureElement.offsetHeight / 2);
-                
-                signatureElement.style.position = 'absolute';
-                signatureElement.style.left = `${leftPos}px`;
-                signatureElement.style.top = `${topPos}px`;
-                signatureElement.style.transform = `scale(${currentState.signatureScale / 100})`;
-                signatureElement.style.transformOrigin = 'center center';
-            }
-
-            if (logoElement && currentState.showLogo) {
-                const leftPos = (rect.width * currentState.logoPositionX) / 100 - (logoElement.offsetWidth / 2);
-                const topPos = (rect.height * currentState.logoPositionY) / 100 - (logoElement.offsetHeight / 2);
-
-                logoElement.style.position = 'absolute';
-                logoElement.style.left = `${leftPos}px`;
-                logoElement.style.top = `${topPos}px`;
-                logoElement.style.transform = `scale(${currentState.logoScale / 100})`;
-                logoElement.style.opacity = `${currentState.logoOpacity / 100}`;
-                logoElement.style.transformOrigin = 'center center';
-            }
-        }
 
         try {
             const canvas = await html2canvas(previewElement, {
@@ -211,16 +175,8 @@ export function EditorClient() {
         } catch (error) {
             console.error('Erro ao exportar imagem:', error);
             toast({ variant: 'destructive', title: 'Erro de Exportação', description: 'Não foi possível gerar a imagem.' });
-        } finally {
-             // Restaura os estilos originais para continuar a edição fluida
-            if (signatureElement && originalStyles.signature !== undefined) {
-                signatureElement.style.cssText = originalStyles.signature;
-            }
-            if (logoElement && originalStyles.logo !== undefined) {
-                logoElement.style.cssText = originalStyles.logo;
-            }
         }
-    }, [toast, currentState]);
+    }, [toast]);
     
     const handleExportJPG = useCallback(() => captureCanvas('jpeg'), [captureCanvas]);
     const handleExportPNG = useCallback(() => captureCanvas('png'), [captureCanvas]);
