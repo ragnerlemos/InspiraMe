@@ -85,13 +85,10 @@ export function EditorHeader() {
 export function AppHeader() {
   const pathname = usePathname();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  
-  const isEditorPage = pathname.startsWith('/editor-de-video');
-  const isProporcaoPage = pathname.startsWith('/editor-de-video/modulos-editor/proporcao');
 
-  // Não renderiza o cabeçalho principal em páginas especiais
-  if (isEditorPage && !isProporcaoPage) {
-      return null;
+  // Renderiza o cabeçalho do editor apenas na página /editor-de-video
+  if (pathname === '/editor-de-video') {
+    return null;
   }
 
   // Função que renderiza os links de navegação.
