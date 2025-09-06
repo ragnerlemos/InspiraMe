@@ -176,7 +176,7 @@ export function EditorClient() {
             console.error('Erro ao exportar imagem:', error);
             toast({ variant: 'destructive', title: 'Erro de Exportação', description: 'Não foi possível gerar a imagem.' });
         }
-    }, [toast, currentState]);
+    }, [toast]);
     
     const handleExportJPG = useCallback(() => captureCanvas('jpeg'), [captureCanvas]);
     const handleExportPNG = useCallback(() => captureCanvas('png'), [captureCanvas]);
@@ -492,7 +492,3 @@ logoScale={currentState.logoScale}
     </PanelGroup>
   );
 }
-
-    
-
-    
