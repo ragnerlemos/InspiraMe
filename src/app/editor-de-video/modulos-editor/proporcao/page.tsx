@@ -76,9 +76,9 @@ export default function AspectWeaverPage() {
   );
 
   return (
-    <div className="h-full w-full bg-background text-foreground">
+    <div className="h-full w-full bg-background text-foreground flex flex-col">
       {/* Layout para telas médias e maiores (desktop) */}
-      <div className="hidden md:grid md:grid-cols-[288px_1fr] h-full">
+      <div className="hidden md:grid md:grid-cols-[288px_1fr] flex-1 min-h-0">
         <aside className="border-r flex flex-col">
           <div className="flex items-center gap-2 border-b p-4 h-16 flex-shrink-0">
             <Wand2 className="h-6 w-6" />
@@ -113,12 +113,12 @@ export default function AspectWeaverPage() {
       </div>
 
       {/* Layout para telas pequenas (mobile) */}
-      <div className="md:hidden flex flex-col h-full">
-        <header className="flex items-center gap-2 border-b p-4 fixed top-16 left-0 w-full bg-background z-10 h-16">
+      <div className="md:hidden flex flex-col flex-1 min-h-0">
+        <header className="flex items-center gap-2 border-b p-4 flex-shrink-0 bg-background z-10 h-16">
           <Wand2 className="h-5 w-5" />
           <h1 className="text-lg font-bold tracking-tight">Aspect Weaver</h1>
         </header>
-        <main className="flex-1 w-full h-full p-4 pt-16 pb-20 overflow-auto flex items-center justify-center">
+        <main className="flex-1 w-full p-4 overflow-auto flex items-center justify-center">
           <div
             className="relative w-full h-full max-w-full max-h-full transition-all duration-300 ease-in-out shadow-2xl rounded-xl"
             style={{
@@ -140,7 +140,7 @@ export default function AspectWeaverPage() {
             </div>
           </div>
         </main>
-        <footer className="border-t p-2 fixed bottom-0 left-0 w-full bg-background z-10">
+        <footer className="border-t p-2 flex-shrink-0 bg-background z-10">
            <div className="flex justify-around items-center h-14">
              <div className="flex items-center gap-1 overflow-x-auto pr-2">
                 {aspectRatios.map((ratio) => (

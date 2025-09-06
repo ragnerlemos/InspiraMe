@@ -27,7 +27,7 @@ export default function RootLayout({
         {/* Importação das fontes utilizadas no projeto. */}
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=PT+Sans:wght@400;700&family=Lobster&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-body antialiased h-full flex flex-col">
+      <body className="font-body antialiased h-full">
         <ThemeProvider
         attribute="class"
         defaultTheme="system"
