@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Film, GalleryVertical, Menu, Star, Settings, User, Clapperboard, GalleryHorizontal, Quote, Undo, Save, FileImage, Video, Redo } from "lucide-react";
+import { Film, GalleryVertical, Menu, Star, Settings, User, Clapperboard, GalleryHorizontal, Quote, Undo, Save, FileImage, Video, Redo, TestTube2 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -15,6 +15,10 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuPortal,
+  DropdownMenuSubContent
 } from "@/components/ui/dropdown-menu"
 
 // Itens de navegação exibidos no cabeçalho.
@@ -83,9 +87,10 @@ export function AppHeader() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   
   const isEditorPage = pathname.startsWith('/editor-de-video');
+  const isProporcaoPage = pathname.startsWith('/proporcao');
 
-  // Não renderiza o cabeçalho principal na página do editor
-  if (isEditorPage) {
+  // Não renderiza o cabeçalho principal em páginas especiais
+  if (isEditorPage || isProporcaoPage) {
       return null;
   }
 
@@ -123,7 +128,7 @@ export function AppHeader() {
           <span className="font-headline text-xl font-bold">QuoteVid</span>
         </Link>
         {/* Navegação para telas maiores (desktop). */}
-        <nav className="hidden items-center gap-2 md:flex">
+        <nav className="hidden items-center gap-1 md:flex">
           {navItems.map((item) => {
              const isActive = item.href === '/' ? pathname === item.href : pathname.startsWith(item.href);
              return (
@@ -141,6 +146,31 @@ export function AppHeader() {
               </Link>
              )
           })}
+           {/* Menu de Teste */}
+           <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                 <Button variant="ghost" className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-primary">
+                    Teste
+                 </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger>
+                    <TestTube2 className="mr-2 h-4 w-4" />
+                    <span>Testes</span>
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuPortal>
+                    <DropdownMenuSubContent>
+                      <Link href="/proporcao" passHref>
+                         <DropdownMenuItem>
+                            Proporção
+                         </DropdownMenuItem>
+                      </Link>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuPortal>
+                </DropdownMenuSub>
+              </DropdownMenuContent>
+            </DropdownMenu>
         </nav>
         {/* Navegação para telas menores (mobile) usando um menu lateral. */}
         <div className="md:hidden">
@@ -157,6 +187,11 @@ export function AppHeader() {
                 </SheetHeader>
                 <nav className="grid gap-2 text-lg font-medium pt-8">
                     {navLinks("text-base")}
+                     {/* Menu de Teste Mobile */}
+                    <Link href="/proporcao" onClick={() => setIsSheetOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary">
+                      <TestTube2 className="h-4 w-4" />
+                      Proporção
+                    </Link>
                 </nav>
             </SheetContent>
           </Sheet>
