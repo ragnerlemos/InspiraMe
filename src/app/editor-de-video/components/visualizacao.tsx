@@ -117,13 +117,11 @@ export function VisualizacaoEditor({
         </div>
         {showProfileSignature && (
             <div
-              id="signature-wrapper"
               className="absolute"
               style={{
                 top: `${signaturePositionY}%`,
                 left: `${signaturePositionX}%`,
                 transform: `translate(-50%, -50%) scale(${signatureScale / 100})`,
-                transformOrigin: 'center center',
               }}
             >
               <AssinaturaPerfil
@@ -136,14 +134,12 @@ export function VisualizacaoEditor({
           )}
            {showLogo && profile.logo && (
             <div
-              id="logo-wrapper"
               className="absolute"
               style={{
                 top: `${logoPositionY}%`,
                 left: `${logoPositionX}%`,
                 transform: `translate(-50%, -50%) scale(${logoScale / 100})`,
                 opacity: logoOpacity / 100,
-                transformOrigin: 'center center',
               }}
             >
                 <img src={profile.logo} alt="Logomarca" className="max-w-[150px] max-h-[150px]" />
@@ -167,3 +163,6 @@ export function VisualizacaoEditor({
     </div>
   );
 }
+
+
+    

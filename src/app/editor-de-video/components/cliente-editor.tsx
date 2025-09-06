@@ -154,38 +154,7 @@ export function EditorClient() {
 
         toast({ title: 'Exportando...', description: `Gerando imagem ${format.toUpperCase()}.` });
         
-        const signatureElement = document.getElementById('signature-wrapper') as HTMLElement | null;
-        const logoElement = document.getElementById('logo-wrapper') as HTMLElement | null;
-        const originalStyles = { signature: signatureElement?.style.cssText, logo: logoElement?.style.cssText };
-
         try {
-            // Assinatura
-            if (signatureElement && currentState.showProfileSignature) {
-                const rect = previewElement.getBoundingClientRect();
-                const left = (rect.width * currentState.signaturePositionX) / 100;
-                const top = (rect.height * currentState.signaturePositionY) / 100;
-
-                signatureElement.style.position = 'absolute';
-                signatureElement.style.left = `${left}px`;
-                signatureElement.style.top = `${top}px`;
-                signatureElement.style.transform = `translate(-50%, -50%) scale(${currentState.signatureScale / 100})`;
-                signatureElement.style.transformOrigin = 'center center';
-            }
-
-            // Logo
-            if (logoElement && currentState.showLogo) {
-                const rect = previewElement.getBoundingClientRect();
-                const left = (rect.width * currentState.logoPositionX) / 100;
-                const top = (rect.height * currentState.logoPositionY) / 100;
-
-                logoElement.style.position = 'absolute';
-                logoElement.style.left = `${left}px`;
-                logoElement.style.top = `${top}px`;
-                logoElement.style.transform = `translate(-50%, -50%) scale(${currentState.logoScale / 100})`;
-                logoElement.style.opacity = `${currentState.logoOpacity / 100}`;
-                logoElement.style.transformOrigin = 'center center';
-            }
-
             const canvas = await html2canvas(previewElement, {
                 useCORS: true,
                 backgroundColor: null, 
@@ -206,10 +175,6 @@ export function EditorClient() {
         } catch (error) {
             console.error('Erro ao exportar imagem:', error);
             toast({ variant: 'destructive', title: 'Erro de Exportação', description: 'Não foi possível gerar a imagem.' });
-        } finally {
-             // Restaura os estilos originais
-            if (signatureElement && originalStyles.signature !== undefined) signatureElement.style.cssText = originalStyles.signature;
-            if (logoElement && originalStyles.logo !== undefined) logoElement.style.cssText = originalStyles.logo;
         }
     }, [toast, currentState]);
     
@@ -326,7 +291,10 @@ export function EditorClient() {
         {/* Área de visualização */}
         <div className="flex-1 bg-muted/40 w-full flex items-start justify-center p-4 overflow-auto">
              <div 
-                className="aspect-[9/16] h-[85%] max-h-full"
+                className={cn(
+                    "h-[85%] max-h-full",
+                    `aspect-[${currentState.aspectRatio.replace(' ', '')}]`
+                )}
             >
                 <VisualizacaoEditor
                     backgroundStyle={currentState.backgroundStyle}
@@ -429,7 +397,10 @@ export function EditorClient() {
         <Panel defaultSize={65} minSize={40}>
             <div className="bg-muted/40 w-full h-full flex items-start justify-center p-4 overflow-auto">
                  <div
-                    className="aspect-[9/16] h-[85%] max-h-full"
+                    className={cn(
+                        "h-[85%] max-h-full",
+                        `aspect-[${currentState.aspectRatio.replace(' ', '')}]`
+                    )}
                 >
                     <VisualizacaoEditor
                         backgroundStyle={currentState.backgroundStyle}
@@ -521,5 +492,7 @@ logoScale={currentState.logoScale}
     </PanelGroup>
   );
 }
+
+    
 
     

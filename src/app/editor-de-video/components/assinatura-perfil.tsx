@@ -17,7 +17,7 @@ export function AssinaturaPerfil({
     showSocial = true,
 }: AssinaturaPerfilProps) {
   return (
-    <div className="flex items-center gap-3 text-white">
+    <div className="flex items-center gap-3 p-2 text-white">
         {showPhoto && (
             <Avatar className="h-10 w-10">
                 <AvatarImage src={profile.photo || ""} alt={profile.username} />
@@ -27,9 +27,9 @@ export function AssinaturaPerfil({
             </Avatar>
         )}
         {(showUsername || showSocial) && (
-            <div className="flex flex-col leading-none">
-                {showUsername && <div className="font-bold">{profile.username}</div>}
-                {showSocial && <div className="text-sm opacity-80">{profile.social}</div>}
+            <div className="flex flex-col">
+                {showUsername && <p className="font-bold">{profile.username}</p>}
+                {showSocial && <p className="text-sm opacity-80">{profile.social}</p>}
             </div>
         )}
          {profile.showIcon && profile.iconUrl && (
@@ -38,3 +38,5 @@ export function AssinaturaPerfil({
     </div>
   );
 }
+
+    
