@@ -122,8 +122,8 @@ export function VisualizacaoEditor({
               style={{
                 top: `${signaturePositionY}%`,
                 left: `${signaturePositionX}%`,
-                transform: `scale(${signatureScale / 100})`,
-                transformOrigin: 'top left',
+                transform: `translate(-50%, -50%) scale(${signatureScale / 100})`,
+                transformOrigin: 'center center',
               }}
             >
               <AssinaturaPerfil
@@ -141,9 +141,9 @@ export function VisualizacaoEditor({
               style={{
                 top: `${logoPositionY}%`,
                 left: `${logoPositionX}%`,
-                transform: `scale(${logoScale / 100})`,
+                transform: `translate(-50%, -50%) scale(${logoScale / 100})`,
                 opacity: logoOpacity / 100,
-                transformOrigin: 'top left',
+                transformOrigin: 'center center',
               }}
             >
                 <img src={profile.logo} alt="Logomarca" className="max-w-[150px] max-h-[150px]" />

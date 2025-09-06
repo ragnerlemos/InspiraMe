@@ -153,8 +153,7 @@ export function EditorClient() {
         }
 
         toast({ title: 'Exportando...', description: `Gerando imagem ${format.toUpperCase()}.` });
-
-        // --- Início da Correção ---
+        
         const signatureElement = document.getElementById('signature-wrapper') as HTMLElement | null;
         const logoElement = document.getElementById('logo-wrapper') as HTMLElement | null;
         
@@ -167,23 +166,28 @@ export function EditorClient() {
             const rect = previewElement.getBoundingClientRect();
 
             if (signatureElement && currentState.showProfileSignature) {
+                const leftPos = (rect.width * currentState.signaturePositionX) / 100 - (signatureElement.offsetWidth / 2);
+                const topPos = (rect.height * currentState.signaturePositionY) / 100 - (signatureElement.offsetHeight / 2);
+                
                 signatureElement.style.position = 'absolute';
-                signatureElement.style.left = `${(rect.width * currentState.signaturePositionX) / 100}px`;
-                signatureElement.style.top = `${(rect.height * currentState.signaturePositionY) / 100}px`;
+                signatureElement.style.left = `${leftPos}px`;
+                signatureElement.style.top = `${topPos}px`;
                 signatureElement.style.transform = `scale(${currentState.signatureScale / 100})`;
-                signatureElement.style.transformOrigin = 'top left';
+                signatureElement.style.transformOrigin = 'center center';
             }
 
             if (logoElement && currentState.showLogo) {
+                const leftPos = (rect.width * currentState.logoPositionX) / 100 - (logoElement.offsetWidth / 2);
+                const topPos = (rect.height * currentState.logoPositionY) / 100 - (logoElement.offsetHeight / 2);
+
                 logoElement.style.position = 'absolute';
-                logoElement.style.left = `${(rect.width * currentState.logoPositionX) / 100}px`;
-                logoElement.style.top = `${(rect.height * currentState.logoPositionY) / 100}px`;
+                logoElement.style.left = `${leftPos}px`;
+                logoElement.style.top = `${topPos}px`;
                 logoElement.style.transform = `scale(${currentState.logoScale / 100})`;
                 logoElement.style.opacity = `${currentState.logoOpacity / 100}`;
-                logoElement.style.transformOrigin = 'top left';
+                logoElement.style.transformOrigin = 'center center';
             }
         }
-        // --- Fim da Correção ---
 
         try {
             const canvas = await html2canvas(previewElement, {
@@ -525,5 +529,3 @@ logoScale={currentState.logoScale}
     </PanelGroup>
   );
 }
-
-    
