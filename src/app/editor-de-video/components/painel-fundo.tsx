@@ -15,21 +15,30 @@ import { templates } from '@/lib/dados';
 import { Slider } from '@/components/ui/slider';
 import { BotaoRecurso } from './botao-recurso';
 import { Separator } from '@/components/ui/separator';
+import { cn } from '@/lib/utils';
 
 function ControleProporcao({ aspectRatio, onAspectRatioChange }: { aspectRatio: ProporcaoTela, onAspectRatioChange: (ratio: ProporcaoTela) => void }) {
+    const proportions: { ratio: ProporcaoTela; icon: React.ElementType; label: string }[] = [
+        { ratio: '9:16', icon: RectangleVertical, label: 'Story' },
+        { ratio: '1:1', icon: Square, label: 'Quadrado' },
+        { ratio: '16:9', icon: RectangleHorizontal, label: 'Vídeo' },
+    ];
     return (
         <div className="space-y-2">
             <Label>Proporção da Tela</Label>
-            <Select value={aspectRatio} onValueChange={onAspectRatioChange}>
-                <SelectTrigger>
-                    <SelectValue placeholder="Selecione a proporção" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="9:16">9:16 (Story)</SelectItem>
-                    <SelectItem value="1:1">1:1 (Quadrado)</SelectItem>
-                    <SelectItem value="16:9">16:9 (Vídeo)</SelectItem>
-                </SelectContent>
-            </Select>
+            <div className="grid grid-cols-3 gap-2">
+                {proportions.map(({ ratio, icon: Icon, label }) => (
+                     <Button
+                        key={ratio}
+                        variant={aspectRatio === ratio ? 'secondary' : 'outline'}
+                        onClick={() => onAspectRatioChange(ratio)}
+                        className="flex flex-col h-16 gap-1"
+                    >
+                        <Icon className="h-5 w-5" />
+                        <span className="text-xs">{label} ({ratio})</span>
+                    </Button>
+                ))}
+            </div>
         </div>
     )
 }
@@ -255,7 +264,7 @@ function ControleAssinatura(props: Omit<PainelFundoProps, 'backgroundStyle' | 'o
             )}
 
             {showProfileSignature && (
-                <div className="space-y-4 pt-2 border-t mt-4" onClick={(e) => e.stopPropagation()}>
+                <div className="space-y-4 pt-2 border-t mt-4">
                     <Label>Elementos Visíveis</Label>
                     <div className="grid grid-cols-3 gap-2">
                          <Button size="sm" variant={showSignaturePhoto ? 'secondary' : 'outline'} onClick={() => onShowSignaturePhotoChange(!showSignaturePhoto)}>
@@ -329,7 +338,7 @@ function ControleLogo(props: Pick<PainelFundoProps, 'showLogo' | 'onShowLogoChan
             )}
 
             {showLogo && (
-                <div className="space-y-4 pt-2 border-t mt-4" onClick={(e) => e.stopPropagation()}>
+                <div className="space-y-4 pt-2 border-t mt-4">
                     <div className="space-y-2">
                         <div className="flex justify-between items-center">
                             <Label htmlFor="logo-position-x" className="text-xs flex items-center"><MoveHorizontal className="mr-2 h-3 w-3" />Posição Horizontal</Label>
@@ -365,7 +374,7 @@ function ControleLogo(props: Pick<PainelFundoProps, 'showLogo' | 'onShowLogoChan
 
 
 export function PainelFundo(props: PainelFundoProps & { onClose: () => void }) {
-    const [controleAtivo, setControleAtivo] = useState<ControleAtivo>(null);
+    const [controleAtivo, setControleAtivo] = useState<ControleAtivo>('proporcao');
 
     const handleSetControleAtivo = (controle: ControleAtivo) => {
         setControleAtivo(prev => prev === controle ? null : controle);
@@ -390,7 +399,7 @@ export function PainelFundo(props: PainelFundoProps & { onClose: () => void }) {
         }
         
         return (
-            <div className="w-full p-4" onClick={(e) => e.stopPropagation()}>
+            <div className="w-full p-4">
                  <Content />
             </div>
         )
@@ -408,7 +417,7 @@ export function PainelFundo(props: PainelFundoProps & { onClose: () => void }) {
     );
 
     return (
-       <div className="w-full h-full flex flex-col" onClick={props.onClose}>
+       <div className="w-full h-full flex flex-col">
             <div className="flex-1 overflow-y-auto">
                  {renderControle()}
             </div>
