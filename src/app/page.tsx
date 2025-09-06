@@ -2,132 +2,152 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { categories, quotes } from "@/lib/dados";
-import { Input } from "@/components/ui/input";
+import { Wand2, Ratio } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Search, Film, Copy, Heart, Share2 } from "lucide-react";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { useToast } from "@/hooks/use-toast";
-import { useFavorites } from "@/hooks/use-favorites";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
-// Página principal que exibe uma lista de frases que podem ser filtradas e selecionadas.
-export default function PhrasesPage() {
-  // Estado para armazenar o termo de busca inserido pelo usuário.
-  const [searchTerm, setSearchTerm] = useState("");
-  // Estado para armazenar a categoria de frase selecionada.
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const { toast } = useToast();
-  const { favorites, toggleFavorite } = useFavorites();
+// Define os tipos para as proporções de tela suportadas.
+type AspectRatio = "16:9" | "1:1" | "4:3" | "3:2" | "9:16" | "21:9";
 
+// Array com as proporções para facilitar a renderização dos botões.
+const aspectRatios: AspectRatio[] = ["16:9", "1:1", "4:3", "3:2", "9:16", "21:9"];
 
-  // Filtra as frases com base no termo de busca e na categoria selecionada.
-  const filteredQuotes = quotes.filter(
-    (quote) =>
-      (quote.text.toLowerCase().includes(searchTerm.toLowerCase()) || quote.author.toLowerCase().includes(searchTerm.toLowerCase())) &&
-      (!selectedCategory || quote.category === selectedCategory)
+export default function AspectWeaverPage() {
+  // Estados para controlar a proporção, cor de fundo e cor do texto.
+  const [aspectRatio, setAspectRatio] = useState<AspectRatio>("16:9");
+  const [bgColor, setBgColor] = useState("#333333");
+  const [fgColor, setFgColor] = useState("#FFFFFF");
+
+  // Componente que renderiza a barra lateral com os controles (visível apenas em desktop).
+  const ControlsSidebar = () => (
+    <aside className="hidden w-72 flex-col border-r bg-background md:flex">
+      <div className="flex h-16 items-center border-b px-6">
+        <Wand2 className="mr-2 h-6 w-6 text-primary" />
+        <h1 className="text-xl font-bold tracking-tight">Aspect Weaver</h1>
+      </div>
+      <div className="flex-1 space-y-6 overflow-y-auto p-6">
+        {/* Seção para selecionar a proporção da tela */}
+        <section>
+          <h2 className="mb-4 text-lg font-semibold">Aspect Ratio</h2>
+          <div className="grid grid-cols-2 gap-2">
+            {aspectRatios.map((ratio) => (
+              <Button
+                key={ratio}
+                variant={aspectRatio === ratio ? "default" : "outline"}
+                onClick={() => setAspectRatio(ratio)}
+              >
+                {ratio}
+              </Button>
+            ))}
+          </div>
+        </section>
+        {/* Seção para selecionar as cores */}
+        <section>
+          <h2 className="mb-4 text-lg font-semibold">Colors</h2>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="bg-color">Background</Label>
+              <input
+                id="bg-color"
+                type="color"
+                value={bgColor}
+                onChange={(e) => setBgColor(e.target.value)}
+                className="h-8 w-8 cursor-pointer appearance-none rounded-md border-none bg-transparent p-0"
+                style={{ backgroundColor: bgColor }}
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="fg-color">Foreground</Label>
+              <input
+                id="fg-color"
+                type="color"
+                value={fgColor}
+                onChange={(e) => setFgColor(e.target.value)}
+                className="h-8 w-8 cursor-pointer appearance-none rounded-md border-none bg-transparent p-0"
+                style={{ backgroundColor: fgColor }}
+              />
+            </div>
+          </div>
+        </section>
+      </div>
+    </aside>
   );
-  
-  const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toast({
-        title: "Copiado!",
-        description: "A frase foi copiada para a área de transferência.",
-    })
-  }
 
-  const handleFavoriteClick = (id: number) => {
-    const isFavorited = favorites.includes(id);
-    toggleFavorite(id);
-    toast({
-        title: isFavorited ? "Removido!" : "Favoritado!",
-        description: isFavorited ? "A frase foi removida dos favoritos." : "A frase foi adicionada aos favoritos.",
-    })
-  }
+  // Componente que renderiza a barra de controles inferior (visível apenas em mobile).
+  const MobileControlsBar = () => (
+     <div className="fixed inset-x-0 bottom-0 z-10 border-t bg-background/95 backdrop-blur-sm md:hidden">
+        <div className="container mx-auto p-2">
+           <div className="flex items-center justify-center gap-2">
+             {aspectRatios.map((ratio) => (
+               <Button
+                 key={ratio}
+                 variant={aspectRatio === ratio ? "default" : "outline"}
+                 size="sm"
+                 onClick={() => setAspectRatio(ratio)}
+                 className="flex-1"
+               >
+                 {ratio}
+               </Button>
+             ))}
+              <input
+                type="color"
+                value={bgColor}
+                onChange={(e) => setBgColor(e.target.value)}
+                className="h-9 w-9 cursor-pointer appearance-none rounded-md border-none bg-transparent p-0"
+                style={{ backgroundColor: bgColor }}
+              />
+               <input
+                type="color"
+                value={fgColor}
+                onChange={(e) => setFgColor(e.target.value)}
+                className="h-9 w-9 cursor-pointer appearance-none rounded-md border-none bg-transparent p-0"
+                style={{ backgroundColor: fgColor }}
+              />
+           </div>
+        </div>
+     </div>
+  );
 
   return (
-    <main className="flex-1">
-      <div className="container mx-auto py-8 px-4">
-        <div className="text-center mb-8">
-          <h1 className="font-headline text-4xl md:text-5xl font-bold text-primary">
-            Encontre Sua Inspiração
-          </h1>
-          <p className="text-muted-foreground mt-2 text-lg">
-            Navegue por nossa coleção de frases e crie seu próximo vídeo viral.
-          </p>
-        </div>
-
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
-          <div className="relative flex-grow">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder="Buscar por frase ou autor..."
-              className="pl-10 w-full"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+    <div className="flex h-dvh w-full flex-col md:flex-row">
+      {/* Cabeçalho fixo para mobile */}
+      <header className="fixed top-0 z-10 flex h-16 w-full items-center border-b bg-background/95 px-6 backdrop-blur-sm md:hidden">
+         <Wand2 className="mr-2 h-6 w-6 text-primary" />
+        <h1 className="text-xl font-bold tracking-tight">Aspect Weaver</h1>
+      </header>
+      
+      {/* Barra lateral para desktop */}
+      <ControlsSidebar />
+      
+      {/* Área de conteúdo principal onde o canvas é exibido */}
+      <main className="flex h-full w-full flex-1 flex-col items-center justify-center bg-muted/40 p-4 pt-20 md:pt-4">
+        {/* O container do canvas garante que ele ocupe o máximo de espaço possível sem estourar os limites */}
+        <div 
+          className="mx-auto my-auto flex max-h-full max-w-full rounded-xl shadow-lg transition-all duration-300"
+          style={{ 
+            aspectRatio: aspectRatio.replace(':', ' / '),
+            backgroundColor: bgColor,
+          }}
+        >
+          {/* Conteúdo de placeholder dentro do canvas */}
+          <div 
+            className="m-auto flex flex-col items-center justify-center gap-4 text-center"
+            style={{ color: fgColor }}
+          >
+            <Ratio className="h-12 w-12" />
+            <div className="space-y-1">
+              <p className="text-2xl font-bold">{aspectRatio}</p>
+              <p className="text-muted-foreground" style={{ color: fgColor, opacity: 0.8 }}>
+                Your content here
+              </p>
+            </div>
           </div>
         </div>
-          <div className="mb-8">
-              <ScrollArea className="w-full whitespace-nowrap">
-                  <div className="flex gap-2 pb-4">
-                      <Button
-                          variant={!selectedCategory ? "default" : "outline"}
-                          onClick={() => setSelectedCategory(null)}
-                          className="rounded-full"
-                      >
-                          Todas
-                      </Button>
-                      {categories.map((category) => (
-                          <Button
-                          key={category}
-                          variant={selectedCategory === category ? "default" : "outline"}
-                          onClick={() => setSelectedCategory(category)}
-                          className="rounded-full"
-                          >
-                          {category}
-                          </Button>
-                      ))}
-                  </div>
-                  <ScrollBar orientation="horizontal" />
-              </ScrollArea>
-          </div>
+      </main>
 
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredQuotes.map((quote) => {
-            const isFavorited = favorites.includes(quote.id);
-            return (
-              <Card key={quote.id} className="group flex flex-col justify-between hover:shadow-lg transition-shadow duration-300">
-                <CardContent className="p-6 pb-2">
-                  <p className="text-xl font-body italic">"{quote.text}"</p>
-                  <p className="text-right text-sm font-medium text-muted-foreground mt-4">- {quote.author}</p>
-                </CardContent>
-                <CardFooter className="px-6 pb-4 flex justify-between items-center">
-                    <span className="bg-muted px-2 py-1 text-xs rounded-full text-muted-foreground">{quote.category}</span>
-                    <div className="flex items-center">
-                      <Link href={`/modelos?quote=${encodeURIComponent(quote.text)}`} passHref>
-                          <Button variant="ghost" size="icon"><Film className="h-4 w-4"/></Button>
-                      </Link>
-                      <Button variant="ghost" size="icon" onClick={() => handleCopy(`"${quote.text}" - ${quote.author}`)}><Copy className="h-4 w-4"/></Button>
-                      <Button variant="ghost" size="icon" onClick={() => handleFavoriteClick(quote.id)}>
-                          <Heart className={`h-4 w-4 ${isFavorited ? 'text-red-500 fill-current' : ''}`}/>
-                      </Button>
-                      <Button variant="ghost" size="icon"><Share2 className="h-4 w-4"/></Button>
-                    </div>
-                </CardFooter>
-              </Card>
-            )
-          })}
-        </div>
-        {filteredQuotes.length === 0 && (
-          <div className="text-center py-16 text-muted-foreground">
-            <p>Nenhuma frase encontrada. Tente uma busca ou categoria diferente.</p>
-          </div>
-        )}
-      </div>
-    </main>
+      {/* Barra de controles inferior para mobile */}
+      <MobileControlsBar />
+    </div>
   );
 }
