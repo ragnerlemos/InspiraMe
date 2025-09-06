@@ -285,38 +285,29 @@ export function EditorClient() {
      return <EditorSkeleton />;
   }
 
-  // O "Palco" para a visualização, seguindo a lógica do Aspect Weaver.
-  const Stage = ({ children }: { children: React.ReactNode }) => (
-    <div className="flex-1 bg-muted/40 w-full h-full flex items-center justify-center p-4 md:p-8 overflow-auto">
-      {children}
-    </div>
-  );
+  const editorProps = {
+    aspectRatio: currentState.aspectRatio,
+    backgroundStyle: currentState.backgroundStyle,
+    text: currentState.text,
+    textStyle: textStyle,
+    textVerticalPosition: currentState.textVerticalPosition,
+    showProfileSignature: currentState.showProfileSignature,
+    profile: profile,
+    signaturePositionX: currentState.signaturePositionX,
+    signaturePositionY: currentState.signaturePositionY,
+    signatureScale: currentState.signatureScale,
+    showSignaturePhoto: currentState.showSignaturePhoto,
+    showSignatureUsername: currentState.showSignatureUsername,
+    showSignatureSocial: currentState.showSignatureSocial,
+    activeTemplateId: typeof currentState.activeTemplateId === 'number' ? currentState.activeTemplateId : null,
+    profileVerticalPosition: currentState.profileVerticalPosition,
+    showLogo: currentState.showLogo,
+    logoPositionX: currentState.logoPositionX,
+    logoPositionY: currentState.logoPositionY,
+    logoScale: currentState.logoScale,
+    logoOpacity: currentState.logoOpacity,
+  };
 
-  const editorView = (
-    <VisualizacaoEditor
-        aspectRatio={currentState.aspectRatio}
-        backgroundStyle={currentState.backgroundStyle}
-        text={currentState.text}
-        textStyle={textStyle}
-        textVerticalPosition={currentState.textVerticalPosition}
-        showProfileSignature={currentState.showProfileSignature}
-        profile={profile}
-        signaturePositionX={currentState.signaturePositionX}
-        signaturePositionY={currentState.signaturePositionY}
-        signatureScale={currentState.signatureScale}
-        showSignaturePhoto={currentState.showSignaturePhoto}
-        showSignatureUsername={currentState.showSignatureUsername}
-        showSignatureSocial={currentState.showSignatureSocial}
-        activeTemplateId={typeof currentState.activeTemplateId === 'number' ? currentState.activeTemplateId : null}
-        profileVerticalPosition={currentState.profileVerticalPosition}
-        showLogo={currentState.showLogo}
-        logoPositionX={currentState.logoPositionX}
-        logoPositionY={currentState.logoPositionY}
-        logoScale={currentState.logoScale}
-        logoOpacity={currentState.logoOpacity}
-    />
-  );
-  
   const controlsPanel = (
      <PainelControles
         text={currentState.text}
@@ -383,7 +374,9 @@ export function EditorClient() {
   if (!isDesktop) {
     return (
       <div className="flex flex-col h-full w-full">
-        <Stage>{editorView}</Stage>
+        <div className="w-full h-full flex items-center justify-center p-4 md:p-8 overflow-auto">
+          <VisualizacaoEditor {...editorProps} />
+        </div>
         <div className="w-full h-auto md:hidden">
           {controlsPanel}
         </div>
@@ -395,7 +388,11 @@ export function EditorClient() {
   return (
     <PanelGroup direction="horizontal" className="h-full w-full">
         <Panel defaultSize={65} minSize={40}>
-            <Stage>{editorView}</Stage>
+            <div className="flex-1 min-h-0 flex items-center justify-center">
+              <div className="w-full h-full max-w-[900px] flex justify-center items-center p-4 md:p-8">
+                <VisualizacaoEditor {...editorProps} />
+              </div>
+            </div>
         </Panel>
         <PanelResizeHandle />
         <Panel defaultSize={35} minSize={30} maxSize={45}>
@@ -406,3 +403,5 @@ export function EditorClient() {
     </PanelGroup>
   );
 }
+
+    

@@ -150,11 +150,14 @@ export function VisualizacaoEditor({
     <div
       id="editor-preview-content"
       className={cn(
-        "relative w-full h-full transition-all duration-300 ease-in-out shadow-2xl rounded-lg @container overflow-hidden",
-        "mx-auto my-auto max-w-full max-h-full" // Aspect Weaver: centraliza e limita o tamanho
+        "relative transition-all duration-300 ease-in-out shadow-2xl rounded-lg @container overflow-hidden",
+        {
+          "aspect-square": aspectRatio.replace(/\s/g, "") === "1/1",
+          "aspect-[9/16]": aspectRatio.replace(/\s/g, "") === "9/16",
+          "aspect-[16/9]": aspectRatio.replace(/\s/g, "") === "16/9",
+        }
       )}
       style={{
-        aspectRatio: aspectRatio.replace(' ', ''),
         backgroundColor: backgroundStyle.type === 'solid' ? backgroundStyle.value : undefined,
         backgroundImage: backgroundStyle.type === 'gradient' ? backgroundStyle.value : undefined,
       }}
@@ -164,3 +167,5 @@ export function VisualizacaoEditor({
     </div>
   );
 }
+
+    
