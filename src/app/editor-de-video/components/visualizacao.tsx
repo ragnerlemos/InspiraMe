@@ -22,11 +22,8 @@ const getMediaType = (src: string): "image" | "video" | "unknown" => {
   return "unknown";
 };
 
-// Omitindo `aspectRatio` das props, pois será controlado pelo wrapper
-type VisualizacaoProps = Omit<VisualizacaoEditorProps, 'aspectRatio'>;
-
-
 export function VisualizacaoEditor({
+  aspectRatio,
   backgroundStyle,
   text,
   textStyle,
@@ -46,7 +43,7 @@ export function VisualizacaoEditor({
   logoPositionY,
   logoScale,
   logoOpacity,
-}: VisualizacaoProps) {
+}: VisualizacaoEditorProps) {
   
   const renderBackground = () => {
     const { type, value } = backgroundStyle;
@@ -152,8 +149,12 @@ export function VisualizacaoEditor({
   return (
     <div
       id="editor-preview-content"
-      className="relative w-full h-full transition-all duration-300 ease-in-out shadow-2xl rounded-lg @container overflow-hidden"
+      className={cn(
+        "relative w-full h-full transition-all duration-300 ease-in-out shadow-2xl rounded-lg @container overflow-hidden",
+        "mx-auto my-auto max-w-full max-h-full" // Aspect Weaver: centraliza e limita o tamanho
+      )}
       style={{
+        aspectRatio: aspectRatio.replace(' ', ''),
         backgroundColor: backgroundStyle.type === 'solid' ? backgroundStyle.value : undefined,
         backgroundImage: backgroundStyle.type === 'gradient' ? backgroundStyle.value : undefined,
       }}
@@ -163,6 +164,3 @@ export function VisualizacaoEditor({
     </div>
   );
 }
-
-
-    
