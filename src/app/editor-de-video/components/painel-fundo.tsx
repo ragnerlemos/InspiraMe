@@ -19,9 +19,9 @@ import { cn } from '@/lib/utils';
 
 function ControleProporcao({ aspectRatio, onAspectRatioChange }: { aspectRatio: ProporcaoTela, onAspectRatioChange: (ratio: ProporcaoTela) => void }) {
     const proportions: { ratio: ProporcaoTela; icon: React.ElementType; label: string }[] = [
-        { ratio: '9:16', icon: RectangleVertical, label: 'Story' },
-        { ratio: '1:1', icon: Square, label: 'Quadrado' },
-        { ratio: '16:9', icon: RectangleHorizontal, label: 'Vídeo' },
+        { ratio: '9 / 16', icon: RectangleVertical, label: 'Story' },
+        { ratio: '1 / 1', icon: Square, label: 'Quadrado' },
+        { ratio: '16 / 9', icon: RectangleHorizontal, label: 'Vídeo' },
     ];
     return (
         <div className="space-y-2">
@@ -35,7 +35,7 @@ function ControleProporcao({ aspectRatio, onAspectRatioChange }: { aspectRatio: 
                         className="flex flex-col h-16 gap-1"
                     >
                         <Icon className="h-5 w-5" />
-                        <span className="text-xs">{label} ({ratio})</span>
+                        <span className="text-xs">{label} ({ratio.replace(/ /g, '')})</span>
                     </Button>
                 ))}
             </div>

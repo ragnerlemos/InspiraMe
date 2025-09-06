@@ -150,23 +150,16 @@ export function VisualizacaoEditor({
   
   return (
     <div
-      id="editor-preview"
-      className="flex items-center justify-center w-full"
+        id="editor-preview-content"
+        className="relative mx-auto my-auto max-w-full max-h-full transition-all duration-300 ease-in-out shadow-2xl rounded-lg @container overflow-hidden"
+        style={{
+          aspectRatio: aspectRatio,
+          backgroundColor: backgroundStyle.type === 'solid' ? backgroundStyle.value : undefined,
+          backgroundImage: backgroundStyle.type === 'gradient' ? backgroundStyle.value : undefined,
+        }}
     >
-        <div
-            id="editor-preview-content"
-            className={cn(
-            "relative overflow-hidden shadow-2xl @container bg-black rounded-lg w-full",
-            {
-                "aspect-square": aspectRatio === "1:1",
-                "aspect-[9/16]": aspectRatio === "9:16",
-                "aspect-[16/9]": aspectRatio === "16:9",
-            }
-            )}
-        >
-            {renderBackground()}
-            {renderContent()}
-        </div>
+        {renderBackground()}
+        {renderContent()}
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import type { ProfileData } from "@/hooks/use-profile";
 
 // Define as possíveis proporções de tela que podem ser usadas no editor.
-export type ProporcaoTela = "1:1" | "9:16" | "16:9";
+export type ProporcaoTela = "1 / 1" | "9 / 16" | "16 / 9";
 
 // Define o tipo para o objeto de estilo do texto, usando as propriedades CSS do React.
 export type EstiloTexto = React.CSSProperties;
