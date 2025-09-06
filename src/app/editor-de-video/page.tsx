@@ -1,6 +1,6 @@
 
 import { Suspense } from 'react';
-import { EditorClient } from './components/cliente-editor';
+import { EditorClient } from './modulos-editor/cliente-editor';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EditorHeader } from '@/app/cabecalho-app';
 import { EditorProvider } from './contexts/editor-context';
@@ -40,5 +40,3 @@ export default function EditorPage() {
         </EditorProvider>
     )
 }
-
-    
