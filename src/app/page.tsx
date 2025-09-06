@@ -48,8 +48,8 @@ export default function HomePage() {
   }, [toast]);
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <main className="flex-1">
+    <div className="flex flex-col h-full">
+      <main className="flex-1 overflow-y-auto">
         <div className="container mx-auto py-8 px-4">
           {/* Cabeçalho da página com título e descrição. */}
           <div className="text-center mb-8">

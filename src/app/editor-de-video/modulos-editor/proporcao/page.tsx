@@ -79,16 +79,18 @@ export default function AspectWeaverPage() {
     <div className="h-full w-full bg-background text-foreground">
       {/* Layout para telas médias e maiores (desktop) */}
       <div className="hidden md:grid md:grid-cols-[288px_1fr] h-full">
-        <aside className="border-r">
-          <div className="flex items-center gap-2 border-b p-4 h-16">
+        <aside className="border-r flex flex-col">
+          <div className="flex items-center gap-2 border-b p-4 h-16 flex-shrink-0">
             <Wand2 className="h-6 w-6" />
             <h1 className="text-xl font-bold tracking-tight">Aspect Weaver</h1>
           </div>
-          <Controls />
+          <div className="overflow-y-auto">
+             <Controls />
+          </div>
         </aside>
-        <main className="w-full h-full p-4 overflow-auto">
+        <main className="w-full h-full p-4 overflow-auto flex items-center justify-center">
           <div
-            className="relative mx-auto my-auto max-w-full max-h-full transition-all duration-300 ease-in-out shadow-2xl rounded-xl"
+            className="relative w-full h-full max-w-full max-h-full transition-all duration-300 ease-in-out shadow-2xl rounded-xl"
             style={{
               aspectRatio: aspectRatio,
               backgroundColor: bgColor,
@@ -116,9 +118,9 @@ export default function AspectWeaverPage() {
           <Wand2 className="h-5 w-5" />
           <h1 className="text-lg font-bold tracking-tight">Aspect Weaver</h1>
         </header>
-        <main className="flex-1 w-full h-full p-4 pt-16 pb-20 overflow-auto">
+        <main className="flex-1 w-full h-full p-4 pt-16 pb-20 overflow-auto flex items-center justify-center">
           <div
-            className="relative mx-auto my-auto max-w-full max-h-full transition-all duration-300 ease-in-out shadow-2xl rounded-xl"
+            className="relative w-full h-full max-w-full max-h-full transition-all duration-300 ease-in-out shadow-2xl rounded-xl"
             style={{
               aspectRatio: aspectRatio,
               backgroundColor: bgColor,
