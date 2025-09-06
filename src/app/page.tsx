@@ -1,153 +1,149 @@
 
 "use client";
 
-import { useState } from "react";
-import { Wand2, Ratio } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
+import Link from "next/link";
+import { Heart, Search, Copy, Film, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { quotes, categories } from "@/lib/dados";
+import type { Quote, Category } from "@/lib/dados";
+import { useFavorites } from "@/hooks/use-favorites";
+import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
-// Define os tipos para as proporções de tela suportadas.
-type AspectRatio = "16:9" | "1:1" | "4:3" | "3:2" | "9:16" | "21:9";
+// Página principal que exibe uma lista de frases e permite ao usuário filtrá-las.
+export default function HomePage() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<Category>("Todos");
+  const { favorites, toggleFavorite } = useFavorites();
+  const { toast } = useToast();
 
-// Array com as proporções para facilitar a renderização dos botões.
-const aspectRatios: AspectRatio[] = ["16:9", "1:1", "4:3", "3:2", "9:16", "21:9"];
+  // Filtra as frases com base no termo de busca e na categoria selecionada.
+  const filteredQuotes = useMemo(() => {
+    return quotes.filter(
+      (quote) =>
+        (quote.text.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          quote.author.toLowerCase().includes(searchTerm.toLowerCase())) &&
+        (selectedCategory === "Todos" || quote.category === selectedCategory)
+    );
+  }, [searchTerm, selectedCategory]);
+  
+  // Função para copiar o texto de uma frase para a área de transferência.
+  const handleCopy = (text: string, author: string) => {
+    navigator.clipboard.writeText(`"${text}" - ${author}`);
+    toast({
+      title: "Copiado!",
+      description: "A frase foi copiada para a sua área de transferência.",
+    });
+  };
 
-export default function AspectWeaverPage() {
-  // Estados para controlar a proporção, cor de fundo e cor do texto.
-  const [aspectRatio, setAspectRatio] = useState<AspectRatio>("16:9");
-  const [bgColor, setBgColor] = useState("#333333");
-  const [fgColor, setFgColor] = useState("#FFFFFF");
-
-  // Componente que renderiza a barra lateral com os controles (visível apenas em desktop).
-  const ControlsSidebar = () => (
-    <aside className="hidden w-72 flex-col border-r bg-background md:flex">
-      <div className="flex h-16 items-center border-b px-6">
-        <Wand2 className="mr-2 h-6 w-6 text-primary" />
-        <h1 className="text-xl font-bold tracking-tight">Aspect Weaver</h1>
-      </div>
-      <div className="flex-1 space-y-6 overflow-y-auto p-6">
-        {/* Seção para selecionar a proporção da tela */}
-        <section>
-          <h2 className="mb-4 text-lg font-semibold">Aspect Ratio</h2>
-          <div className="grid grid-cols-2 gap-2">
-            {aspectRatios.map((ratio) => (
-              <Button
-                key={ratio}
-                variant={aspectRatio === ratio ? "default" : "outline"}
-                onClick={() => setAspectRatio(ratio)}
-              >
-                {ratio}
-              </Button>
-            ))}
-          </div>
-        </section>
-        {/* Seção para selecionar as cores */}
-        <section>
-          <h2 className="mb-4 text-lg font-semibold">Colors</h2>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="bg-color">Background</Label>
-              <input
-                id="bg-color"
-                type="color"
-                value={bgColor}
-                onChange={(e) => setBgColor(e.target.value)}
-                className="h-8 w-8 cursor-pointer appearance-none rounded-md border-none bg-transparent p-0"
-                style={{ backgroundColor: bgColor }}
-              />
-            </div>
-            <div className="flex items-center justify-between">
-              <Label htmlFor="fg-color">Foreground</Label>
-              <input
-                id="fg-color"
-                type="color"
-                value={fgColor}
-                onChange={(e) => setFgColor(e.target.value)}
-                className="h-8 w-8 cursor-pointer appearance-none rounded-md border-none bg-transparent p-0"
-                style={{ backgroundColor: fgColor }}
-              />
-            </div>
-          </div>
-        </section>
-      </div>
-    </aside>
-  );
-
-  // Componente que renderiza a barra de controles inferior (visível apenas em mobile).
-  const MobileControlsBar = () => (
-     <div className="fixed inset-x-0 bottom-0 z-10 border-t bg-background/95 backdrop-blur-sm md:hidden">
-        <div className="container mx-auto p-2">
-           <div className="flex items-center justify-center gap-2">
-             {aspectRatios.map((ratio) => (
-               <Button
-                 key={ratio}
-                 variant={aspectRatio === ratio ? "default" : "outline"}
-                 size="sm"
-                 onClick={() => setAspectRatio(ratio)}
-                 className="flex-1"
-               >
-                 {ratio}
-               </Button>
-             ))}
-              <input
-                type="color"
-                value={bgColor}
-                onChange={(e) => setBgColor(e.target.value)}
-                className="h-9 w-9 cursor-pointer appearance-none rounded-md border-none bg-transparent p-0"
-                style={{ backgroundColor: bgColor }}
-              />
-               <input
-                type="color"
-                value={fgColor}
-                onChange={(e) => setFgColor(e.target.value)}
-                className="h-9 w-9 cursor-pointer appearance-none rounded-md border-none bg-transparent p-0"
-                style={{ backgroundColor: fgColor }}
-              />
-           </div>
-        </div>
-     </div>
-  );
+  // Efeito para mostrar uma mensagem de boas-vindas ao carregar a página.
+  useEffect(() => {
+    toast({
+      title: "Bem-vindo ao QuoteVid!",
+      description: "Explore as frases e comece a criar.",
+    });
+  }, [toast]);
 
   return (
-    <div className="flex h-dvh w-full flex-col md:flex-row">
-      {/* Cabeçalho fixo para mobile */}
-      <header className="fixed top-0 z-10 flex h-16 w-full items-center border-b bg-background/95 px-6 backdrop-blur-sm md:hidden">
-         <Wand2 className="mr-2 h-6 w-6 text-primary" />
-        <h1 className="text-xl font-bold tracking-tight">Aspect Weaver</h1>
-      </header>
-      
-      {/* Barra lateral para desktop */}
-      <ControlsSidebar />
-      
-      {/* Área de conteúdo principal onde o canvas é exibido */}
-      <main className="flex h-full w-full flex-1 flex-col items-center justify-center bg-muted/40 p-4 pt-20 md:pt-4">
-        {/* O container do canvas garante que ele ocupe o máximo de espaço possível sem estourar os limites */}
-        <div 
-          className="mx-auto my-auto flex max-h-full max-w-full rounded-xl shadow-lg transition-all duration-300"
-          style={{ 
-            aspectRatio: aspectRatio.replace(':', ' / '),
-            backgroundColor: bgColor,
-          }}
-        >
-          {/* Conteúdo de placeholder dentro do canvas */}
-          <div 
-            className="m-auto flex flex-col items-center justify-center gap-4 text-center"
-            style={{ color: fgColor }}
-          >
-            <Ratio className="h-12 w-12" />
-            <div className="space-y-1">
-              <p className="text-2xl font-bold">{aspectRatio}</p>
-              <p className="text-muted-foreground" style={{ color: fgColor, opacity: 0.8 }}>
-                Your content here
-              </p>
+    <div className="flex flex-col min-h-screen">
+      <main className="flex-1">
+        <div className="container mx-auto py-8 px-4">
+          {/* Cabeçalho da página com título e descrição. */}
+          <div className="text-center mb-8">
+            <h1 className="font-headline text-4xl md:text-5xl font-bold text-primary">
+              Inspire-se. Crie. Compartilhe.
+            </h1>
+            <p className="text-muted-foreground mt-2 text-lg">
+              Encontre a frase perfeita para o seu próximo vídeo.
+            </p>
+          </div>
+
+          {/* Controles de filtro (busca e categorias). */}
+          <div className="flex flex-col md:flex-row gap-4 mb-8">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Buscar por frases ou autores..."
+                className="pl-10 w-full"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <div className="flex items-center gap-2 overflow-x-auto pb-2">
+               <Button
+                  variant={selectedCategory === "Todos" ? "default" : "outline"}
+                  onClick={() => setSelectedCategory("Todos")}
+                  className="whitespace-nowrap"
+                >
+                  Todos
+                </Button>
+              {categories.map((category) => (
+                <Button
+                  key={category}
+                  variant={selectedCategory === category ? "default" : "outline"}
+                  onClick={() => setSelectedCategory(category)}
+                  className="whitespace-nowrap"
+                >
+                  {category}
+                </Button>
+              ))}
             </div>
           </div>
+
+          {/* Grid de frases filtradas. */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredQuotes.map((quote) => (
+              <Card
+                key={quote.id}
+                className="group flex flex-col justify-between hover:shadow-lg transition-shadow duration-300"
+              >
+                <CardContent className="p-6 pb-2">
+                  <p className="text-xl font-body italic">"{quote.text}"</p>
+                  <p className="text-right text-sm font-medium text-muted-foreground mt-4">
+                    - {quote.author}
+                  </p>
+                </CardContent>
+                <CardFooter className="px-6 pb-4 flex justify-between items-center">
+                    <span className="bg-muted px-2 py-1 text-xs rounded-full text-muted-foreground">
+                        {quote.category}
+                    </span>
+                    <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                         <Button variant="ghost" size="icon" onClick={() => toggleFavorite(quote.id)}>
+                            <Heart className={cn("h-4 w-4", favorites.includes(quote.id) ? "text-red-500 fill-current" : "")} />
+                        </Button>
+                        <Link href={`/modelos?quote=${encodeURIComponent(quote.text)}`} passHref>
+                           <Button variant="ghost" size="icon">
+                               <Film className="h-4 w-4" />
+                           </Button>
+                        </Link>
+                        <Button variant="ghost" size="icon" onClick={() => handleCopy(quote.text, quote.author)}>
+                            <Copy className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon">
+                            <Share2 className="h-4 w-4" />
+                        </Button>
+                    </div>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+
+          {/* Mensagem exibida quando nenhuma frase é encontrada. */}
+          {filteredQuotes.length === 0 && (
+            <div className="text-center py-16">
+              <Search className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <h2 className="text-2xl font-semibold">Nenhuma frase encontrada</h2>
+              <p className="text-muted-foreground mt-2">
+                Tente ajustar sua busca ou selecionar outra categoria.
+              </p>
+            </div>
+          )}
         </div>
       </main>
-
-      {/* Barra de controles inferior para mobile */}
-      <MobileControlsBar />
     </div>
   );
 }

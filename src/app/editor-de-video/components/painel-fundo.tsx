@@ -1,4 +1,3 @@
-
 // Componente para a aba "Fundo", permitindo o upload de imagem/vídeo ou seleção de cores/gradientes.
 
 import { useRef, useMemo, useState } from 'react';
@@ -16,33 +15,20 @@ import { Slider } from '@/components/ui/slider';
 import { BotaoRecurso } from './botao-recurso';
 import { Separator } from '@/components/ui/separator';
 
-const proporcoes: { ratio: ProporcaoTela; icon: React.ElementType }[] = [
-    { ratio: "9:16", icon: RectangleVertical },
-    { ratio: "1:1", icon: Square },
-    { ratio: "16:9", icon: RectangleHorizontal },
-];
-
-type ControleAtivo = 'proporcao' | 'tipo' | 'assinatura' | 'logo' | null;
-type TipoFundoAtivo = 'media' | 'solid' | 'gradient';
-
-
 function ControleProporcao({ aspectRatio, onAspectRatioChange }: { aspectRatio: ProporcaoTela, onAspectRatioChange: (ratio: ProporcaoTela) => void }) {
     return (
         <div className="space-y-2">
             <Label>Proporção da Tela</Label>
-            <div className="grid grid-cols-3 gap-2">
-                {proporcoes.map(({ ratio, icon: Icon }) => (
-                    <Button
-                        key={ratio}
-                        variant={aspectRatio === ratio ? "secondary" : "ghost"}
-                        onClick={() => onAspectRatioChange(ratio)}
-                        className="flex flex-col h-16"
-                    >
-                        <Icon className="h-6 w-6 mb-1"/>
-                        <span className="text-xs">{ratio}</span>
-                    </Button>
-                ))}
-            </div>
+            <Select value={aspectRatio} onValueChange={onAspectRatioChange}>
+                <SelectTrigger>
+                    <SelectValue placeholder="Selecione a proporção" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="9:16">9:16 (Story)</SelectItem>
+                    <SelectItem value="1:1">1:1 (Quadrado)</SelectItem>
+                    <SelectItem value="16:9">16:9 (Vídeo)</SelectItem>
+                </SelectContent>
+            </Select>
         </div>
     )
 }
@@ -229,6 +215,8 @@ function ControleTipoFundo(props: {
     )
 }
 
+type ControleAtivo = 'proporcao' | 'tipo' | 'assinatura' | 'logo' | null;
+type TipoFundoAtivo = 'media' | 'solid' | 'gradient';
 
 function ControleAssinatura(props: Omit<PainelFundoProps, 'backgroundStyle' | 'onBackgroundStyleChange' | 'aspectRatio' | 'onAspectRatioChange' | 'showLogo' | 'onShowLogoChange' | 'logoPositionX' | 'onLogoPositionXChange' | 'logoPositionY' | 'onLogoPositionYChange' | 'logoScale' | 'onLogoScaleChange' | 'logoOpacity' | 'onLogoOpacityChange' >) {
     const { 
@@ -417,11 +405,11 @@ export function PainelFundo(props: PainelFundoProps & { onClose: () => void }) {
     );
 
     return (
-        <div className="w-full h-full flex flex-col" onClick={props.onClose}>
-            <div className="flex-1" onClick={(e) => e.stopPropagation()}>
+       <div className="w-full h-full flex flex-col">
+            <div className="flex-1 overflow-y-auto">
                  {renderControle()}
             </div>
             {subMenu}
-        </div>
+       </div>
     );
 }
