@@ -399,10 +399,8 @@ export function PainelFundo(props: PainelFundoProps & { onClose: () => void }) {
         }
         
         return (
-            <div className="w-full" onClick={(e) => e.stopPropagation()}>
-                <div className="p-4">
-                    <Content />
-                </div>
+            <div className="w-full p-4">
+                 <Content />
             </div>
         )
     }
@@ -419,8 +417,10 @@ export function PainelFundo(props: PainelFundoProps & { onClose: () => void }) {
     );
 
     return (
-        <div className="w-full h-full flex flex-col" onClick={() => setControleAtivo(null)}>
-            {renderControle()}
+        <div className="w-full h-full flex flex-col" onClick={props.onClose}>
+            <div className="flex-1" onClick={(e) => e.stopPropagation()}>
+                 {renderControle()}
+            </div>
             {subMenu}
         </div>
     );
