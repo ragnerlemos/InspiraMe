@@ -76,19 +76,19 @@ export default function AspectWeaverPage() {
   );
 
   return (
-    <div className="h-full w-full bg-background text-foreground flex flex-col overflow-hidden">
+    <div className="w-screen h-screen bg-background text-foreground flex flex-col overflow-hidden">
       {/* Layout para telas médias e maiores (desktop) */}
       <div className="hidden md:grid md:grid-cols-[288px_1fr] flex-1 min-h-0">
-        <aside className="border-r flex flex-col bg-card overflow-y-auto">
+        <aside className="border-r flex flex-col bg-card overflow-hidden">
           <div className="flex items-center gap-2 border-b p-4 h-16 flex-shrink-0">
             <Wand2 className="h-6 w-6" />
             <h1 className="text-xl font-bold tracking-tight">Aspect Weaver</h1>
           </div>
           <Controls />
         </aside>
-        <main className="w-full h-full p-4 flex items-center justify-center">
+        <main className="w-full h-full p-4 flex items-center justify-center overflow-hidden">
           <div
-            className="relative w-full h-full max-w-full max-h-full transition-all duration-300 ease-in-out shadow-2xl rounded-xl"
+            className="relative max-w-full max-h-full transition-all duration-300 ease-in-out shadow-2xl rounded-xl"
             style={{
               aspectRatio: aspectRatio,
               backgroundColor: bgColor,
@@ -118,7 +118,7 @@ export default function AspectWeaverPage() {
         </header>
         <main className="flex-1 w-full p-4 flex items-center justify-center min-h-0">
           <div
-            className="relative w-full h-full max-w-full max-h-full transition-all duration-300 ease-in-out shadow-2xl rounded-xl"
+            className="relative max-w-full max-h-full transition-all duration-300 ease-in-out shadow-2xl rounded-xl"
             style={{
               aspectRatio: aspectRatio,
               backgroundColor: bgColor,
