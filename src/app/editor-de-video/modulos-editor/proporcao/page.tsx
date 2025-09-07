@@ -25,9 +25,9 @@ export default function AspectWeaverPage() {
 
   // Componente da barra lateral para desktop
   const Controls = () => (
-    <div className="flex flex-col gap-6 p-4 overflow-y-auto">
+    <div className="flex flex-col gap-6 p-4 overflow-hidden">
       <div>
-        <h2 className="text-lg font-semibold tracking-tight mb-3">Aspect Ratio</h2>
+        <h2 className="text-lg font.semibold tracking-tight mb-3">Aspect Ratio</h2>
         <div className="grid grid-cols-2 gap-2">
           {aspectRatios.map((ratio) => (
             <Button
@@ -85,7 +85,7 @@ export default function AspectWeaverPage() {
           </div>
           <Controls />
         </aside>
-        <main className="w-full h-full p-4 flex items-start justify-center overflow-hidden">
+        <main className="w-full h-full px-4 pt-4 pb-8 flex items-start justify-center overflow-hidden">
            <div className="w-full h-full flex items-start justify-center">
             <div
               className="relative shadow-2xl rounded-xl"
@@ -121,7 +121,7 @@ export default function AspectWeaverPage() {
           <Wand2 className="h-5 w-5" />
           <h1 className="text-lg font-bold tracking-tight">Aspect Weaver</h1>
         </header>
-        <main className="flex-1 w-full p-4 flex items-start justify-center overflow-hidden min-h-0">
+        <main className="flex-1 w-full px-4 pt-4 pb-8 flex items-start justify-center overflow-hidden min-h-0">
            <div className="w-full h-full flex items-start justify-center">
             <div
               className="relative shadow-2xl rounded-xl"
