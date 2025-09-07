@@ -93,8 +93,9 @@ export default function AspectWeaverPage() {
               backgroundColor: bgColor,
               maxWidth: "100%",
               maxHeight: "100%",
-              width: "auto",
-              height: "100%",
+              width: "100%",
+              height: "auto",
+              objectFit: "contain",
             }}
           >
             <div
@@ -127,8 +128,9 @@ export default function AspectWeaverPage() {
               backgroundColor: bgColor,
               maxWidth: "100%",
               maxHeight: "100%",
-              width: "auto",
-              height: "100%",
+              width: "100%",
+              height: "auto",
+              objectFit: "contain",
             }}
           >
              <div
