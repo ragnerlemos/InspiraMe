@@ -85,7 +85,7 @@ export default function AspectWeaverPage() {
           </div>
           <Controls />
         </aside>
-        <main className="w-full h-full p-4 flex items-center justify-center overflow-hidden">
+        <main className="w-full h-full p-4 flex items-start justify-center overflow-hidden">
           <div
             className="relative transition-all duration-300 ease-in-out shadow-2xl rounded-xl"
             style={{
@@ -93,8 +93,8 @@ export default function AspectWeaverPage() {
               backgroundColor: bgColor,
               maxWidth: "100%",
               maxHeight: "100%",
-              width: "100%",
-              height: "auto",
+              width: "auto",
+              height: "100%",
             }}
           >
             <div
@@ -119,7 +119,7 @@ export default function AspectWeaverPage() {
           <Wand2 className="h-5 w-5" />
           <h1 className="text-lg font-bold tracking-tight">Aspect Weaver</h1>
         </header>
-        <main className="flex-1 w-full p-4 flex items-center justify-center min-h-0">
+        <main className="flex-1 w-full p-4 flex items-start justify-center overflow-hidden min-h-0">
           <div
             className="relative transition-all duration-300 ease-in-out shadow-2xl rounded-xl"
             style={{
@@ -127,8 +127,8 @@ export default function AspectWeaverPage() {
               backgroundColor: bgColor,
               maxWidth: "100%",
               maxHeight: "100%",
-              width: "100%",
-              height: "auto",
+              width: "auto",
+              height: "100%",
             }}
           >
              <div
