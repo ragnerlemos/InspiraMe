@@ -94,7 +94,7 @@ export default function AspectWeaverPage() {
                 backgroundColor: bgColor,
                 maxWidth: "100%",
                 maxHeight: "100%",
-                height: "80%",   // controla pela altura do main
+                height: "90%",   // controla pela altura do main
                 width: "auto",    // largura ajusta sozinha
               }}
             >
@@ -130,7 +130,7 @@ export default function AspectWeaverPage() {
                 backgroundColor: bgColor,
                 maxWidth: "100%",
                 maxHeight: "100%",
-                height: "80%",   // controla pela altura do main
+                height: "90%",   // controla pela altura do main
                 width: "auto",    // largura ajusta sozinha
               }}
             >
