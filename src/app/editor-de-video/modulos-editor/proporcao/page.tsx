@@ -44,7 +44,7 @@ export default function AspectWeaverPage() {
       </div>
       <Separator />
       <div>
-        <h2 className="text-lg font-semibold tracking-tight mb-3">Colors</h2>
+        <h2 className="text-lg font.semibold tracking-tight mb-3">Colors</h2>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
             <Label htmlFor="bg-color">Background</Label>
@@ -76,10 +76,10 @@ export default function AspectWeaverPage() {
   );
 
   return (
-    <div className="h-full w-full bg-background text-foreground flex flex-col">
+    <div className="h-screen w-screen bg-background text-foreground flex flex-col overflow-hidden">
       {/* Layout para telas médias e maiores (desktop) */}
       <div className="hidden md:grid md:grid-cols-[288px_1fr] flex-1 min-h-0">
-        <aside className="border-r flex flex-col">
+        <aside className="border-r flex flex-col bg-card">
           <div className="flex items-center gap-2 border-b p-4 h-16 flex-shrink-0">
             <Wand2 className="h-6 w-6" />
             <h1 className="text-xl font-bold tracking-tight">Aspect Weaver</h1>
