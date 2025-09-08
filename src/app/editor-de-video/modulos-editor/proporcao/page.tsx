@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useMemo, useState } from "react";
@@ -105,7 +104,7 @@ export default function AspectWeaver() {
             {/* Canvas for aspect ratio preview */}
             <div
               className={cn(
-                "absolute m-auto max-w-full max-h-full transition-all duration-300 ease-in-out shadow-2xl rounded-xl inset-[5px]"
+                "absolute m-auto max-w-full max-h-full transition-all duration-300 ease-in-out shadow-2xl rounded-xl inset-[10px]"
               )}
               style={{
                 aspectRatio: aspectRatio,
