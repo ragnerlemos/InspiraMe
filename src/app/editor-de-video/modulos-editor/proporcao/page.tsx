@@ -95,13 +95,13 @@ export default function AspectWeaver() {
           </div>
         </aside>
 
-        <main className="flex flex-col flex-1 bg-muted/50 md:grid md:grid-rows-[auto_1fr] min-h-0">
+        <main className="flex-1 bg-muted/50 grid grid-rows-[auto_1fr] md:grid-rows-1 min-h-0">
           <header className="sticky top-0 z-10 flex items-center border-b bg-background/80 p-4 backdrop-blur-sm md:hidden">
             <Wand2 className="h-6 w-6 text-primary" />
             <h1 className="ml-2 text-xl font-bold font-headline">Aspect Weaver</h1>
           </header>
           {/* Main visualization area */}
-          <div className="flex-1 p-2 grid place-items-center overflow-hidden min-h-0">
+          <div className="overflow-hidden grid place-items-center">
             {/* Canvas for aspect ratio preview */}
             <div
               className="relative max-w-full max-h-full transition-all duration-300 ease-in-out shadow-2xl rounded-xl"
