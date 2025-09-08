@@ -23,7 +23,7 @@ export default function AspectWeaver() {
 
   return (
     <div className="flex flex-col w-full bg-background font-body text-foreground h-screen overflow-hidden">
-      <div className="flex flex-1 md:grid md:grid-cols-[288px_1fr] md:divide-x min-h-0">
+      <div className="flex flex-1 md:grid md:grid-cols-[288px_1fr] md:divide-x min-h-0 h-full">
         <aside className="hidden shrink-0 bg-card p-6 md:flex md:flex-col md:border-r">
           <div className="space-y-8">
             <div className="flex items-center gap-3">
@@ -95,13 +95,13 @@ export default function AspectWeaver() {
           </div>
         </aside>
 
-        <main className="grid flex-1 grid-rows-[auto_1fr] bg-muted/50 md:grid-rows-1 min-h-0">
+        <main className="grid flex-1 grid-rows-[auto_1fr] bg-muted/50 md:grid-rows-1 min-h-0 h-full">
           <header className="sticky top-0 z-10 flex items-center border-b bg-background/80 p-4 backdrop-blur-sm md:hidden">
             <Wand2 className="h-6 w-6 text-primary" />
             <h1 className="ml-2 text-xl font-bold font-headline">Aspect Weaver</h1>
           </header>
           {/* Main visualization area */}
-          <div className="w-full h-full overflow-hidden flex justify-center items-start">
+          <div className="w-full h-full overflow-hidden flex justify-center items-start p-[10px]">
             {/* Canvas for aspect ratio preview */}
             <div
               className={cn(
