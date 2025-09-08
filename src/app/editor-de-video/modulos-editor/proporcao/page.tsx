@@ -134,12 +134,12 @@ export default function AspectWeaver() {
               style={{
                 aspectRatio: aspectRatio,
                 backgroundColor: bgColor,
-                width: "auto",
-                height: "100%",
-                maxWidth: "100%",
-                maxHeight: "100%",
                 transform: `scale(${scale})`,
                 transformOrigin: "top center",
+                width: "auto",      // largura se ajusta proporcionalmente
+                height: "auto",     // altura se ajusta proporcionalmente
+                maxWidth: "100%",  // nunca ultrapassa a largura do main
+                maxHeight: "100%", // nunca ultrapassa a altura do main
               }}
             >
               {/* Conteúdo interno */}
