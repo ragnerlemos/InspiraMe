@@ -39,14 +39,6 @@ export default function HomePage() {
     });
   };
 
-  // Efeito para mostrar uma mensagem de boas-vindas ao carregar a página.
-  useEffect(() => {
-    toast({
-      title: "Bem-vindo ao QuoteVid!",
-      description: "Explore as frases e comece a criar.",
-    });
-  }, [toast]);
-
   return (
     <div className="flex flex-col h-full">
       <main className="flex-1 overflow-y-auto">
