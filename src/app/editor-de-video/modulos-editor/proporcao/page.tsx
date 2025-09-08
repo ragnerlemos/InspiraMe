@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { Ratio, Wand2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -20,6 +19,7 @@ export default function AspectWeaver() {
   const [aspectRatio, setAspectRatio] = useState("9 / 16");
   const [bgColor, setBgColor] = useState("#333333");
   const [fgColor, setFgColor] = useState("#ffffff");
+  const [scale, setScale] = useState(1); // escala inicial 100%
 
   return (
     <div className="flex flex-col w-full bg-background font-body text-foreground h-[calc(100vh-4rem)] overflow-hidden">
@@ -31,6 +31,7 @@ export default function AspectWeaver() {
               <h1 className="text-2xl font-bold font-headline">Aspect Weaver</h1>
             </div>
 
+            {/* Proporção */}
             <div className="space-y-4">
               <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
                 PROPORÇÃO DA TELA
@@ -51,6 +52,25 @@ export default function AspectWeaver() {
               </div>
             </div>
 
+            {/* Escala */}
+            <div className="space-y-4">
+              <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                ESCALA DO CANVAS
+              </h2>
+              <div className="grid grid-cols-3 gap-2">
+                {[1, 1.1, 1.2].map((value) => (
+                  <Button
+                    key={value}
+                    onClick={() => setScale(value)}
+                    variant={scale === value ? "default" : "outline"}
+                  >
+                    {Math.round(value * 100)}%
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {/* Cores */}
             <div className="space-y-4">
               <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
                 CORES
@@ -110,6 +130,7 @@ export default function AspectWeaver() {
               style={{
                 aspectRatio: aspectRatio,
                 backgroundColor: bgColor,
+                transform: `scale(${scale})`, // aplica escala
               }}
             >
               <div className="flex items-center justify-center h-full p-4">
@@ -148,6 +169,25 @@ export default function AspectWeaver() {
                       className="shrink-0"
                     >
                       {ratio.label}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Escala (MOBILE) */}
+              <div className="space-y-4">
+                <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                  ESCALA DO CANVAS
+                </h2>
+                <div className="flex space-x-2 overflow-x-auto pb-2">
+                  {[1, 1.1, 1.2].map((value) => (
+                    <Button
+                      key={value}
+                      onClick={() => setScale(value)}
+                      variant={scale === value ? "default" : "outline"}
+                      className="shrink-0"
+                    >
+                      {Math.round(value * 100)}%
                     </Button>
                   ))}
                 </div>
