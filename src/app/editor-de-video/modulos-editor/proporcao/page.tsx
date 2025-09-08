@@ -25,7 +25,7 @@ export default function AspectWeaverPage() {
 
   // Componente da barra lateral para desktop
   const Controls = () => (
-    <div className="flex flex-col gap-6 p-4 overflow-hidden">
+    <div className="flex flex-col gap-6 p-4 overflow-auto">
       <div>
         <h2 className="text-lg font.semibold tracking-tight mb-3">Aspect Ratio</h2>
         <div className="grid grid-cols-2 gap-2">
@@ -75,77 +75,65 @@ export default function AspectWeaverPage() {
   );
 
   return (
-    <div className="h-screen w-screen bg-background text-foreground flex flex-col overflow-hidden">
+    <div className="h-screen w-screen bg-background text-foreground flex flex-col">
       {/* Layout para telas médias e maiores (desktop) */}
-      <div className="hidden md:grid md:grid-cols-[288px_1fr] flex-1 min-h-0">
-        <aside className="border-r flex flex-col bg-card overflow-hidden">
+      <div className="hidden md:grid md:grid-cols-[288px_1fr] flex-1">
+        <aside className="border-r flex flex-col bg-card">
           <div className="flex items-center gap-2 border-b p-4 h-16 flex-shrink-0">
             <Wand2 className="h-6 w-6" />
             <h1 className="text-xl font-bold tracking-tight">Aspect Weaver</h1>
           </div>
           <Controls />
         </aside>
-        <main className="w-full h-full p-4 flex items-start justify-center overflow-hidden">
-          <div className="w-full h-full flex items-start justify-center">
+        <main className="w-full h-full p-4 flex items-center justify-center overflow-auto">
+          <div
+            className="relative w-full h-full max-w-full max-h-full transition-all duration-300 ease-in-out shadow-2xl rounded-xl"
+            style={{
+              aspectRatio: aspectRatio,
+              backgroundColor: bgColor,
+            }}
+          >
             <div
-              className="relative shadow-2xl rounded-xl"
-              style={{
-                aspectRatio: aspectRatio,
-                backgroundColor: bgColor,
-                maxWidth: "100%",
-                maxHeight: "100%",
-                height: "90%",
-                width: "auto",
-              }}
+              className="absolute inset-0 flex flex-col items-center justify-center gap-4 text-center"
+              style={{ color: fgColor }}
             >
-              <div
-                className="absolute inset-0 flex flex-col items-center justify-center gap-4 text-center"
-                style={{ color: fgColor }}
-              >
-                <Ratio className="h-16 w-16" />
-                <p className="text-3xl font-bold font-mono tracking-tighter">
-                  {aspectRatio.replace(' / ', ':')}
-                </p>
-                <p className="text-muted-foreground" style={{ color: fgColor, opacity: 0.7 }}>
-                  Your content here
-                </p>
-              </div>
+              <Ratio className="h-16 w-16" />
+              <p className="text-3xl font-bold font-mono tracking-tighter">
+                {aspectRatio.replace(' / ', ':')}
+              </p>
+              <p className="text-muted-foreground" style={{ color: fgColor, opacity: 0.7 }}>
+                Your content here
+              </p>
             </div>
           </div>
         </main>
       </div>
 
       {/* Layout para telas pequenas (mobile) */}
-      <div className="md:hidden flex flex-col flex-1 min-h-0">
+      <div className="md:hidden flex flex-col flex-1">
         <header className="flex items-center gap-2 border-b p-4 flex-shrink-0 bg-background z-10 h-16">
           <Wand2 className="h-5 w-5" />
           <h1 className="text-lg font-bold tracking-tight">Aspect Weaver</h1>
         </header>
-        <main className="flex-1 w-full p-4 pb-8 flex items-start justify-center overflow-hidden min-h-0">
-          <div className="w-full h-full flex items-start justify-center">
+        <main className="flex-1 w-full p-4 pb-8 flex items-center justify-center overflow-auto">
+          <div
+            className="relative w-full h-full max-w-full max-h-full transition-all duration-300 ease-in-out shadow-2xl rounded-xl"
+            style={{
+              aspectRatio: aspectRatio,
+              backgroundColor: bgColor,
+            }}
+          >
             <div
-              className="relative shadow-2xl rounded-xl"
-              style={{
-                aspectRatio: aspectRatio,
-                backgroundColor: bgColor,
-                maxWidth: "100%",
-                maxHeight: "100%",
-                height: "90%",
-                width: "auto",
-              }}
+              className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-center"
+              style={{ color: fgColor }}
             >
-              <div
-                className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-center"
-                style={{ color: fgColor }}
-              >
-                <Ratio className="h-8 w-8" />
-                <p className="text-xl font-bold font-mono tracking-tighter">
-                  {aspectRatio.replace(' / ', ':')}
-                </p>
-                <p className="text-xs text-muted-foreground" style={{ color: fgColor, opacity: 0.7 }}>
-                  Your content here
-                </p>
-              </div>
+              <Ratio className="h-8 w-8" />
+              <p className="text-xl font-bold font-mono tracking-tighter">
+                {aspectRatio.replace(' / ', ':')}
+              </p>
+              <p className="text-xs text-muted-foreground" style={{ color: fgColor, opacity: 0.7 }}>
+                Your content here
+              </p>
             </div>
           </div>
         </main>
@@ -164,12 +152,8 @@ export default function AspectWeaverPage() {
                 ))}
              </div>
              <div className="flex items-center gap-2 pl-2 border-l">
-                <div className="relative h-8 w-8 rounded-md border border-input" style={{ backgroundColor: bgColor }}>
-                    <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} className="absolute inset-0 w-full h-full cursor-pointer opacity-0" />
-                </div>
-                 <div className="relative h-8 w-8 rounded-md border border-input" style={{ backgroundColor: fgColor }}>
-                    <input type="color" value={fgColor} onChange={(e) => setFgColor(e.target.value)} className="absolute inset-0 w-full h-full cursor-pointer opacity-0" />
-                </div>
+                <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} className="w-8 h-8" />
+                <input type="color" value={fgColor} onChange={(e) => setFgColor(e.target.value)} className="w-8 h-8" />
              </div>
            </div>
         </footer>
