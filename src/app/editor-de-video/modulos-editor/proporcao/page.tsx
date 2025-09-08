@@ -22,7 +22,7 @@ export default function AspectWeaver() {
   const [fgColor, setFgColor] = useState("#ffffff");
 
   return (
-    <div className="flex flex-col w-full bg-background font-body text-foreground h-full overflow-hidden">
+    <div className="flex flex-col w-full bg-background font-body text-foreground h-screen overflow-hidden">
       <div className="flex flex-1 md:grid md:grid-cols-[288px_1fr] md:divide-x min-h-0">
         <aside className="hidden shrink-0 bg-card p-6 md:flex md:flex-col md:border-r">
           <div className="space-y-8">
@@ -95,16 +95,16 @@ export default function AspectWeaver() {
           </div>
         </aside>
 
-        <main className="flex flex-col flex-1 overflow-hidden bg-muted/50 md:grid md:grid-rows-[auto_1fr]">
+        <main className="flex flex-col flex-1 bg-muted/50 md:grid md:grid-rows-[auto_1fr] min-h-0">
           <header className="sticky top-0 z-10 flex items-center border-b bg-background/80 p-4 backdrop-blur-sm md:hidden">
             <Wand2 className="h-6 w-6 text-primary" />
             <h1 className="ml-2 text-xl font-bold font-headline">Aspect Weaver</h1>
           </header>
           {/* Main visualization area */}
-          <div className="flex-1 p-4 grid place-items-center overflow-hidden">
+          <div className="flex-1 p-4 grid place-items-center overflow-hidden min-h-0">
             {/* Canvas for aspect ratio preview */}
             <div
-              className="relative w-full h-full max-w-full max-h-full transition-all duration-300 ease-in-out shadow-2xl rounded-xl"
+              className="relative max-w-full max-h-full transition-all duration-300 ease-in-out shadow-2xl rounded-xl"
               style={{
                 aspectRatio: aspectRatio,
                 backgroundColor: bgColor,
