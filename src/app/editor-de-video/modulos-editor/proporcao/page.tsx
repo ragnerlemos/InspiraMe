@@ -103,7 +103,7 @@ export default function AspectWeaver() {
           </header>
           {/* Main visualization area */}
           <div className={cn(
-              "w-full h-full overflow-auto px-4 md:px-8",
+              "flex flex-1 w-full overflow-auto px-4 md:px-8",
               isVerticalAspectRatio ? "py-4" : "py-8 md:py-12"
           )}>
             {/* Canvas for aspect ratio preview */}
