@@ -102,7 +102,7 @@ export default function AspectWeaver() {
           <div className="w-full h-full p-4 md:p-8 overflow-hidden">
             {/* Canvas for aspect ratio preview */}
             <div
-              className="relative mx-auto my-auto max-w-full max-h-full transition-all duration-300 ease-in-out shadow-2xl rounded-xl"
+              className="relative mx-auto my-auto max-w-full max-h-full transition-all duration-300 ease-in-out shadow-2xl rounded-xl p-[10px]"
               style={{
                 aspectRatio: aspectRatio,
                 backgroundColor: bgColor,
