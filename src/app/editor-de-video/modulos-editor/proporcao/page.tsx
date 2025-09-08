@@ -82,11 +82,10 @@ export default function AspectWeaverPage() {
   
   const CanvasPreview = () => (
      <div
-      className="relative transition-all duration-300 ease-in-out shadow-2xl rounded-xl w-full h-full max-w-full max-h-full"
+      className="relative transition-all duration-300 ease-in-out shadow-2xl rounded-xl max-w-full max-h-full"
       style={{
         aspectRatio: aspectRatio,
         backgroundColor: bgColor,
-        margin: 'auto' // Garante centralização dentro do grid cell
       }}
     >
       <div
@@ -105,12 +104,14 @@ export default function AspectWeaverPage() {
   );
 
   return (
-    <div className="h-screen w-screen bg-background text-foreground">
+    <div className="h-screen w-screen bg-background text-foreground overflow-hidden">
       {/* Layout para telas médias e maiores (desktop) */}
-      <div className="hidden md:grid md:grid-cols-[288px_1fr] h-full overflow-hidden">
+      <div className="hidden md:grid md:grid-cols-[288px_1fr] h-full">
         <Controls />
-        <main className="w-full h-full overflow-hidden p-6 flex justify-center items-center">
-            <CanvasPreview />
+        <main className="w-full h-full overflow-hidden p-6">
+             <div className="w-full h-full border-2 border-ring rounded-lg flex items-center justify-center p-4">
+                <CanvasPreview />
+             </div>
         </main>
       </div>
 
@@ -120,8 +121,10 @@ export default function AspectWeaverPage() {
           <Wand2 className="h-5 w-5" />
           <h1 className="text-lg font-bold tracking-tight">Aspect Weaver</h1>
         </header>
-        <main className="flex-1 w-full overflow-hidden p-6 min-h-0 flex justify-center items-center">
-            <CanvasPreview />
+        <main className="flex-1 w-full p-4 overflow-hidden min-h-0">
+           <div className="w-full h-full border-2 border-ring rounded-lg flex items-center justify-center p-4">
+              <CanvasPreview />
+           </div>
         </main>
         <footer className="border-t p-2 flex-shrink-0 bg-background z-10">
            <div className="flex justify-around items-center h-14">
