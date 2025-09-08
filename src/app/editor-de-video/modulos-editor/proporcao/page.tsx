@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -5,6 +6,7 @@ import { Ratio, Wand2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { Slider } from "@/components/ui/slider";
 
 const aspectRatios = [
   { label: "16:9", value: "16 / 9" },
@@ -54,9 +56,12 @@ export default function AspectWeaver() {
 
             {/* Escala */}
             <div className="space-y-4">
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                ESCALA DO CANVAS
-              </h2>
+              <div className="flex justify-between items-center">
+                  <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                    ESCALA DO CANVAS
+                  </h2>
+                  <span className="text-sm font-mono text-muted-foreground">{Math.round(scale * 100)}%</span>
+              </div>
               <div className="grid grid-cols-3 gap-2">
                 {[1, 1.1, 1.2].map((value) => (
                   <Button
@@ -68,6 +73,13 @@ export default function AspectWeaver() {
                   </Button>
                 ))}
               </div>
+              <Slider
+                value={[scale]}
+                onValueChange={(values) => setScale(values[0])}
+                min={0.5}
+                max={1.5}
+                step={0.01}
+              />
             </div>
 
             {/* Cores */}
@@ -177,9 +189,12 @@ export default function AspectWeaver() {
 
               {/* Escala (MOBILE) */}
               <div className="space-y-4">
-                <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                  ESCALA DO CANVAS
-                </h2>
+                <div className="flex justify-between items-center">
+                    <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                      ESCALA DO CANVAS
+                    </h2>
+                    <span className="text-sm font-mono text-muted-foreground">{Math.round(scale * 100)}%</span>
+                </div>
                 <div className="flex space-x-2 overflow-x-auto pb-2">
                   {[1, 1.1, 1.2].map((value) => (
                     <Button
@@ -192,6 +207,13 @@ export default function AspectWeaver() {
                     </Button>
                   ))}
                 </div>
+                <Slider
+                  value={[scale]}
+                  onValueChange={(values) => setScale(values[0])}
+                  min={0.5}
+                  max={1.5}
+                  step={0.01}
+                />
               </div>
 
               <div className="space-y-4">
