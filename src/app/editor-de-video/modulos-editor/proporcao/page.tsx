@@ -1,10 +1,10 @@
+
 "use client";
 
 import { useState } from "react";
 import { Ratio, Wand2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
 
 const aspectRatios = [
   { label: "16:9", value: "16 / 9" },
@@ -19,8 +19,6 @@ export default function AspectWeaver() {
   const [aspectRatio, setAspectRatio] = useState("9 / 16");
   const [bgColor, setBgColor] = useState("#333333");
   const [fgColor, setFgColor] = useState("#ffffff");
-  
-  const isVerticalAspectRatio = aspectRatio === "1 / 1" || aspectRatio === "9 / 16";
 
   return (
     <div className="flex h-dvh w-full bg-background font-body text-foreground">
@@ -102,10 +100,7 @@ export default function AspectWeaver() {
             <h1 className="ml-2 text-xl font-bold font-headline">Aspect Weaver</h1>
           </header>
           {/* Main visualization area */}
-          <div className={cn(
-              "flex flex-1 w-full overflow-auto px-4 md:px-8",
-              isVerticalAspectRatio ? "py-4" : "py-8 md:py-12"
-          )}>
+          <div className="w-full h-full p-4 md:p-8 overflow-auto">
             {/* Canvas for aspect ratio preview */}
             <div
               className="relative mx-auto my-auto max-w-full max-h-full transition-all duration-300 ease-in-out shadow-2xl rounded-xl p-[10px]"
