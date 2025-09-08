@@ -101,11 +101,11 @@ export default function AspectWeaver() {
             <h1 className="ml-2 text-xl font-bold font-headline">Aspect Weaver</h1>
           </header>
           {/* Main visualization area */}
-          <div className="relative overflow-hidden p-[5px]">
+          <div className="relative overflow-hidden">
             {/* Canvas for aspect ratio preview */}
             <div
               className={cn(
-                "absolute inset-0 m-auto max-w-full max-h-full transition-all duration-300 ease-in-out shadow-2xl rounded-xl"
+                "absolute m-auto max-w-full max-h-full transition-all duration-300 ease-in-out shadow-2xl rounded-xl inset-[5px]"
               )}
               style={{
                 aspectRatio: aspectRatio,
