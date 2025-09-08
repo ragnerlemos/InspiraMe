@@ -22,20 +22,8 @@ export default function AspectWeaver() {
   const [fgColor, setFgColor] = useState("#ffffff");
 
   const canvasWidth = useMemo(() => {
-    switch (aspectRatio) {
-      case "9 / 16":
-        return "40%";
-      case "1 / 1":
-        return "65%";
-      case "16 / 9":
-      case "21 / 9":
-      case "4 / 3":
-      case "3 / 2":
-        return "80%";
-      default:
-        return "70%";
-    }
-  }, [aspectRatio]);
+    return "70%";
+  }, []);
 
   return (
     <div className="flex flex-col w-full bg-background font-body text-foreground h-screen overflow-hidden">
