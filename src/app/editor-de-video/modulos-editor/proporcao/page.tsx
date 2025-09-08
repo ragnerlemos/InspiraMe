@@ -22,8 +22,8 @@ export default function AspectWeaver() {
   const [fgColor, setFgColor] = useState("#ffffff");
 
   return (
-    <div className="flex flex-col w-full bg-background font-body text-foreground h-full overflow-hidden">
-      <div className="flex flex-1 md:grid md:grid-cols-[288px_1fr] md:divide-x min-h-0 h-full">
+    <div className="flex flex-col w-full bg-background font-body text-foreground h-[calc(100vh-4rem)] overflow-hidden">
+      <div className="flex flex-1 md:grid md:grid-cols-[288px_1fr] h-full min-h-0">
         <aside className="hidden shrink-0 bg-card p-6 md:flex md:flex-col md:border-r">
           <div className="space-y-8">
             <div className="flex items-center gap-3">
@@ -101,7 +101,7 @@ export default function AspectWeaver() {
             <h1 className="ml-2 text-xl font-bold font-headline">Aspect Weaver</h1>
           </header>
           {/* Main visualization area */}
-          <div className="w-full h-full flex justify-center items-start p-[10px] min-h-0">
+          <div className="w-full h-full flex justify-center items-start p-[10px]">
             {/* Canvas for aspect ratio preview */}
             <div
               className={cn(
