@@ -117,7 +117,7 @@ export default function AspectWeaver() {
             <h1 className="ml-2 text-xl font-bold font-headline">Aspect Weaver</h1>
           </header>
           {/* Main visualization area */}
-          <div className="overflow-hidden grid place-items-center p-2">
+          <div className="overflow-hidden grid justify-items-center items-start pt-[5px] px-2">
             {/* Canvas for aspect ratio preview */}
             <div
               className="relative transition-all duration-300 ease-in-out shadow-2xl rounded-xl max-w-full max-h-full"
