@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -141,9 +142,9 @@ export default function AspectWeaver() {
               style={{
                 aspectRatio: aspectRatio,
                 backgroundColor: bgColor,
-                transform: `scale(${scale})`, // aplica escala
-                transformOrigin: "top center", // 👈 fixa no topo
-                width: "min(90%, 800px)",
+                transform: `scale(${scale})`,
+                transformOrigin: "top center",
+                width: "clamp(200px, 50vw, 500px)",
                 height: "auto",
               }}
             >
