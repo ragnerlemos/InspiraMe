@@ -370,38 +370,28 @@ export function EditorClient() {
   );
 
 
-  // Layout para Mobile
-  if (!isDesktop) {
-    return (
-      <div className="flex flex-col h-full w-full">
-        <div className="flex-1 min-h-0 flex items-center justify-center">
-            <div className="w-full h-full max-w-[900px] flex justify-center items-center p-4 md:p-8">
-                <VisualizacaoEditor {...editorProps} />
-            </div>
-        </div>
-        <div className="w-full h-auto md:hidden">
-          {controlsPanel}
-        </div>
-      </div>
-    );
-  }
-
-  // Layout para Desktop
+  // Layout para Mobile e Desktop
   return (
     <PanelGroup direction="horizontal" className="h-full w-full">
-        <Panel defaultSize={65} minSize={40}>
-            <div className="flex-1 min-h-0 flex items-center justify-center">
-              <div className="w-full h-full max-w-[900px] flex justify-center items-center p-4 md:p-8">
-                <VisualizacaoEditor {...editorProps} />
+        <Panel defaultSize={100} minSize={30} className={!isDesktop ? "md:!flex-none" : ""}>
+             <div className="relative w-full h-full flex flex-col">
+                <div className="flex-1 min-h-0 flex items-center justify-center bg-muted/40">
+                    <div className="w-full h-full max-w-[900px] flex justify-center items-center p-4 md:p-8">
+                        <VisualizacaoEditor {...editorProps} />
+                    </div>
+                </div>
+                {/* O painel de controles para mobile é renderizado aqui e controlado internamente */}
+                {!isDesktop && controlsPanel}
+            </div>
+        </Panel>
+        {isDesktop && <PanelResizeHandle />}
+        {isDesktop && (
+          <Panel defaultSize={35} minSize={30} maxSize={45}>
+              <div className="h-full w-full border-l bg-background">
+                   {controlsPanel}
               </div>
-            </div>
-        </Panel>
-        <PanelResizeHandle />
-        <Panel defaultSize={35} minSize={30} maxSize={45}>
-            <div className="h-full w-full border-l bg-background">
-                 {controlsPanel}
-            </div>
-        </Panel>
+          </Panel>
+        )}
     </PanelGroup>
   );
 }

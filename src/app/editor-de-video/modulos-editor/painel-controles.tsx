@@ -18,7 +18,9 @@ export function PainelControles(props: PainelControlesProps) {
     const { width } = useWindowSize();
     const isDesktop = width >= 768; // Tailwind's md breakpoint
     
-    const handlePanelChange = (panel: 'text' | 'style' | 'background' | null) => {
+    const handlePanelChange = (panel: 'text' | 'style' | 'background') => {
+        // No mobile, clicar no mesmo botão não deve fechar o painel.
+        // O fechamento será feito pelo botão "voltar" ou deslizando.
         setActivePanel(panel);
     };
 
@@ -54,11 +56,19 @@ export function PainelControles(props: PainelControlesProps) {
 
     const mainToolbar = (
         <div className="flex h-16 items-center justify-around px-2 border-b">
-            <BotaoRecurso icon={Type} label="Texto" onClick={() => handlePanelChange('text')} isActive={activePanel === 'text'} />
-            <BotaoRecurso icon={Palette} label="Estilo" onClick={() => handlePanelChange('style')} isActive={activePanel === 'style'} />
-            <BotaoRecurso icon={ImagePlus} label="Fundo" onClick={() => handlePanelChange('background')} isActive={activePanel === 'background'}/>
+            <BotaoRecurso icon={Type} label="Texto" onClick={() => handlePanelChange('text')} isActive={isDesktop && activePanel === 'text'} />
+            <BotaoRecurso icon={Palette} label="Estilo" onClick={() => handlePanelChange('style')} isActive={isDesktop && activePanel === 'style'} />
+            <BotaoRecurso icon={ImagePlus} label="Fundo" onClick={() => handlePanelChange('background')} isActive={isDesktop && activePanel === 'background'}/>
         </div>
     );
+    
+    const mobileToolbar = (
+         <div className="flex h-16 items-center justify-around px-2 border-t bg-background">
+            <BotaoRecurso icon={Type} label="Texto" onClick={() => setActivePanel('text')} isActive={activePanel === 'text'} />
+            <BotaoRecurso icon={Palette} label="Estilo" onClick={() => setActivePanel('style')} isActive={activePanel === 'style'} />
+            <BotaoRecurso icon={ImagePlus} label="Fundo" onClick={() => setActivePanel('background')} isActive={activePanel === 'background'}/>
+        </div>
+    )
 
     // Layout para Desktop
     if (isDesktop) {
@@ -66,7 +76,10 @@ export function PainelControles(props: PainelControlesProps) {
             <div className="flex flex-col h-full">
                 {mainToolbar}
                 <div className="flex-1 overflow-y-auto">
-                    {renderPanelContent()}
+                    {activePanel === 'text' && <PainelTexto {...props} />}
+                    {activePanel === 'style' && <PainelEstilo {...props} onClose={() => setActivePanel(null)} />}
+                    {activePanel === 'background' && <PainelFundo {...props} onClose={() => setActivePanel(null)} />}
+                    {!activePanel && <div className="p-4 text-center text-muted-foreground">Selecione uma ferramenta para começar a editar.</div>}
                 </div>
             </div>
         )
@@ -74,34 +87,37 @@ export function PainelControles(props: PainelControlesProps) {
 
     // Layout para Mobile com Sheet
     return (
-        <Sheet open={!!activePanel} onOpenChange={(open) => !open && setActivePanel(null)}>
-            {/* O toolbar agora está embutido e será controlado pelo layout flex */}
-            <div className="fixed bottom-0 left-0 z-10 w-full border-t bg-background md:hidden">
-                {mainToolbar}
+        <div className="md:hidden">
+            {/* O toolbar agora fica fixo na parte inferior da tela */}
+            <div className="fixed bottom-0 left-0 z-10 w-full">
+                {mobileToolbar}
             </div>
 
-            <SheetContent 
-                side="bottom" 
-                className="h-auto max-h-[80vh] flex flex-col bg-background/70 backdrop-blur-sm"
-                onInteractOutside={(e) => {
-                    // Impede o fechamento do seletor de cores ao interagir com ele.
-                    if (e.target instanceof HTMLElement && e.target.getAttribute('type') === 'color') {
-                        e.preventDefault();
-                    }
-                }}
-            >
-                 <SheetHeader className="mb-4">
-                    <SheetTitle className="flex items-center">
-                         <Button variant="ghost" size="icon" className="mr-2" onClick={() => setActivePanel(null)}>
-                             <ArrowLeft className="h-5 w-5" />
-                         </Button>
-                         {getPanelTitle()}
-                    </SheetTitle>
-                </SheetHeader>
-                <div className="overflow-y-auto flex-1">
-                    {renderPanelContent()}
-                </div>
-            </SheetContent>
-        </Sheet>
+            <Sheet open={!!activePanel} onOpenChange={(open) => !open && setActivePanel(null)}>
+                <SheetContent 
+                    side="bottom" 
+                    className="h-auto max-h-[85vh] flex flex-col bg-background/80 backdrop-blur-sm"
+                    onInteractOutside={(e) => {
+                        // Impede o fechamento ao interagir com o seletor de cores.
+                        const target = e.target as HTMLElement;
+                        if (target.closest('[type="color"]') || target.closest('.rcs-popover')) {
+                            e.preventDefault();
+                        }
+                    }}
+                >
+                    <SheetHeader className="mb-2">
+                        <SheetTitle className="flex items-center">
+                            <Button variant="ghost" size="icon" className="mr-2" onClick={() => setActivePanel(null)}>
+                                <ArrowLeft className="h-5 w-5" />
+                            </Button>
+                            {getPanelTitle()}
+                        </SheetTitle>
+                    </SheetHeader>
+                    <div className="overflow-y-auto flex-1">
+                        {renderPanelContent()}
+                    </div>
+                </SheetContent>
+            </Sheet>
+        </div>
     );
 }

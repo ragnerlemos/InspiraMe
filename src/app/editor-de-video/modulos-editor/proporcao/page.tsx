@@ -1,4 +1,3 @@
-
 // src/app/editor-de-video/modulos-editor/proporcao/page.tsx
 "use client";
 
@@ -27,25 +26,24 @@ export default function AspectWeaver() {
             setFgColor={setFgColor}
         />
 
-        <div className="flex-1 flex flex-col min-h-0">
-          <PreviewCanva 
-              aspectRatio={aspectRatio}
-              bgColor={bgColor}
-              fgColor={fgColor}
-              scale={scale}
-          />
-        </div>
+        <PreviewCanva 
+            aspectRatio={aspectRatio}
+            bgColor={bgColor}
+            fgColor={fgColor}
+            scale={scale}
+        />
+
+        <MobileToolbar
+            aspectRatio={aspectRatio}
+            setAspectRatio={setAspectRatio}
+            scale={scale}
+            setScale={setScale}
+            bgColor={bgColor}
+            setBgColor={setBgColor}
+            fgColor={fgColor}
+            setFgColor={setFgColor}
+        />
       </div>
-      <MobileToolbar
-          aspectRatio={aspectRatio}
-          setAspectRatio={setAspectRatio}
-          scale={scale}
-          setScale={setScale}
-          bgColor={bgColor}
-          setBgColor={setBgColor}
-          fgColor={fgColor}
-          setFgColor={setFgColor}
-      />
     </div>
   );
 }
