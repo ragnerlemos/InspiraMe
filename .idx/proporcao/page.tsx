@@ -26,25 +26,23 @@ export default function AspectWeaver() {
             setFgColor={setFgColor}
         />
 
-        <div className="flex flex-col flex-1 h-full min-h-0">
-            <PreviewCanva 
-                aspectRatio={aspectRatio}
-                bgColor={bgColor}
-                fgColor={fgColor}
-                scale={scale}
-            />
+        <PreviewCanva 
+            aspectRatio={aspectRatio}
+            bgColor={bgColor}
+            fgColor={fgColor}
+            scale={scale}
+        />
 
-            <MobileToolbar
-                aspectRatio={aspectRatio}
-                setAspectRatio={setAspectRatio}
-                scale={scale}
-                setScale={setScale}
-                bgColor={bgColor}
-                setBgColor={setBgColor}
-                fgColor={fgColor}
-                setFgColor={setFgColor}
-            />
-        </div>
+        <MobileToolbar
+            aspectRatio={aspectRatio}
+            setAspectRatio={setAspectRatio}
+            scale={scale}
+            setScale={setScale}
+            bgColor={bgColor}
+            setBgColor={setBgColor}
+            fgColor={fgColor}
+            setFgColor={setFgColor}
+        />
       </div>
     </div>
   );
