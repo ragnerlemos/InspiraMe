@@ -1,4 +1,3 @@
-
 // src/app/editor-de-video/modulos-editor/proporcao/components/preview-canva.tsx
 "use client";
 
@@ -14,16 +13,19 @@ interface PreviewCanvaProps {
 
 export function PreviewCanva({ aspectRatio, bgColor, fgColor, scale }: PreviewCanvaProps) {
   return (
-    <main className="w-full h-full p-4 flex items-start justify-center overflow-hidden">
+    <main className="w-full h-full p-4 flex items-center justify-center overflow-hidden">
       <div
         className={cn(
-            "relative transition-all duration-300 ease-in-out shadow-2xl rounded-xl w-full h-full max-w-full max-h-full"
+            "relative transition-all duration-300 ease-in-out shadow-2xl rounded-xl"
         )}
         style={{
             aspectRatio: aspectRatio,
             backgroundColor: bgColor,
             transform: `scale(${scale})`,
             transformOrigin: "center center",
+            width: '100%',
+            maxWidth: '100%',
+            maxHeight: '100%'
         }}
       >
         <div className="flex items-center justify-center h-full p-4">
