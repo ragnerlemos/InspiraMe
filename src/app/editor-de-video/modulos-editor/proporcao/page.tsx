@@ -40,23 +40,12 @@ export default function AspectWeaver() {
         {/* Área de preview que respeita o espaço do menu */}
         <div className="flex-1 relative flex items-center justify-center overflow-hidden">
           <div className="w-full h-full flex items-center justify-center p-2">
-            <div
-              className="bg-background rounded-md overflow-hidden shadow-lg"
-              style={{
-                aspectRatio: aspectRatio.replace(/\s/g, ''),
-                maxWidth: "100%",
-                maxHeight: "100%",
-                width: "auto",
-                height: "auto",
-              }}
-            >
-              <PreviewCanva
-                aspectRatio={aspectRatio}
-                bgColor={bgColor}
-                fgColor={fgColor}
-                scale={scale}
-              />
-            </div>
+            <PreviewCanva
+              aspectRatio={aspectRatio}
+              bgColor={bgColor}
+              fgColor={fgColor}
+              scale={scale}
+            />
           </div>
         </div>
 
