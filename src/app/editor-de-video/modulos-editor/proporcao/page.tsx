@@ -127,39 +127,37 @@ export default function AspectWeaver() {
           </div>
         </aside>
 
-        <main className="w-full h-full flex items-center justify-center">
-            <div className="w-full h-full p-4 flex items-center justify-center">
-                <div
-                className={cn(
-                    "relative transition-all duration-300 ease-in-out shadow-2xl rounded-xl"
-                )}
-                style={{
-                    aspectRatio: aspectRatio,
-                    backgroundColor: bgColor,
-                    transform: `scale(${scale})`,
-                    transformOrigin: "center center",
-                    maxWidth: '100%',
-                    maxHeight: '100%',
-                }}
+        <main className="w-full h-full p-4 flex items-start justify-center">
+            <div
+            className={cn(
+                "relative transition-all duration-300 ease-in-out shadow-2xl rounded-xl"
+            )}
+            style={{
+                aspectRatio: aspectRatio,
+                backgroundColor: bgColor,
+                transform: `scale(${scale})`,
+                transformOrigin: "top center",
+                maxWidth: '100%',
+                maxHeight: '100%',
+            }}
+            >
+            <div className="flex items-center justify-center h-full p-4">
+                <div className="text-center space-y-2">
+                <Ratio
+                    className="mx-auto h-12 w-12 opacity-50"
+                    style={{ color: fgColor }}
+                />
+                <p
+                    className="font-semibold text-xl font-mono"
+                    style={{ color: fgColor }}
                 >
-                <div className="flex items-center justify-center h-full p-4">
-                    <div className="text-center space-y-2">
-                    <Ratio
-                        className="mx-auto h-12 w-12 opacity-50"
-                        style={{ color: fgColor }}
-                    />
-                    <p
-                        className="font-semibold text-xl font-mono"
-                        style={{ color: fgColor }}
-                    >
-                        {aspectRatio.replace(/\s\/\s/g, ":")}
-                    </p>
-                    <p className="text-sm opacity-75" style={{ color: fgColor }}>
-                        Seu conteúdo aqui
-                    </p>
-                    </div>
+                    {aspectRatio.replace(/\s\/\s/g, ":")}
+                </p>
+                <p className="text-sm opacity-75" style={{ color: fgColor }}>
+                    Seu conteúdo aqui
+                </p>
                 </div>
-                </div>
+            </div>
             </div>
         </main>
 
