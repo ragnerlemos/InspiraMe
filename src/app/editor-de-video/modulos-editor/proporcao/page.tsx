@@ -5,12 +5,16 @@ import { useState } from "react";
 import { Sidebar } from "./components/sidebar";
 import { PreviewCanva } from "./components/preview-canva";
 import { MobileToolbar } from "./components/mobile-toolbar";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { SlidersHorizontal } from "lucide-react";
 
 export default function AspectWeaver() {
   const [aspectRatio, setAspectRatio] = useState("9 / 16");
   const [bgColor, setBgColor] = useState("#333333");
   const [fgColor, setFgColor] = useState("#ffffff");
   const [scale, setScale] = useState(1); // escala inicial 100%
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   return (
     <div className="flex h-screen w-full flex-col bg-background font-body text-foreground">
@@ -26,25 +30,46 @@ export default function AspectWeaver() {
           setFgColor={setFgColor}
         />
         <div className="flex flex-1 flex-col min-h-0">
-          {/* A <main> tag foi trocada por uma <div> para maior controle do layout flex */}
-          <div className="flex-1 relative p-4 flex justify-center items-center overflow-hidden">
-            <PreviewCanva
-              aspectRatio={aspectRatio}
-              bgColor={bgColor}
-              fgColor={fgColor}
-              scale={scale}
-            />
+          <main className="flex-1 relative p-4 flex justify-center items-center overflow-hidden">
+             <div className="w-full h-full max-w-full max-h-full flex items-center justify-center">
+                <PreviewCanva
+                  aspectRatio={aspectRatio}
+                  bgColor={bgColor}
+                  fgColor={fgColor}
+                  scale={scale}
+                />
+            </div>
+          </main>
+          
+          {/* Botão e Sheet para Mobile */}
+          <div className="md:hidden">
+             <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+                <SheetTrigger asChild>
+                    <Button
+                        size="icon"
+                        className="absolute bottom-6 right-6 rounded-full h-14 w-14 shadow-lg"
+                    >
+                        <SlidersHorizontal className="h-6 w-6" />
+                        <span className="sr-only">Abrir Controles</span>
+                    </Button>
+                </SheetTrigger>
+                <SheetContent 
+                    side="bottom" 
+                    className="h-auto max-h-[85vh] flex flex-col bg-background/90 backdrop-blur-sm rounded-t-lg"
+                >
+                    <MobileToolbar
+                        aspectRatio={aspectRatio}
+                        setAspectRatio={setAspectRatio}
+                        scale={scale}
+                        setScale={setScale}
+                        bgColor={bgColor}
+                        setBgColor={setBgColor}
+                        fgColor={fgColor}
+                        setFgColor={setFgColor}
+                    />
+                </SheetContent>
+            </Sheet>
           </div>
-          <MobileToolbar
-            aspectRatio={aspectRatio}
-            setAspectRatio={setAspectRatio}
-            scale={scale}
-            setScale={setScale}
-            bgColor={bgColor}
-            setBgColor={setBgColor}
-            fgColor={fgColor}
-            setFgColor={setFgColor}
-          />
         </div>
       </div>
     </div>

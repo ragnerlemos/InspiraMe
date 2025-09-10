@@ -36,7 +36,7 @@ export function MobileToolbar({
     setFgColor,
 }: MobileToolbarProps) {
     return (
-        <div className="shrink-0 border-t bg-card p-4 md:hidden">
+        <div className="bg-card p-4">
             <div className="mx-auto max-w-sm space-y-8 md:max-w-none">
                 <div className="space-y-4">
                     <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
