@@ -38,7 +38,7 @@ export function Sidebar({
 }: SidebarProps) {
     return (
         <aside className="hidden shrink-0 bg-card p-6 md:flex md:flex-col md:border-r">
-            <div className="flex flex-1 flex-col justify-between">
+            <div className="flex flex-1 flex-col">
                 <div className="space-y-8">
                     <div className="flex items-center gap-3">
                         <Wand2 className="h-8 w-8 text-primary" />
@@ -96,6 +96,9 @@ export function Sidebar({
                         />
                     </div>
                 </div>
+
+                {/* Flexible spacer */}
+                <div className="flex-1" />
 
                 {/* Cores */}
                 <div className="space-y-4">
