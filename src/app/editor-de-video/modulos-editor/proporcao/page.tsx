@@ -31,14 +31,12 @@ export default function AspectWeaver() {
         />
         <div className="flex flex-1 flex-col min-h-0">
           <main className="flex-1 relative p-4 flex justify-center items-center overflow-hidden">
-             <div className="w-full h-full max-w-full max-h-full flex items-center justify-center">
-                <PreviewCanva
-                  aspectRatio={aspectRatio}
-                  bgColor={bgColor}
-                  fgColor={fgColor}
-                  scale={scale}
-                />
-            </div>
+            <PreviewCanva
+              aspectRatio={aspectRatio}
+              bgColor={bgColor}
+              fgColor={fgColor}
+              scale={scale}
+            />
           </main>
           
           {/* Botão e Sheet para Mobile */}
