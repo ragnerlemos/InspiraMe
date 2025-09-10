@@ -13,7 +13,7 @@ export default function AspectWeaver() {
   const [aspectRatio, setAspectRatio] = useState("9 / 16");
   const [bgColor, setBgColor] = useState("#333333");
   const [fgColor, setFgColor] = useState("#ffffff");
-  const [scale, setScale] = useState(1); // escala inicial 100%
+  const [scale, setScale] = useState(1);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   return (
@@ -30,7 +30,7 @@ export default function AspectWeaver() {
           setFgColor={setFgColor}
         />
         <div className="flex flex-1 flex-col min-h-0">
-          <main className="flex-1 relative flex justify-center items-center overflow-hidden">
+          <main className="flex-1 relative flex justify-center items-center p-4">
             <PreviewCanva
               aspectRatio={aspectRatio}
               bgColor={bgColor}

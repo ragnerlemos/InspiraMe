@@ -17,14 +17,14 @@ export function PreviewCanva({ aspectRatio, bgColor, fgColor, scale }: PreviewCa
   const canvasStyle: React.CSSProperties = {
     aspectRatio: aspectRatio,
     backgroundColor: bgColor,
-    transform: `scale(${scale * 0.95})`, // Multiplica a escala do usuário por 0.95 para criar uma margem
+    transform: `scale(${scale})`,
     transformOrigin: "center center",
   };
 
   return (
     <div
       className={cn(
-        "relative transition-all duration-300 ease-in-out shadow-2xl rounded-xl max-w-full max-h-full"
+        "relative transition-all duration-300 ease-in-out shadow-2xl rounded-xl w-full h-full max-w-full max-h-full"
       )}
       style={canvasStyle}
     >
