@@ -38,63 +38,66 @@ export function Sidebar({
 }: SidebarProps) {
     return (
         <aside className="hidden shrink-0 bg-card p-6 md:flex md:flex-col md:border-r">
-            <div className="flex flex-1 flex-col justify-between">
-                <div className="space-y-8">
-                    <div className="flex items-center gap-3">
-                        <Wand2 className="h-8 w-8 text-primary" />
-                        <h1 className="text-2xl font-bold font-headline">Aspect Weaver</h1>
-                    </div>
-
-                    {/* Proporção */}
-                    <div className="space-y-4">
-                        <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-                            PROPORÇÃO DA TELA
-                        </h2>
-                        <div className="grid grid-cols-2 gap-2">
-                            {aspectRatios.map((ratio) => (
-                                <Button
-                                    key={ratio.value}
-                                    onClick={() => setAspectRatio(ratio.value)}
-                                    variant={
-                                        aspectRatio === ratio.value ? "default" : "outline"
-                                    }
-                                    className="shrink-0"
-                                    size="sm"
-                                >
-                                    {ratio.label}
-                                </Button>
-                            ))}
+            <div className="flex flex-1 flex-col">
+                <div className="space-y-8 flex flex-col flex-1 justify-between">
+                    <div className="space-y-8">
+                        <div className="flex items-center gap-3">
+                            <Wand2 className="h-8 w-8 text-primary" />
+                            <h1 className="text-2xl font-bold font-headline">Aspect Weaver</h1>
                         </div>
-                    </div>
 
-                    {/* Escala */}
-                    <div className="space-y-4">
-                        <div className="flex justify-between items-center mb-2">
-                            <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                                ESCALA DO CANVAS
+                        {/* Proporção */}
+                        <div className="space-y-4">
+                            <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+                                PROPORÇÃO DA TELA
                             </h2>
-                            <span className="text-sm font-mono text-muted-foreground">{Math.round(scale * 100)}%</span>
+                            <div className="grid grid-cols-2 gap-2">
+                                {aspectRatios.map((ratio) => (
+                                    <Button
+                                        key={ratio.value}
+                                        onClick={() => setAspectRatio(ratio.value)}
+                                        variant={
+                                            aspectRatio === ratio.value ? "default" : "outline"
+                                        }
+                                        className="shrink-0"
+                                        size="sm"
+                                    >
+                                        {ratio.label}
+                                    </Button>
+                                ))}
+                            </div>
                         </div>
-                        <div className="grid grid-cols-3 gap-1">
-                            {[1, 1.1, 1.2].map((value) => (
-                                <Button
-                                    key={value}
-                                    onClick={() => setScale(value)}
-                                    variant={scale === value ? "default" : "outline"}
-                                    size="sm"
-                                >
-                                    {Math.round(value * 100)}%
-                                </Button>
-                            ))}
+
+                        {/* Escala */}
+                        <div className="space-y-4">
+                            <div className="flex justify-between items-center mb-2">
+                                <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                                    ESCALA DO CANVAS
+                                </h2>
+                                <span className="text-sm font-mono text-muted-foreground">{Math.round(scale * 100)}%</span>
+                            </div>
+                            <div className="grid grid-cols-3 gap-1">
+                                {[1, 1.1, 1.2].map((value) => (
+                                    <Button
+                                        key={value}
+                                        onClick={() => setScale(value)}
+                                        variant={scale === value ? "default" : "outline"}
+                                        size="sm"
+                                    >
+                                        {Math.round(value * 100)}%
+                                    </Button>
+                                ))}
+                            </div>
+                            <Slider
+                                value={[scale]}
+                                onValueChange={(values) => setScale(values[0])}
+                                min={0.5}
+                                max={2}
+                                step={0.01}
+                            />
                         </div>
-                        <Slider
-                            value={[scale]}
-                            onValueChange={(values) => setScale(values[0])}
-                            min={0.5}
-                            max={2}
-                            step={0.01}
-                        />
                     </div>
+
 
                     {/* Cores */}
                     <div className="space-y-4">
