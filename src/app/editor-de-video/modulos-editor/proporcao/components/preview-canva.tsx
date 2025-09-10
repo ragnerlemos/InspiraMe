@@ -22,8 +22,7 @@ export function PreviewCanva({ aspectRatio, bgColor, fgColor, scale }: PreviewCa
   };
 
   return (
-    // Adicionado um container para restringir o tamanho do canvas
-    <div className="w-full h-full max-w-full max-h-full flex items-center justify-center">
+    <div className="w-full h-full flex items-center justify-center p-4">
       <div
         className={cn(
           "relative transition-all duration-300 ease-in-out shadow-2xl rounded-xl max-w-full max-h-full"

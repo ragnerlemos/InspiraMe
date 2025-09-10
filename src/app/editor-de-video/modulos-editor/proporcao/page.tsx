@@ -30,7 +30,7 @@ export default function AspectWeaver() {
           setFgColor={setFgColor}
         />
         <div className="flex flex-1 flex-col min-h-0">
-          <main className="flex-1 relative p-4 flex justify-center items-center overflow-hidden">
+          <main className="flex-1 relative flex justify-center items-center overflow-hidden">
             <PreviewCanva
               aspectRatio={aspectRatio}
               bgColor={bgColor}
