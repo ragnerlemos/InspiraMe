@@ -19,7 +19,7 @@ export default function AspectWeaver() {
       <div className="flex flex-1 md:grid md:grid-cols-[288px_1fr] h-full min-h-0">
         
         {/* Sidebar só aparece no desktop */}
-        <div className="hidden md:block h-full">
+        <div className="hidden md:block">
           <Sidebar
             aspectRatio={aspectRatio}
             setAspectRatio={setAspectRatio}
