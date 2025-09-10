@@ -37,7 +37,7 @@ export function Sidebar({
     setFgColor,
 }: SidebarProps) {
     return (
-        <aside className="hidden shrink-0 bg-card p-6 md:flex md:flex-col md:border-r h-full">
+        <aside className="hidden md:flex md:flex-col shrink-0 bg-card p-6 border-r h-full">
             <div className="flex flex-col flex-1">
                 <div>
                     <div className="flex items-center gap-3 mb-8">
