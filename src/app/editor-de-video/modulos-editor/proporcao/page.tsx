@@ -19,7 +19,7 @@ export default function AspectWeaver() {
       <div className="flex flex-1 md:grid md:grid-cols-[288px_1fr] h-full min-h-0">
         
         {/* Sidebar só aparece no desktop */}
-        <div className="hidden md:block">
+        <div className="hidden md:block h-full">
           <Sidebar
             aspectRatio={aspectRatio}
             setAspectRatio={setAspectRatio}
@@ -33,12 +33,14 @@ export default function AspectWeaver() {
         </div>
 
         {/* Preview sempre no meio */}
-        <PreviewCanva 
-          aspectRatio={aspectRatio}
-          bgColor={bgColor}
-          fgColor={fgColor}
-          scale={scale}
-        />
+        <main className="w-full h-full flex items-center justify-center p-4">
+          <PreviewCanva 
+            aspectRatio={aspectRatio}
+            bgColor={bgColor}
+            fgColor={fgColor}
+            scale={scale}
+          />
+        </main>
 
         {/* Botão e menu só no mobile */}
         <div className="md:hidden fixed bottom-0 left-0 right-0 bg-background border-t border-border p-2 flex justify-center items-center">
