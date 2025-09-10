@@ -25,14 +25,15 @@ export default function AspectWeaver() {
           setFgColor={setFgColor}
         />
         <div className="flex flex-1 flex-col min-h-0">
-          <main className="flex-1 flex items-center justify-center overflow-hidden p-4">
+          {/* A <main> tag foi trocada por uma <div> para maior controle do layout flex */}
+          <div className="flex-1 relative p-4 flex justify-center items-center overflow-hidden">
             <PreviewCanva
               aspectRatio={aspectRatio}
               bgColor={bgColor}
               fgColor={fgColor}
               scale={scale}
             />
-          </main>
+          </div>
           <MobileToolbar
             aspectRatio={aspectRatio}
             setAspectRatio={setAspectRatio}

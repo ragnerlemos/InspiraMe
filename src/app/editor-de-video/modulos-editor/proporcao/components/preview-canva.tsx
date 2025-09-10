@@ -22,20 +22,23 @@ export function PreviewCanva({ aspectRatio, bgColor, fgColor, scale }: PreviewCa
   };
 
   return (
-    <div
-      className={cn(
-        "relative transition-all duration-300 ease-in-out shadow-2xl rounded-xl w-full h-full max-w-full max-h-full flex items-center justify-center"
-      )}
-      style={canvasStyle}
-    >
-      <div className="text-center space-y-2">
-        <Ratio className="mx-auto h-12 w-12 opacity-50" style={{ color: fgColor }} />
-        <p className="font-semibold text-xl font-mono" style={{ color: fgColor }}>
-          {aspectRatio.replace(/\s\/\s/g, ":")}
-        </p>
-        <p className="text-sm opacity-75" style={{ color: fgColor }}>
-          Seu conteúdo aqui
-        </p>
+    // Adicionado um container para restringir o tamanho do canvas
+    <div className="w-full h-full max-w-full max-h-full flex items-center justify-center">
+      <div
+        className={cn(
+          "relative transition-all duration-300 ease-in-out shadow-2xl rounded-xl w-full"
+        )}
+        style={canvasStyle}
+      >
+        <div className="text-center space-y-2 p-4">
+          <Ratio className="mx-auto h-12 w-12 opacity-50" style={{ color: fgColor }} />
+          <p className="font-semibold text-xl font-mono" style={{ color: fgColor }}>
+            {aspectRatio.replace(/\s\/\s/g, ":")}
+          </p>
+          <p className="text-sm opacity-75" style={{ color: fgColor }}>
+            Seu conteúdo aqui
+          </p>
+        </div>
       </div>
     </div>
   );
