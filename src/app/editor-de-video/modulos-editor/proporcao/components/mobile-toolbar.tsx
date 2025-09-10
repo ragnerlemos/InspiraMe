@@ -37,7 +37,7 @@ export function MobileToolbar({
     setFgColor,
 }: MobileToolbarProps) {
     return (
-        <div className="p-1 space-y-8">
+        <div className="p-4 space-y-8">
             <div className="space-y-4">
                 <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
                     PROPORÇÃO DA TELA
