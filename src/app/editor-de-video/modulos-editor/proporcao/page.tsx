@@ -13,8 +13,8 @@ export default function AspectWeaver() {
   const [scale, setScale] = useState(1);
   
   return (
-    <div className="flex flex-col w-full bg-background font-body text-foreground h-[calc(100vh-4rem)] overflow-hidden">
-      <div className="flex flex-1 md:grid md:grid-cols-[288px_1fr] h-full min-h-0">
+    <div className="flex flex-col w-full bg-background font-body text-foreground h-[calc(100vh-4rem)]">
+      <div className="flex-1 flex md:grid md:grid-cols-[288px_1fr] min-h-0">
         <Sidebar
           aspectRatio={aspectRatio}
           setAspectRatio={setAspectRatio}
