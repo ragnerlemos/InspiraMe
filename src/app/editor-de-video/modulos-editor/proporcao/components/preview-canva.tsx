@@ -18,8 +18,8 @@ export function PreviewCanva({
   scale,
 }: PreviewCanvaProps) {
   return (
-    <main className="w-full p-4 flex items-start justify-center overflow-hidden">
-     <div
+    <main className="w-full h-full p-4 flex items-start justify-center overflow-hidden">
+      <div
         style={{
           aspectRatio,
           backgroundColor: bgColor,
@@ -27,7 +27,7 @@ export function PreviewCanva({
           transformOrigin: "top center",
         }}
         className={cn(
-          "transition-all duration-300 ease-in-out shadow-2xl rounded-xl w-full"
+          "transition-all duration-300 ease-in-out shadow-2xl rounded-xl w-full md:h-[80vh] md:w-auto"
         )}
       >
         <div className="flex items-center justify-center h-full p-4">
