@@ -491,7 +491,7 @@ export function Sidebar({
     );
 
     return (
-        <aside className="hidden shrink-0 bg-card md:flex md:flex-col md:border-r w-96">
+        <aside className="hidden shrink-0 bg-card md:flex md:flex-col md:border-r w-full h-full">
             
             {mainToolbar}
 
