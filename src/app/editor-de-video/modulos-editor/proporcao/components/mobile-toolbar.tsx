@@ -32,7 +32,9 @@ import {
 } from "lucide-react";
 import { BotaoRecurso } from "../../botao-recurso";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Textarea } from "@/components/ui/textarea";
+import TextareaAutosize from 'react-textarea-autosize';
+import { cn } from "@/lib/utils";
+
 
 const aspectRatios = [
   { label: "Story", value: "9 / 16", icon: RectangleVertical },
@@ -87,13 +89,16 @@ export function MobileToolbar({
       texto: (
           <div className="p-4">
               <Label htmlFor="text-input-mobile" className="sr-only">Texto da Frase</Label>
-              <Textarea
+              <TextareaAutosize
                   id="text-input-mobile"
                   value={text}
                   onChange={(e) => setText(e.target.value)}
-                  rows={6}
+                  minRows={6}
                   placeholder="Digite sua frase aqui..."
-                  className="text-base w-full"
+                  className={cn(
+                      'flex w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
+                      'resize-y'
+                  )}
               />
           </div>
       ),
@@ -220,5 +225,3 @@ export function MobileToolbar({
     </>
   );
 }
-
-    
