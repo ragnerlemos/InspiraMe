@@ -6,7 +6,8 @@ import { useState, useRef } from "react";
 import Link from 'next/link';
 import { Wand2, RectangleHorizontal, RectangleVertical, Square, LayoutTemplate, UserCheck, ImageUp, Paintbrush, Type, CaseSensitive, Pipette, AlignLeft, Bold, MoveVertical, Baseline, Upload, Image as ImageIcon, Palette, Layers, Check, Edit, User, MoveHorizontal, ZoomIn, AtSign, BadgePercent, Film } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Label } VITE_API_URL=http://localhost:3333import { Slider } from "@/components/ui/slider";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
 import { BotaoRecurso } from "../../botao-recurso";
 import TextareaAutosize from 'react-textarea-autosize';
@@ -430,7 +431,7 @@ export function Sidebar({
                         <div className="space-y-2">
                             <Label>Cor de Fundo</Label>
                             <div className="flex items-center gap-2">
-                                <Input type="text" value={baseBgColor} onChange={(e) => setBaseBgColor(e.target.value)} className="w-full h-10"/>
+                                <Input type="text" value={baseBgColor} onChange={(e) => setBaseBgColor(e.target.value)} className="flex-1" />
                                 <div className="relative h-10 w-10">
                                     <Input type="color" value={baseBgColor} onChange={e => setBaseBgColor(e.target.value)} className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer" />
                                 </div>
@@ -439,7 +440,7 @@ export function Sidebar({
                         <div className="space-y-2">
                             <Label>Cor do Texto</Label>
                             <div className="flex items-center gap-2">
-                                <Input type="text" value={fgColor} onChange={(e) => setFgColor(e.target.value)} className="w-full h-10"/>
+                                <Input type="text" value={fgColor} onChange={(e) => setFgColor(e.target.value)} className="flex-1" />
                                 <div className="relative h-10 w-10">
                                     <Input type="color" value={fgColor} onChange={e => setFgColor(e.target.value)} className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer" />
                                 </div>
@@ -453,7 +454,7 @@ export function Sidebar({
                         <div className="space-y-2">
                             <Label>Cor do Filtro</Label>
                             <div className="flex items-center gap-2">
-                                <Input type="text" value={filmColor} onChange={(e) => setFilmColor(e.target.value)} className="w-full h-10"/>
+                                <Input type="text" value={filmColor} onChange={(e) => setFilmColor(e.target.value)} className="flex-1" />
                                 <div className="relative h-10 w-10">
                                     <Input type="color" value={filmColor} onChange={e => setFilmColor(e.target.value)} className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer" />
                                 </div>
