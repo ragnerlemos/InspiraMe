@@ -476,8 +476,8 @@ export function Sidebar({
     }
 
     const mainToolbar = (
-        <ScrollArea className="w-full whitespace-nowrap border-b">
-            <div className="flex h-16 items-center w-max space-x-1 px-2">
+        <ScrollArea className="w-full border-b">
+            <div className="flex h-16 items-center justify-center w-full space-x-1 px-2">
                 <BotaoRecurso icon={Type} label="Texto" onClick={() => handleSetControleAtivo('texto')} isActive={activeControl === 'texto'}/>
                 <BotaoRecurso icon={RectangleHorizontal} label="Canvas" onClick={() => handleSetControleAtivo('canvas')} isActive={activeControl === 'canvas'}/>
                 <BotaoRecurso icon={Paintbrush} label="Cores" onClick={() => handleSetControleAtivo('cores')} isActive={activeControl === 'cores'}/>
@@ -501,5 +501,3 @@ export function Sidebar({
         </aside>
     );
 }
-
-    
