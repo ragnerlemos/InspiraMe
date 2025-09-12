@@ -4,7 +4,7 @@
 import { Ratio } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ProfileData } from "@/hooks/use-profile";
-import { AssinaturaPerfil } from "../../../assinatura-perfil";
+import { AssinaturaPerfil } from "../../assinatura-perfil";
 
 
 interface PreviewCanvaProps {
