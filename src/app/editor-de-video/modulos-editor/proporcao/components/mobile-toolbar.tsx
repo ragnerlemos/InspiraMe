@@ -20,6 +20,7 @@ import {
   LayoutTemplate,
   UserCheck,
   ImageUp,
+  ArrowLeft,
 } from "lucide-react";
 import { BotaoRecurso } from "../../botao-recurso";
 
@@ -38,9 +39,11 @@ interface MobileToolbarProps {
   setBgColor: (color: string) => void;
   fgColor: string;
   setFgColor: (color: string) => void;
+  activeControl: string | null;
+  setActiveControl: (control: string | null) => void;
 }
 
-type ActivePanel = "ratio" | "scale" | "colors" | "elements" | null;
+type ActivePanel = "proporcao" | "escala" | "cores" | "fundo" | "assinatura" | "logo" | null;
 
 export function MobileToolbar({
   aspectRatio,
@@ -54,173 +57,109 @@ export function MobileToolbar({
 }: MobileToolbarProps) {
   const [activePanel, setActivePanel] = useState<ActivePanel>(null);
 
+  const handlePanelChange = (panel: ActivePanel) => {
+    setActivePanel(panel);
+  };
+
   const renderPanelContent = () => {
-    switch (activePanel) {
-      case "ratio":
-        return (
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-muted-foreground">
-              PROPORÇÃO
-            </h3>
-            <div className="grid grid-cols-3 gap-2">
-              {aspectRatios.map((ratio) => (
-                <Button
-                  key={ratio.value}
-                  onClick={() => setAspectRatio(ratio.value)}
-                  variant={aspectRatio === ratio.value ? "secondary" : "outline"}
-                  className="flex flex-col h-16 gap-1"
-                >
-                  <ratio.icon className="h-5 w-5" />
-                  <span className="text-xs">{ratio.label}</span>
-                </Button>
-              ))}
+    if (!activePanel) return null;
+
+    const panels: Record<ActivePanel, JSX.Element | null> = {
+      proporcao: (
+        <div className="space-y-2">
+          <Label>Proporção da Tela</Label>
+          <div className="grid grid-cols-3 gap-2">
+            {aspectRatios.map(({ value, icon: Icon, label }) => (
+              <Button
+                key={value}
+                variant={aspectRatio === value ? "secondary" : "outline"}
+                onClick={() => setAspectRatio(value)}
+                className="flex flex-col h-16 gap-1"
+              >
+                <Icon className="h-5 w-5" />
+                <span className="text-xs">{label}</span>
+              </Button>
+            ))}
+          </div>
+        </div>
+      ),
+      escala: (
+        <div className="space-y-2">
+          <div className="flex justify-between items-center">
+            <Label>Escala do Canvas</Label>
+            <span className="text-sm font-mono">{Math.round(scale * 100)}%</span>
+          </div>
+          <Slider value={[scale]} onValueChange={(v) => setScale(v[0])} min={0.5} max={2} step={0.01} />
+        </div>
+      ),
+      cores: (
+        <div className="space-y-4">
+          <Label>Cores</Label>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <Label htmlFor="bg-color-mobile">Fundo</Label>
+              <input id="bg-color-mobile" type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} className="w-full h-10 rounded-md border cursor-pointer" />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="fg-color-mobile">Primeiro Plano</Label>
+              <input id="fg-color-mobile" type="color" value={fgColor} onChange={(e) => setFgColor(e.target.value)} className="w-full h-10 rounded-md border cursor-pointer" />
             </div>
           </div>
-        );
-      case "scale":
-        return (
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h3 className="text-sm font-semibold text-muted-foreground">
-                ESCALA
-              </h3>
-              <span className="text-sm font-mono text-muted-foreground">
-                {Math.round(scale * 100)}%
-              </span>
-            </div>
-            <Slider
-              value={[scale]}
-              onValueChange={(values) => setScale(values[0])}
-              min={0.5}
-              max={2}
-              step={0.01}
-            />
-          </div>
-        );
-      case "colors":
-        return (
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-muted-foreground">CORES</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="bg-color-mobile">Fundo</Label>
-                <div className="relative h-10 w-full overflow-hidden rounded-md border">
-                  <div
-                    className="h-full w-full"
-                    style={{ backgroundColor: bgColor }}
-                  />
-                  <input
-                    id="bg-color-mobile"
-                    type="color"
-                    value={bgColor}
-                    onChange={(e) => setBgColor(e.target.value)}
-                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                    aria-label="Seletor de cor do fundo"
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="fg-color-mobile">Primeiro Plano</Label>
-                <div className="relative h-10 w-full overflow-hidden rounded-md border">
-                  <div
-                    className="h-full w-full"
-                    style={{ backgroundColor: fgColor }}
-                  />
-                  <input
-                    id="fg-color-mobile"
-                    type="color"
-                    value={fgColor}
-                    onChange={(e) => setFgColor(e.target.value)}
-                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                    aria-label="Seletor de cor do primeiro plano"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-        case "elements":
-            return (
-              <div className="space-y-4">
-                <h3 className="text-sm font-semibold text-muted-foreground">
-                  ELEMENTOS
-                </h3>
-                <div className="flex justify-around items-center h-16">
-                     <BotaoRecurso
-                        icon={LayoutTemplate}
-                        label="Fundo"
-                        onClick={() => {}}
-                        isActive={false}
-                    />
-                     <BotaoRecurso
-                        icon={UserCheck}
-                        label="Assinatura"
-                        onClick={() => {}}
-                        isActive={false}
-                    />
-                     <BotaoRecurso
-                        icon={ImageUp}
-                        label="Logo"
-                        onClick={() => {}}
-                        isActive={false}
-                    />
-                </div>
-              </div>
-            );
-      default:
-        return null;
-    }
+        </div>
+      ),
+      fundo: <p className="text-center text-muted-foreground">Controles de Fundo aqui.</p>,
+      assinatura: <p className="text-center text-muted-foreground">Controles de Assinatura aqui.</p>,
+      logo: <p className="text-center text-muted-foreground">Controles de Logo aqui.</p>,
+    };
+
+    return panels[activePanel];
   };
 
   const getPanelTitle = () => {
-    switch (activePanel) {
-        case "ratio": return "Proporção";
-        case "scale": return "Escala";
-        case "colors": return "Cores";
-        case "elements": return "Elementos";
-        default: return "";
-    }
-  }
+    const titles: Record<ActivePanel, string> = {
+      proporcao: "Editar Proporção",
+      escala: "Editar Escala",
+      cores: "Editar Cores",
+      fundo: "Editar Fundo",
+      assinatura: "Editar Assinatura",
+      logo: "Editar Logo",
+      null: "",
+    };
+    return titles[activePanel];
+  };
+
+  const mainToolbar = (
+    <div className="flex h-16 items-center justify-around px-2 border-t bg-background">
+      <BotaoRecurso icon={RectangleHorizontal} label="Proporção" onClick={() => handlePanelChange("proporcao")} isActive={activePanel === "proporcao"} />
+      <BotaoRecurso icon={Scaling} label="Escala" onClick={() => handlePanelChange("escala")} isActive={activePanel === "escala"} />
+      <BotaoRecurso icon={Paintbrush} label="Cores" onClick={() => handlePanelChange("cores")} isActive={activePanel === "cores"} />
+      <BotaoRecurso icon={LayoutTemplate} label="Fundo" onClick={() => handlePanelChange("fundo")} isActive={activePanel === "fundo"} />
+      <BotaoRecurso icon={UserCheck} label="Assinatura" onClick={() => handlePanelChange("assinatura")} isActive={activePanel === "assinatura"} />
+      <BotaoRecurso icon={ImageUp} label="Logo" onClick={() => handlePanelChange("logo")} isActive={activePanel === "logo"} />
+    </div>
+  );
 
   return (
     <>
+      <div className="md:hidden fixed bottom-0 left-0 w-full z-10">
+        {mainToolbar}
+      </div>
+
       <Sheet open={!!activePanel} onOpenChange={(open) => !open && setActivePanel(null)}>
-        <SheetContent side="bottom" className="h-auto">
-          <SheetHeader className="mb-4">
-             <SheetTitle className="capitalize">{getPanelTitle()}</SheetTitle>
+        <SheetContent side="bottom" className="h-auto max-h-[85vh] flex flex-col">
+          <SheetHeader className="mb-2">
+            <SheetTitle className="flex items-center">
+              <Button variant="ghost" size="icon" className="mr-2" onClick={() => setActivePanel(null)}>
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              {getPanelTitle()}
+            </SheetTitle>
           </SheetHeader>
-          <div className="p-4">{renderPanelContent()}</div>
+          <div className="overflow-y-auto flex-1 p-4">
+            {renderPanelContent()}
+          </div>
         </SheetContent>
       </Sheet>
-
-      <div className="md:hidden fixed bottom-0 left-0 w-full bg-background border-t">
-        <div className="flex justify-around items-center h-16">
-          <BotaoRecurso
-            icon={RectangleHorizontal}
-            label="Proporção"
-            onClick={() => setActivePanel("ratio")}
-            isActive={activePanel === "ratio"}
-          />
-          <BotaoRecurso
-            icon={Scaling}
-            label="Escala"
-            onClick={() => setActivePanel("scale")}
-            isActive={activePanel === "scale"}
-          />
-          <BotaoRecurso
-            icon={Paintbrush}
-            label="Cores"
-            onClick={() => setActivePanel("colors")}
-            isActive={activePanel === "colors"}
-          />
-           <BotaoRecurso
-            icon={LayoutTemplate}
-            label="Elementos"
-            onClick={() => setActivePanel("elements")}
-            isActive={activePanel === "elements"}
-          />
-        </div>
-      </div>
     </>
   );
 }

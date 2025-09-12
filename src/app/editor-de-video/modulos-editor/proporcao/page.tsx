@@ -11,15 +11,15 @@ export default function AspectWeaver() {
   const [aspectRatio, setAspectRatioState] = useState("9 / 16");
   const [bgColor, setBgColor] = useState("#333333");
   const [fgColor, setFgColor] = useState("#ffffff");
-  const [scale, setScale] = useState(1); // Começa com escala normal
+  const [scale, setScale] = useState(1);
+  const [activeControl, setActiveControl] = useState<string | null>('proporcao');
   const { width } = useWindowSize();
-  const isDesktop = width >= 768; // Tailwind's md breakpoint
+  const isDesktop = width >= 768;
 
   const setAspectRatio = (ratio: string) => {
     setAspectRatioState(ratio);
   };
   
-  // Efeito para ajustar a escala baseado na proporção e no tamanho da tela
   useEffect(() => {
     if (aspectRatio === "9 / 16" && !isDesktop) {
       setScale(0.80);
@@ -41,6 +41,8 @@ export default function AspectWeaver() {
           setBgColor={setBgColor}
           fgColor={fgColor}
           setFgColor={setFgColor}
+          activeControl={activeControl}
+          setActiveControl={setActiveControl}
         />
 
         <main className="flex-1 w-full overflow-auto">
@@ -53,7 +55,6 @@ export default function AspectWeaver() {
         </main>
       </div>
 
-       {/* Barra de Ferramentas Mobile */}
       <MobileToolbar
         aspectRatio={aspectRatio}
         setAspectRatio={setAspectRatio}
@@ -63,6 +64,8 @@ export default function AspectWeaver() {
         setBgColor={setBgColor}
         fgColor={fgColor}
         setFgColor={setFgColor}
+        activeControl={activeControl}
+        setActiveControl={setActiveControl}
       />
     </div>
   );

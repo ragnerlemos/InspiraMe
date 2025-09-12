@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Wand2, RectangleHorizontal, RectangleVertical, Square, LayoutTemplate, UserCheck, ImageUp } from "lucide-react";
+import { Wand2, RectangleHorizontal, RectangleVertical, Square, LayoutTemplate, UserCheck, ImageUp, Scaling, Paintbrush } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -22,6 +22,8 @@ interface SidebarProps {
     setBgColor: (color: string) => void;
     fgColor: string;
     setFgColor: (color: string) => void;
+    activeControl: string | null;
+    setActiveControl: (control: string | null) => void;
 }
 
 export function Sidebar({
@@ -33,121 +35,114 @@ export function Sidebar({
     setBgColor,
     fgColor,
     setFgColor,
+    activeControl,
+    setActiveControl,
 }: SidebarProps) {
-    return (
-        <aside className="hidden shrink-0 bg-card p-6 md:flex md:flex-col md:border-r">
-            <div className="space-y-6">
-                <div className="flex items-center gap-3">
-                    <Wand2 className="h-8 w-8 text-primary" />
-                    <h1 className="text-2xl font-bold font-headline">Aspect Weaver</h1>
-                </div>
 
-                {/* Proporção */}
-                <div className="space-y-2">
-                    <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-                        PROPORÇÃO DA TELA
-                    </h2>
-                    <div className="grid grid-cols-3 gap-2">
-                        {aspectRatios.map((ratio) => (
-                            <Button
-                                key={ratio.value}
-                                onClick={() => setAspectRatio(ratio.value)}
-                                variant={
-                                    aspectRatio === ratio.value ? "default" : "outline"
-                                }
-                                className="flex flex-col h-20 gap-1"
-                            >
-                                <ratio.icon className="h-6 w-6" />
-                                <span className="text-xs">{ratio.label}</span>
-                            </Button>
-                        ))}
-                    </div>
-                </div>
+    const handleSetControleAtivo = (controle: string) => {
+        setActiveControl(prev => prev === controle ? null : controle);
+    }
 
-                {/* Escala */}
-                <div className="space-y-2">
-                    <div className="flex justify-between items-center mb-2">
-                        <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                            ESCALA DO CANVAS
-                        </h2>
-                        <span className="text-sm font-mono text-muted-foreground">{Math.round(scale * 100)}%</span>
-                    </div>
-                    <div className="grid grid-cols-3 gap-1">
-                        {[1, 1.1, 1.2].map((value) => (
-                            <Button
-                                key={value}
-                                onClick={() => setScale(value)}
-                                variant={scale === value ? "default" : "outline"}
-                                size="sm"
-                            >
-                                {Math.round(value * 100)}%
-                            </Button>
-                        ))}
-                    </div>
-                    <Slider
-                        value={[scale]}
-                        onValueChange={(values) => setScale(values[0])}
-                        min={0.5}
-                        max={2}
-                        step={0.01}
-                    />
-                </div>
-
-                {/* Cores */}
-                <div className="space-y-2">
-                    <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-                        CORES
-                    </h2>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1">
-                            <Label htmlFor="bg-color">Fundo</Label>
-                            <div className="relative h-10 w-full overflow-hidden rounded-md border">
-                                <div
-                                    className="h-full w-full"
-                                    style={{ backgroundColor: bgColor }}
-                                />
-                                <input
-                                    id="bg-color"
-                                    type="color"
-                                    value={bgColor}
-                                    onChange={(e) => setBgColor(e.target.value)}
-                                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                                    aria-label="Seletor de cor do fundo"
-                                />
-                            </div>
+    const renderActiveControl = () => {
+        if (!activeControl) {
+            return <p className="text-sm text-muted-foreground text-center p-4">Selecione uma ferramenta para editar.</p>;
+        }
+        switch (activeControl) {
+            case 'proporcao':
+                return (
+                    <div className="space-y-2">
+                        <Label>Proporção da Tela</Label>
+                        <div className="grid grid-cols-3 gap-2">
+                            {aspectRatios.map((ratio) => (
+                                <Button
+                                    key={ratio.value}
+                                    onClick={() => setAspectRatio(ratio.value)}
+                                    variant={aspectRatio === ratio.value ? "secondary" : "outline"}
+                                    className="flex flex-col h-20 gap-1"
+                                >
+                                    <ratio.icon className="h-6 w-6" />
+                                    <span className="text-xs">{ratio.label}</span>
+                                </Button>
+                            ))}
                         </div>
-                        <div className="space-y-1">
-                            <Label htmlFor="fg-color">Primeiro Plano</Label>
-                            <div className="relative h-10 w-full overflow-hidden rounded-md border">
-                                <div
-                                    className="h-full w-full"
-                                    style={{ backgroundColor: fgColor }}
-                                />
-                                <input
-                                    id="fg-color"
-                                    type="color"
-                                    value={fgColor}
-                                    onChange={(e) => setFgColor(e.target.value)}
-                                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                                    aria-label="Seletor de cor do primeiro plano"
-                                />
+                    </div>
+                );
+            case 'escala':
+                return (
+                    <div className="space-y-2">
+                         <div className="flex justify-between items-center">
+                            <Label>Escala do Canvas</Label>
+                            <span className="text-sm font-mono text-muted-foreground">{Math.round(scale * 100)}%</span>
+                        </div>
+                        <Slider
+                            value={[scale]}
+                            onValueChange={(values) => setScale(values[0])}
+                            min={0.5}
+                            max={2}
+                            step={0.01}
+                        />
+                    </div>
+                );
+            case 'cores':
+                 return (
+                     <div className="space-y-4">
+                        <Label>Cores</Label>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-1">
+                                <Label htmlFor="bg-color">Fundo</Label>
+                                <input id="bg-color" type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} className="w-full h-10 rounded-md border cursor-pointer" aria-label="Seletor de cor do fundo" />
+                            </div>
+                            <div className="space-y-1">
+                                <Label htmlFor="fg-color">Primeiro Plano</Label>
+                                <input id="fg-color" type="color" value={fgColor} onChange={(e) => setFgColor(e.target.value)} className="w-full h-10 rounded-md border cursor-pointer" aria-label="Seletor de cor do primeiro plano" />
                             </div>
                         </div>
                     </div>
-                </div>
+                 );
+            case 'fundo':
+                return <p className="text-center text-muted-foreground">Controles de Fundo aqui.</p>;
+            case 'assinatura':
+                return <p className="text-center text-muted-foreground">Controles de Assinatura aqui.</p>;
+            case 'logo':
+                return <p className="text-center text-muted-foreground">Controles de Logo aqui.</p>;
+            default:
+                return null;
+        }
+    }
 
-                 {/* Elementos */}
-                <div className="space-y-2">
-                    <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-                        ELEMENTOS
-                    </h2>
-                     <div className="flex h-14 items-center justify-around flex-wrap bg-background/90 backdrop-blur-sm px-2 rounded-lg border">
-                        <BotaoRecurso icon={LayoutTemplate} label="Fundo" onClick={() => {}} isActive={false}/>
-                        <BotaoRecurso icon={UserCheck} label="Assinatura" onClick={() => {}} isActive={false}/>
-                        <BotaoRecurso icon={ImageUp} label="Logo" onClick={() => {}} isActive={false}/>
-                    </div>
-                </div>
+
+    const mainToolbar = (
+         <div className="flex h-16 items-center justify-around px-2 border-b">
+            <BotaoRecurso icon={RectangleHorizontal} label="Proporção" onClick={() => handleSetControleAtivo('proporcao')} isActive={activeControl === 'proporcao'}/>
+            <BotaoRecurso icon={Scaling} label="Escala" onClick={() => handleSetControleAtivo('escala')} isActive={activeControl === 'escala'}/>
+            <BotaoRecurso icon={Paintbrush} label="Cores" onClick={() => handleSetControleAtivo('cores')} isActive={activeControl === 'cores'}/>
+        </div>
+    );
+     const elementsToolbar = (
+        <div className="w-full whitespace-nowrap border-t">
+            <div className="flex h-14 items-center justify-around flex-wrap bg-background/90 backdrop-blur-sm px-2">
+                <BotaoRecurso icon={LayoutTemplate} label="Fundo" onClick={() => handleSetControleAtivo('fundo')} isActive={activeControl === 'fundo'}/>
+                <BotaoRecurso icon={UserCheck} label="Assinatura" onClick={() => handleSetControleAtivo('assinatura')} isActive={activeControl === 'assinatura'}/>
+                <BotaoRecurso icon={ImageUp} label="Logo" onClick={() => handleSetControleAtivo('logo')} isActive={activeControl === 'logo'}/>
             </div>
+        </div>
+    );
+
+    return (
+        <aside className="hidden shrink-0 bg-card md:flex md:flex-col md:border-r">
+            <div className="flex items-center gap-3 p-6 border-b">
+                <Wand2 className="h-8 w-8 text-primary" />
+                <h1 className="text-2xl font-bold font-headline">Aspect Weaver</h1>
+            </div>
+            
+            {mainToolbar}
+
+            <div className="flex-1 overflow-y-auto p-6">
+                {renderActiveControl()}
+            </div>
+
+            {elementsToolbar}
+
         </aside>
     );
 }
