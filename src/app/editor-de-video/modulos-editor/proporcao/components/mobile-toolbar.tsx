@@ -195,7 +195,25 @@ function ControleTipoFundo({ bgColor, setBgColor }: { bgColor: string, setBgColo
     )
 }
 
-function ControleAssinatura(props: Omit<MobileToolbarProps, 'aspectRatio' | 'setAspectRatio' | 'scale' | 'setScale' | 'bgColor' | 'setBgColor' | 'fgColor' | 'setFgColor' | 'activeControl' | 'setActiveControl' | 'text' | 'setText'>) {
+interface ControleAssinaturaProps {
+  showProfileSignature: boolean;
+  onShowProfileSignatureChange: (show: boolean) => void;
+  signaturePositionX: number;
+  onSignaturePositionXChange: (x: number) => void;
+  signaturePositionY: number;
+  onSignaturePositionYChange: (y: number) => void;
+  signatureScale: number;
+  onSignatureScaleChange: (scale: number) => void;
+  showSignaturePhoto: boolean;
+  onShowSignaturePhotoChange: (show: boolean) => void;
+  showSignatureUsername: boolean;
+  onShowSignatureUsernameChange: (show: boolean) => void;
+  showSignatureSocial: boolean;
+  onShowSignatureSocialChange: (show: boolean) => void;
+  profile: ProfileData;
+}
+
+function ControleAssinatura(props: ControleAssinaturaProps) {
     const { 
         showProfileSignature, onShowProfileSignatureChange,
         signaturePositionX, onSignaturePositionXChange,
@@ -439,5 +457,3 @@ export function MobileToolbar({
     </>
   );
 }
-
-    
