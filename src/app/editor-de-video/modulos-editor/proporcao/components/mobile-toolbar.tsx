@@ -59,7 +59,7 @@ const aspectRatios = [
   { label: "Vídeo", value: "16 / 9", icon: RectangleHorizontal },
 ];
 
-type ActivePanel = "texto" | "proporcao" | "escala" | "cores" | "fundo" | "assinatura" | "logo" | "estilo" | null;
+type ActivePanel = "texto" | "proporcao" | "cores" | "fundo" | "assinatura" | "logo" | "estilo" | null;
 type TipoFundoAtivo = 'media' | 'solid' | 'gradient';
 
 
@@ -94,24 +94,6 @@ interface ControleLogoProps {
     onLogoOpacityChange: (opacity: number) => void;
     profile: ProfileData;
 }
-
-
-interface MobileToolbarProps extends ControleAssinaturaProps, ControleLogoProps {
-  aspectRatio: string;
-  setAspectRatio: (ratio: string) => void;
-  scale: number;
-  setScale: (scale: number) => void;
-  bgColor: string;
-  setBgColor: (color: string) => void;
-  fgColor: string;
-  setFgColor: (color: string) => void;
-  activeControl: string | null;
-  setActiveControl: (control: string | null) => void;
-  text: string;
-  setText: (text: string) => void;
-  profile: ProfileData;
-}
-
 
 function ControleTipoFundo({ bgColor, setBgColor }: { bgColor: string, setBgColor: (color: string) => void }) {
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -360,6 +342,22 @@ function ControleLogo(props: ControleLogoProps) {
     )
 }
 
+interface MobileToolbarProps extends ControleAssinaturaProps, ControleLogoProps {
+  aspectRatio: string;
+  setAspectRatio: (ratio: string) => void;
+  scale: number;
+  setScale: (scale: number) => void;
+  bgColor: string;
+  setBgColor: (color: string) => void;
+  fgColor: string;
+  setFgColor: (color: string) => void;
+  activeControl: string | null;
+  setActiveControl: (control: string | null) => void;
+  text: string;
+  setText: (text: string) => void;
+  profile: ProfileData;
+}
+
 export function MobileToolbar({
   aspectRatio,
   setAspectRatio,
@@ -398,37 +396,37 @@ export function MobileToolbar({
                   minRows={6}
                   placeholder="Digite sua frase aqui..."
                   className={cn(
-                      'flex w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
-                      'h-full'
+                      'flex w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm'
                   )}
               />
           </div>
       ),
       proporcao: (
-        <div className="space-y-2 p-4">
-          <Label>Proporção da Tela</Label>
-          <div className="grid grid-cols-3 gap-2">
-            {aspectRatios.map(({ value, icon: Icon, label }) => (
-              <Button
-                key={value}
-                variant={aspectRatio === value ? "secondary" : "outline"}
-                onClick={() => setAspectRatio(value)}
-                className="flex flex-col h-16 gap-1"
-              >
-                <Icon className="h-5 w-5" />
-                <span className="text-xs">{label}</span>
-              </Button>
-            ))}
-          </div>
-        </div>
-      ),
-      escala: (
-        <div className="space-y-2 p-4">
-          <div className="flex justify-between items-center">
-            <Label>Escala do Canvas</Label>
-            <span className="text-sm font-mono">{Math.round(scale * 100)}%</span>
-          </div>
-          <Slider value={[scale]} onValueChange={(v) => setScale(v[0])} min={0.5} max={2} step={0.01} />
+        <div className="space-y-4 p-4">
+            <div className="space-y-2">
+                <Label>Proporção da Tela</Label>
+                <div className="grid grid-cols-3 gap-2">
+                    {aspectRatios.map(({ value, icon: Icon, label }) => (
+                    <Button
+                        key={value}
+                        variant={aspectRatio === value ? "secondary" : "outline"}
+                        onClick={() => setAspectRatio(value)}
+                        className="flex flex-col h-16 gap-1"
+                    >
+                        <Icon className="h-5 w-5" />
+                        <span className="text-xs">{label}</span>
+                    </Button>
+                    ))}
+                </div>
+            </div>
+            <Separator />
+            <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                    <Label>Escala do Canvas</Label>
+                    <span className="text-sm font-mono">{Math.round(scale * 100)}%</span>
+                </div>
+                <Slider value={[scale]} onValueChange={(v) => setScale(v[0])} min={0.5} max={2} step={0.01} />
+            </div>
         </div>
       ),
       cores: (
@@ -477,8 +475,7 @@ export function MobileToolbar({
   const getPanelTitle = () => {
     const titles: Record<string, string> = {
       texto: "Editar Texto",
-      proporcao: "Editar Proporção",
-      escala: "Editar Escala",
+      proporcao: "Editar Canvas",
       cores: "Editar Cores",
       estilo: "Editar Estilo",
       fundo: "Editar Fundo",
@@ -492,8 +489,7 @@ export function MobileToolbar({
      <ScrollArea className="w-full whitespace-nowrap">
         <div className="flex h-16 items-center justify-start gap-1 px-2 border-t bg-background">
             <BotaoRecurso icon={Type} label="Texto" onClick={() => handlePanelChange("texto")} isActive={activePanel === "texto"} />
-            <BotaoRecurso icon={RectangleHorizontal} label="Proporção" onClick={() => handlePanelChange("proporcao")} isActive={activePanel === "proporcao"} />
-            <BotaoRecurso icon={Scaling} label="Escala" onClick={() => handlePanelChange("escala")} isActive={activePanel === "escala"} />
+            <BotaoRecurso icon={RectangleHorizontal} label="Canvas" onClick={() => handlePanelChange("proporcao")} isActive={activePanel === "proporcao"} />
             <BotaoRecurso icon={Paintbrush} label="Cores" onClick={() => handlePanelChange("cores")} isActive={activePanel === "cores"} />
             <BotaoRecurso icon={Wand2} label="Estilo" onClick={() => handlePanelChange("estilo")} isActive={activePanel === "estilo"} />
             <BotaoRecurso icon={LayoutTemplate} label="Fundo" onClick={() => handlePanelChange("fundo")} isActive={activePanel === "fundo"} />

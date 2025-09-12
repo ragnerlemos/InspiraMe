@@ -59,6 +59,11 @@ export default function AspectWeaver() {
 
   const setAspectRatio = (ratio: string) => {
     setAspectRatioState(ratio);
+    if (ratio === '9 / 16' && !isDesktop) {
+        setScale(0.80);
+    } else {
+        setScale(1);
+    }
   };
   
   useEffect(() => {

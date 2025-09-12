@@ -58,29 +58,11 @@ interface ControleLogoProps {
     profile: ProfileData;
 }
 
-interface SidebarProps extends ControleAssinaturaProps, ControleLogoProps {
-    aspectRatio: string;
-    setAspectRatio: (ratio: string) => void;
-    scale: number;
-    setScale: (scale: number) => void;
-    bgColor: string;
-    setBgColor: (color: string) => void;
-    fgColor: string;
-    setFgColor: (color: string) => void;
-    activeControl: string | null;
-    setActiveControl: (control: string | null) => void;
-    text: string;
-    setText: (text: string) => void;
-    profile: ProfileData;
-}
-
-
 function ControleTipoFundo({ setBgColor }: { setBgColor: (color: string) => void }) {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { toast } = useToast();
     const [activeTab, setActiveTab] = useState<TipoFundoAtivo>('solid');
     
-    // Simulating state for gradient, as we don't have full state persistence here yet
     const [gradient, setGradient] = useState({
         type: 'linear' as 'linear' | 'radial',
         colors: ['#A06CD5', '#45B8AC'],
@@ -98,7 +80,6 @@ function ControleTipoFundo({ setBgColor }: { setBgColor: (color: string) => void
 
         const reader = new FileReader();
         reader.onload = (e) => {
-            // In a real scenario, this would update a different state for media background
             toast({ title: "Carregado!", description: "Mídia carregada (efeito visual não aplicado nesta tela)." });
         };
         reader.readAsDataURL(file);
@@ -335,6 +316,22 @@ function ControleLogo(props: ControleLogoProps) {
     )
 }
 
+interface SidebarProps extends ControleAssinaturaProps, ControleLogoProps {
+    aspectRatio: string;
+    setAspectRatio: (ratio: string) => void;
+    scale: number;
+    setScale: (scale: number) => void;
+    bgColor: string;
+    setBgColor: (color: string) => void;
+    fgColor: string;
+    setFgColor: (color: string) => void;
+    activeControl: string | null;
+    setActiveControl: (control: string | null) => void;
+    text: string;
+    setText: (text: string) => void;
+    profile: ProfileData;
+}
+
 export function Sidebar({
     aspectRatio,
     setAspectRatio,
@@ -379,45 +376,44 @@ export function Sidebar({
                             minRows={6}
                             placeholder="Digite sua frase aqui..."
                             className={cn(
-                                'flex w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
-                                'h-full'
+                                'flex w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm'
                             )}
                         />
                     </div>
                 );
             case 'proporcao':
                 return (
-                    <div className="space-y-2 p-4">
-                        <Label>Proporção da Tela</Label>
-                        <div className="grid grid-cols-3 gap-2">
-                            {aspectRatios.map((ratio) => (
-                                <Button
-                                    key={ratio.value}
-                                    onClick={() => setAspectRatio(ratio.value)}
-                                    variant={aspectRatio === ratio.value ? "secondary" : "outline"}
-                                    className="flex flex-col h-20 gap-1"
-                                >
-                                    <ratio.icon className="h-6 w-6" />
-                                    <span className="text-xs">{ratio.label}</span>
-                                </Button>
-                            ))}
+                    <div className="space-y-4 p-4">
+                        <div className="space-y-2">
+                            <Label>Proporção da Tela</Label>
+                            <div className="grid grid-cols-3 gap-2">
+                                {aspectRatios.map((ratio) => (
+                                    <Button
+                                        key={ratio.value}
+                                        onClick={() => setAspectRatio(ratio.value)}
+                                        variant={aspectRatio === ratio.value ? "secondary" : "outline"}
+                                        className="flex flex-col h-20 gap-1"
+                                    >
+                                        <ratio.icon className="h-6 w-6" />
+                                        <span className="text-xs">{ratio.label}</span>
+                                    </Button>
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                );
-            case 'escala':
-                return (
-                    <div className="space-y-2 p-4">
-                         <div className="flex justify-between items-center">
-                            <Label>Escala do Canvas</Label>
-                            <span className="text-sm font-mono text-muted-foreground">{Math.round(scale * 100)}%</span>
+                        <Separator />
+                        <div className="space-y-2">
+                            <div className="flex justify-between items-center">
+                                <Label>Escala do Canvas</Label>
+                                <span className="text-sm font-mono text-muted-foreground">{Math.round(scale * 100)}%</span>
+                            </div>
+                            <Slider
+                                value={[scale]}
+                                onValueChange={(values) => setScale(values[0])}
+                                min={0.5}
+                                max={2}
+                                step={0.01}
+                            />
                         </div>
-                        <Slider
-                            value={[scale]}
-                            onValueChange={(values) => setScale(values[0])}
-                            min={0.5}
-                            max={2}
-                            step={0.01}
-                        />
                     </div>
                 );
             case 'cores':
@@ -472,8 +468,7 @@ export function Sidebar({
     const mainToolbar = (
          <div className="flex h-16 items-center justify-around px-2 border-b">
             <BotaoRecurso icon={Type} label="Texto" onClick={() => handleSetControleAtivo('texto')} isActive={activeControl === 'texto'}/>
-            <BotaoRecurso icon={RectangleHorizontal} label="Proporção" onClick={() => handleSetControleAtivo('proporcao')} isActive={activeControl === 'proporcao'}/>
-            <BotaoRecurso icon={Scaling} label="Escala" onClick={() => handleSetControleAtivo('escala')} isActive={activeControl === 'escala'}/>
+            <BotaoRecurso icon={RectangleHorizontal} label="Canvas" onClick={() => handleSetControleAtivo('proporcao')} isActive={activeControl === 'proporcao'}/>
             <BotaoRecurso icon={Paintbrush} label="Cores" onClick={() => handleSetControleAtivo('cores')} isActive={activeControl === 'cores'}/>
             <BotaoRecurso icon={Wand2} label="Estilo" onClick={() => handleSetControleAtivo('estilo')} isActive={activeControl === 'estilo'}/>
         </div>
