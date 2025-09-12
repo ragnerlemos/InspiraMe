@@ -406,9 +406,9 @@ export function Sidebar({
                 );
             case 'cores':
                  return (
-                     <div className="p-4 space-y-4">
+                    <div className="p-4 grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label>Cor do Fundo</Label>
+                            <Label className="text-center block">Fundo</Label>
                             <div className="relative h-10 w-full rounded-md border overflow-hidden cursor-pointer">
                                 <div className="w-full h-full" style={{ backgroundColor: baseBgColor }} />
                                 <Input 
@@ -420,8 +420,8 @@ export function Sidebar({
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <Label>Cor do Texto</Label>
-                             <div className="relative h-10 w-full rounded-md border overflow-hidden cursor-pointer">
+                            <Label className="text-center block">Primeiro Plano</Label>
+                            <div className="relative h-10 w-full rounded-md border overflow-hidden cursor-pointer">
                                 <div className="w-full h-full" style={{ backgroundColor: fgColor }} />
                                 <Input 
                                     type="color" 
