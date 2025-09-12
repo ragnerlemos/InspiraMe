@@ -64,7 +64,7 @@ export function Sidebar({
         switch (activeControl) {
             case 'texto':
                 return (
-                    <div className="px-2 py-4 h-full">
+                    <div className="p-4">
                         <Label htmlFor="text-input" className="sr-only">Texto da Frase</Label>
                         <Textarea
                             id="text-input"
@@ -72,7 +72,7 @@ export function Sidebar({
                             onChange={(e) => setText(e.target.value)}
                             rows={6}
                             placeholder="Digite sua frase aqui..."
-                            className="text-base w-full h-full resize-none"
+                            className="text-base w-full"
                         />
                     </div>
                 );

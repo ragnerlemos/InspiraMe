@@ -85,7 +85,7 @@ export function MobileToolbar({
 
     const panels: Record<string, JSX.Element | null> = {
       texto: (
-          <div className="px-2 py-4 h-full">
+          <div className="p-4">
               <Label htmlFor="text-input-mobile" className="sr-only">Texto da Frase</Label>
               <Textarea
                   id="text-input-mobile"
@@ -93,7 +93,7 @@ export function MobileToolbar({
                   onChange={(e) => setText(e.target.value)}
                   rows={6}
                   placeholder="Digite sua frase aqui..."
-                  className="text-base w-full h-full resize-none"
+                  className="text-base w-full"
               />
           </div>
       ),
