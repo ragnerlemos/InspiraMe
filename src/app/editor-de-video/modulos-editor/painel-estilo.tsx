@@ -1,4 +1,5 @@
 
+
 // Componente para a aba "Estilo", que agrupa todos os controles de customização visual do texto.
 
 import {
@@ -9,7 +10,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from "@/components/ui/select";
@@ -57,18 +57,24 @@ export function PainelEstilo(props: PainelEstiloProps & { onClose: () => void })
                     </div>
                 )}
                 {controleAtivo === 'cor' && (
-                    <div className="space-y-2">
+                     <div className="space-y-2">
                         <Label htmlFor="text-color">Cor do Texto</Label>
                         <div className="flex items-center gap-2">
-                            <Input id="text-color" type="text" value={props.textColor} onChange={(e) => props.onTextColorChange(e.target.value)} className="w-full" />
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button variant="outline" size="icon" style={{ backgroundColor: props.textColor }} className="h-10 w-10 border-2" />
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0 border-none">
-                                    <input type="color" value={props.textColor} onChange={e => props.onTextColorChange(e.target.value)} className="w-16 h-16 cursor-pointer" />
-                                </PopoverContent>
-                            </Popover>
+                            <Input
+                                id="text-color"
+                                type="text"
+                                value={props.textColor}
+                                onChange={(e) => props.onTextColorChange(e.target.value)}
+                                className="flex-1"
+                            />
+                            <div className="relative h-10 w-10">
+                                <Input
+                                    type="color"
+                                    value={props.textColor}
+                                    onChange={(e) => props.onTextColorChange(e.target.value)}
+                                    className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer"
+                                />
+                            </div>
                         </div>
                     </div>
                 )}
@@ -101,15 +107,25 @@ export function PainelEstilo(props: PainelEstiloProps & { onClose: () => void })
                     </div>
                 )}
                 {controleAtivo === 'contorno' && (
-                    <div className="space-y-4">
+                     <div className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="stroke-color" className="text-xs text-muted-foreground">Cor</Label>
                             <div className="flex items-center gap-2">
-                                <Input id="stroke-color" type="text" value={props.textStrokeColor} onChange={(e) => props.onTextStrokeColorChange(e.target.value)} className="w-full h-9" />
-                                <Popover>
-                                    <PopoverTrigger asChild><Button variant="outline" size="icon" style={{ backgroundColor: props.textStrokeColor }} className="h-9 w-9 border-2" /></PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0 border-none"><input type="color" value={props.textStrokeColor} onChange={e => props.onTextStrokeColorChange(e.target.value)} className="w-16 h-16 cursor-pointer" /></PopoverContent>
-                                </Popover>
+                                <Input
+                                    id="stroke-color"
+                                    type="text"
+                                    value={props.textStrokeColor}
+                                    onChange={(e) => props.onTextStrokeColorChange(e.target.value)}
+                                    className="h-9 flex-1"
+                                />
+                                <div className="relative h-9 w-9">
+                                     <Input
+                                        type="color"
+                                        value={props.textStrokeColor}
+                                        onChange={(e) => props.onTextStrokeColorChange(e.target.value)}
+                                        className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer"
+                                    />
+                                </div>
                             </div>
                         </div>
                         <div className="space-y-2">

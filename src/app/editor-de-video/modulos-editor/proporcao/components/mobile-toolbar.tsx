@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useRef } from "react";
@@ -41,12 +42,12 @@ import {
   ZoomIn,
   AtSign,
   BadgePercent,
+  Film,
 } from "lucide-react";
 import { BotaoRecurso } from "../../botao-recurso";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import TextareaAutosize from 'react-textarea-autosize';
 import { cn } from "@/lib/utils";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
@@ -60,38 +61,6 @@ const aspectRatios = [
 
 type ActivePanel = "texto" | "canvas" | "cores" | "filtro" | "fundo" | "assinatura" | "logo" | "estilo" | null;
 type TipoFundoAtivo = 'media' | 'solid' | 'gradient';
-
-interface ControleAssinaturaProps {
-  showProfileSignature: boolean;
-  onShowProfileSignatureChange: (show: boolean) => void;
-  signaturePositionX: number;
-  onSignaturePositionXChange: (x: number) => void;
-  signaturePositionY: number;
-  onSignaturePositionYChange: (y: number) => void;
-  signatureScale: number;
-  onSignatureScaleChange: (scale: number) => void;
-  showSignaturePhoto: boolean;
-  onShowSignaturePhotoChange: (show: boolean) => void;
-  showSignatureUsername: boolean;
-  onShowSignatureUsernameChange: (show: boolean) => void;
-  showSignatureSocial: boolean;
-  onShowSignatureSocialChange: (show: boolean) => void;
-  profile: ProfileData;
-}
-
-interface ControleLogoProps {
-    showLogo: boolean;
-    onShowLogoChange: (show: boolean) => void;
-    logoPositionX: number;
-    onLogoPositionXChange: (x: number) => void;
-    logoPositionY: number;
-    onLogoPositionYChange: (y: number) => void;
-    logoScale: number;
-    onLogoScaleChange: (scale: number) => void;
-    logoOpacity: number;
-    onLogoOpacityChange: (opacity: number) => void;
-    profile: ProfileData;
-}
 
 function ControleTipoFundo({ baseBgColor, setBaseBgColor }: { baseBgColor: string, setBaseBgColor: (color: string) => void }) {
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -125,6 +94,12 @@ function ControleTipoFundo({ baseBgColor, setBaseBgColor }: { baseBgColor: strin
     const handleSolidColorChange = (color: string) => {
         setBaseBgColor(color);
     };
+    
+    const handleGradientColorChange = (index: 0 | 1, color: string) => {
+        const newColors = [...gradient.colors];
+        newColors[index] = color;
+        setGradient(g => ({...g, colors: newColors as [string, string]}));
+    }
 
     return (
         <div className="space-y-4">
@@ -151,7 +126,12 @@ function ControleTipoFundo({ baseBgColor, setBaseBgColor }: { baseBgColor: strin
             {activeTab === 'solid' && (
                  <div className="space-y-1">
                     <Label htmlFor="bg-color-mobile">Cor de Fundo</Label>
-                    <input id="bg-color-mobile" type="color" value={baseBgColor} onChange={(e) => handleSolidColorChange(e.target.value)} className="w-full h-10 rounded-md border cursor-pointer" />
+                    <div className="flex items-center gap-2">
+                        <Input id="bg-color-mobile" type="text" value={baseBgColor} onChange={(e) => handleSolidColorChange(e.target.value)} className="flex-1" />
+                        <div className="relative h-10 w-10">
+                            <Input type="color" value={baseBgColor} onChange={(e) => handleSolidColorChange(e.target.value)} className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer" />
+                        </div>
+                    </div>
                 </div>
             )}
             
@@ -180,13 +160,14 @@ function ControleTipoFundo({ baseBgColor, setBaseBgColor }: { baseBgColor: strin
                     )}
                     <div className="space-y-2">
                         <Label>Cores</Label>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 gap-2">
                             {[0, 1].map((index) => (
-                                <input key={index} type="color" value={gradient.colors[index]} onChange={(e) => {
-                                    const newColors = [...gradient.colors];
-                                    newColors[index] = e.target.value;
-                                    setGradient(g => ({...g, colors: newColors as [string, string]}));
-                                }} className="w-full h-10 rounded-md border cursor-pointer" />
+                                <div key={index} className="flex items-center gap-2">
+                                    <Input type="text" value={gradient.colors[index]} onChange={(e) => handleGradientColorChange(index as 0 | 1, e.target.value)} className="flex-1" />
+                                    <div className="relative h-10 w-10">
+                                         <Input type="color" value={gradient.colors[index]} onChange={(e) => handleGradientColorChange(index as 0 | 1, e.target.value)} className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer" />
+                                    </div>
+                                </div>
                             ))}
                         </div>
                     </div>
@@ -439,11 +420,21 @@ export function MobileToolbar({
         <div className="space-y-4 p-4">
           <div className="space-y-1">
               <Label htmlFor="bg-color-mobile">Cor de Fundo</Label>
-              <input id="bg-color-mobile" type="color" value={baseBgColor} onChange={(e) => setBaseBgColor(e.target.value)} className="w-full h-10 rounded-md border cursor-pointer" />
+               <div className="flex items-center gap-2">
+                    <Input id="bg-color-mobile" type="text" value={baseBgColor} onChange={(e) => setBaseBgColor(e.target.value)} className="flex-1" />
+                    <div className="relative h-10 w-10">
+                       <Input type="color" value={baseBgColor} onChange={(e) => setBaseBgColor(e.target.value)} className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer" />
+                    </div>
+                </div>
             </div>
             <div className="space-y-1">
               <Label htmlFor="fg-color-mobile">Cor do Texto</Label>
-              <input id="fg-color-mobile" type="color" value={fgColor} onChange={(e) => setFgColor(e.target.value)} className="w-full h-10 rounded-md border cursor-pointer" />
+              <div className="flex items-center gap-2">
+                <Input id="fg-color-mobile" type="text" value={fgColor} onChange={(e) => setFgColor(e.target.value)} className="flex-1" />
+                <div className="relative h-10 w-10">
+                    <Input type="color" value={fgColor} onChange={(e) => setFgColor(e.target.value)} className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer" />
+                </div>
+              </div>
             </div>
         </div>
       ),
@@ -451,7 +442,12 @@ export function MobileToolbar({
          <div className="space-y-4 p-4">
             <div className="space-y-1">
               <Label htmlFor="film-color-mobile">Cor do Filtro</Label>
-              <input id="film-color-mobile" type="color" value={filmColor} onChange={(e) => setFilmColor(e.target.value)} className="w-full h-10 rounded-md border cursor-pointer" />
+              <div className="flex items-center gap-2">
+                <Input id="film-color-mobile" type="text" value={filmColor} onChange={(e) => setFilmColor(e.target.value)} className="flex-1" />
+                <div className="relative h-10 w-10">
+                    <Input type="color" value={filmColor} onChange={(e) => setFilmColor(e.target.value)} className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer" />
+                </div>
+              </div>
             </div>
             <div className="space-y-2">
                 <div className="flex justify-between items-center">
@@ -510,7 +506,7 @@ export function MobileToolbar({
             <BotaoRecurso icon={Type} label="Texto" onClick={() => handlePanelChange("texto")} isActive={activePanel === "texto"} />
             <BotaoRecurso icon={RectangleHorizontal} label="Canvas" onClick={() => handlePanelChange("canvas")} isActive={activePanel === "canvas"} />
             <BotaoRecurso icon={Paintbrush} label="Cores" onClick={() => handlePanelChange("cores")} isActive={activePanel === "cores"} />
-            <BotaoRecurso icon={Palette} label="Filtro" onClick={() => handlePanelChange("filtro")} isActive={activePanel === "filtro"} />
+            <BotaoRecurso icon={Film} label="Filtro" onClick={() => handlePanelChange("filtro")} isActive={activePanel === "filtro"} />
             <BotaoRecurso icon={Wand2} label="Estilo" onClick={() => handlePanelChange("estilo")} isActive={activePanel === "estilo"} />
             <BotaoRecurso icon={LayoutTemplate} label="Fundo" onClick={() => handlePanelChange("fundo")} isActive={activePanel === "fundo"} />
             <BotaoRecurso icon={UserCheck} label="Assinatura" onClick={() => handlePanelChange("assinatura")} isActive={activePanel === "assinatura"} />

@@ -1,4 +1,5 @@
 
+
 // Componente para a aba "Fundo", permitindo o upload de imagem/vídeo ou seleção de cores/gradientes.
 
 import { useRef, useMemo, useState } from 'react';
@@ -8,7 +9,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Upload, Image as ImageIcon, Palette, Layers, Redo, UserCheck, MoveVertical, MoveHorizontal, CaseSensitive, AtSign, RectangleHorizontal, Check, Edit, Edit2, LayoutTemplate, RectangleVertical, Square, ZoomIn, ImageUp, BadgePercent, User, X, Film } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import type { PainelFundoProps, ProporcaoTela } from './tipos';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { templates } from '@/lib/dados';
@@ -164,12 +164,24 @@ function ControleTipoFundo(props: {
             )}
 
             {activeTab === 'film' && (
-                <div className="space-y-4">
+                 <div className="space-y-4">
                     <div className="space-y-2">
                         <Label>Cor da Película</Label>
                         <div className="flex items-center gap-2">
-                            <Input type="text" value={filmColor} onChange={(e) => onFilmColorChange(e.target.value)} className="w-full h-10"/>
-                            <Popover><PopoverTrigger asChild><Button variant="outline" size="icon" style={{ backgroundColor: filmColor }} className="h-10 w-10 border-2" /></PopoverTrigger><PopoverContent className="w-auto p-0 border-none"><input type="color" value={filmColor} onChange={e => onFilmColorChange(e.target.value)} className="w-16 h-16 cursor-pointer" /></PopoverContent></Popover>
+                            <Input
+                                type="text"
+                                value={filmColor}
+                                onChange={(e) => onFilmColorChange(e.target.value)}
+                                className="h-10 flex-1"
+                            />
+                            <div className="relative h-10 w-10">
+                                <Input
+                                    type="color"
+                                    value={filmColor}
+                                    onChange={(e) => onFilmColorChange(e.target.value)}
+                                    className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer"
+                                />
+                            </div>
                         </div>
                     </div>
                     <div className="space-y-2">
@@ -218,19 +230,22 @@ function ControleTipoFundo(props: {
                         <Label>Cores do Gradiente</Label>
                         <div className="grid grid-cols-2 gap-4">
                             {[0, 1].map((index) => (
-                                <Popover key={index}>
-                                    <PopoverTrigger asChild>
-                                        <div className="w-full h-10 rounded-md border-2" style={{ backgroundColor: gradient.colors[index as 0 | 1] }} />
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0 border-none">
-                                        <input
+                                <div key={index} className="flex items-center gap-2">
+                                     <Input
+                                        type="text"
+                                        value={gradient.colors[index as 0 | 1]}
+                                        onChange={(e) => handleGradientColorChange(index as 0 | 1, e.target.value)}
+                                        className="h-10 flex-1"
+                                    />
+                                    <div className="relative h-10 w-10">
+                                        <Input
                                             type="color"
                                             value={gradient.colors[index as 0 | 1]}
                                             onChange={(e) => handleGradientColorChange(index as 0 | 1, e.target.value)}
-                                            className="w-16 h-16 cursor-pointer"
+                                            className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer"
                                         />
-                                    </PopoverContent>
-                                </Popover>
+                                    </div>
+                                </div>
                             ))}
                         </div>
                     </div>

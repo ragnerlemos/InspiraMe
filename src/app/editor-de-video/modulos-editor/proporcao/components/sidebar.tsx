@@ -1,17 +1,16 @@
 
+
 "use client";
 
-import { useState, useRef, forwardRef } from "react";
+import { useState, useRef } from "react";
 import Link from 'next/link';
-import { Wand2, RectangleHorizontal, RectangleVertical, Square, LayoutTemplate, UserCheck, ImageUp, Paintbrush, Type, CaseSensitive, Pipette, AlignLeft, Bold, MoveVertical, Baseline, Upload, Image as ImageIcon, Palette, Layers, Check, Edit, User, MoveHorizontal, ZoomIn, AtSign, BadgePercent } from "lucide-react";
+import { Wand2, RectangleHorizontal, RectangleVertical, Square, LayoutTemplate, UserCheck, ImageUp, Paintbrush, Type, CaseSensitive, Pipette, AlignLeft, Bold, MoveVertical, Baseline, Upload, Image as ImageIcon, Palette, Layers, Check, Edit, User, MoveHorizontal, ZoomIn, AtSign, BadgePercent, Film } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
+import { Label } VITE_API_URL=http://localhost:3333import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
 import { BotaoRecurso } from "../../botao-recurso";
 import TextareaAutosize from 'react-textarea-autosize';
 import { cn } from "@/lib/utils";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
@@ -87,6 +86,12 @@ function ControleTipoFundo({ setBaseBgColor }: { setBaseBgColor: (color: string)
     const handleSolidColorChange = (color: string) => {
         setBaseBgColor(color);
     };
+    
+    const handleGradientColorChange = (index: 0 | 1, color: string) => {
+        const newColors = [...gradient.colors];
+        newColors[index] = color;
+        setGradient(g => ({...g, colors: newColors as [string, string]}));
+    }
 
     return (
         <div className="space-y-4">
@@ -115,7 +120,9 @@ function ControleTipoFundo({ setBaseBgColor }: { setBaseBgColor: (color: string)
                     <Label>Cor de Fundo</Label>
                     <div className="flex items-center gap-2">
                         <Input type="text" value={"#ffffff"} onChange={(e) => handleSolidColorChange(e.target.value)} className="w-full h-10"/>
-                        <Popover><PopoverTrigger asChild><Button variant="outline" size="icon" style={{ backgroundColor: "#ffffff" }} className="h-10 w-10 border-2" /></PopoverTrigger><PopoverContent className="w-auto p-0 border-none"><input type="color" value={"#ffffff"} onChange={e => handleSolidColorChange(e.target.value)} className="w-16 h-16 cursor-pointer" /></PopoverContent></Popover>
+                         <div className="relative h-10 w-10">
+                            <Input type="color" value={"#ffffff"} onChange={e => handleSolidColorChange(e.target.value)} className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer" />
+                        </div>
                     </div>
                 </div>
             )}
@@ -148,20 +155,14 @@ function ControleTipoFundo({ setBaseBgColor }: { setBaseBgColor: (color: string)
                     )}
                     <div className="space-y-2">
                         <Label>Cores do Gradiente</Label>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 gap-2">
                             {[0, 1].map((index) => (
-                                <Popover key={index}>
-                                    <PopoverTrigger asChild>
-                                        <div className="w-full h-10 rounded-md border-2" style={{ backgroundColor: gradient.colors[index as 0 | 1] }} />
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0 border-none">
-                                        <input type="color" value={gradient.colors[index as 0 | 1]} onChange={(e) => {
-                                            const newColors = [...gradient.colors];
-                                            newColors[index] = e.target.value;
-                                            setGradient(g => ({...g, colors: newColors as [string, string]}));
-                                        }} className="w-16 h-16 cursor-pointer" />
-                                    </PopoverContent>
-                                </Popover>
+                                <div key={index} className="flex items-center gap-2">
+                                    <Input type="text" value={gradient.colors[index as 0 | 1]} onChange={(e) => handleGradientColorChange(index as 0 | 1, e.target.value)} className="w-full h-10"/>
+                                    <div className="relative h-10 w-10">
+                                        <Input type="color" value={gradient.colors[index as 0 | 1]} onChange={(e) => handleGradientColorChange(index as 0 | 1, e.target.value)} className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer" />
+                                    </div>
+                                </div>
                             ))}
                         </div>
                     </div>
@@ -430,14 +431,18 @@ export function Sidebar({
                             <Label>Cor de Fundo</Label>
                             <div className="flex items-center gap-2">
                                 <Input type="text" value={baseBgColor} onChange={(e) => setBaseBgColor(e.target.value)} className="w-full h-10"/>
-                                <Popover><PopoverTrigger asChild><Button variant="outline" size="icon" style={{ backgroundColor: baseBgColor }} className="h-10 w-10 border-2" /></PopoverTrigger><PopoverContent className="w-auto p-0 border-none"><input type="color" value={baseBgColor} onChange={e => setBaseBgColor(e.target.value)} className="w-16 h-16 cursor-pointer" /></PopoverContent></Popover>
+                                <div className="relative h-10 w-10">
+                                    <Input type="color" value={baseBgColor} onChange={e => setBaseBgColor(e.target.value)} className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer" />
+                                </div>
                             </div>
                         </div>
                         <div className="space-y-2">
                             <Label>Cor do Texto</Label>
                             <div className="flex items-center gap-2">
                                 <Input type="text" value={fgColor} onChange={(e) => setFgColor(e.target.value)} className="w-full h-10"/>
-                                <Popover><PopoverTrigger asChild><Button variant="outline" size="icon" style={{ backgroundColor: fgColor }} className="h-10 w-10 border-2" /></PopoverTrigger><PopoverContent className="w-auto p-0 border-none"><input type="color" value={fgColor} onChange={e => setFgColor(e.target.value)} className="w-16 h-16 cursor-pointer" /></PopoverContent></Popover>
+                                <div className="relative h-10 w-10">
+                                    <Input type="color" value={fgColor} onChange={e => setFgColor(e.target.value)} className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer" />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -449,7 +454,9 @@ export function Sidebar({
                             <Label>Cor do Filtro</Label>
                             <div className="flex items-center gap-2">
                                 <Input type="text" value={filmColor} onChange={(e) => setFilmColor(e.target.value)} className="w-full h-10"/>
-                                <Popover><PopoverTrigger asChild><Button variant="outline" size="icon" style={{ backgroundColor: filmColor }} className="h-10 w-10 border-2" /></PopoverTrigger><PopoverContent className="w-auto p-0 border-none"><input type="color" value={filmColor} onChange={e => setFilmColor(e.target.value)} className="w-16 h-16 cursor-pointer" /></PopoverContent></Popover>
+                                <div className="relative h-10 w-10">
+                                    <Input type="color" value={filmColor} onChange={e => setFilmColor(e.target.value)} className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer" />
+                                </div>
                             </div>
                         </div>
                         <div className="space-y-2">
@@ -504,7 +511,7 @@ export function Sidebar({
             <BotaoRecurso icon={Type} label="Texto" onClick={() => handleSetControleAtivo('texto')} isActive={activeControl === 'texto'}/>
             <BotaoRecurso icon={RectangleHorizontal} label="Canvas" onClick={() => handleSetControleAtivo('canvas')} isActive={activeControl === 'canvas'}/>
             <BotaoRecurso icon={Paintbrush} label="Cores" onClick={() => handleSetControleAtivo('cores')} isActive={activeControl === 'cores'}/>
-            <BotaoRecurso icon={Palette} label="Filtro" onClick={() => handleSetControleAtivo('filtro')} isActive={activeControl === 'filtro'} />
+            <BotaoRecurso icon={Film} label="Filtro" onClick={() => handleSetControleAtivo('filtro')} isActive={activeControl === 'filtro'} />
             <BotaoRecurso icon={Wand2} label="Estilo" onClick={() => handleSetControleAtivo('estilo')} isActive={activeControl === 'estilo'}/>
         </div>
     );
