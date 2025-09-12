@@ -1,15 +1,18 @@
-
+// src/app/editor-de-video/modulos-editor/proporcao/components/sidebar.tsx
 "use client";
 
-import { Wand2, RectangleHorizontal, RectangleVertical, Square } from "lucide-react";
+import { Wand2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 
 const aspectRatios = [
-    { label: "Story", value: "9 / 16", icon: RectangleVertical },
-    { label: "Quadrado", value: "1 / 1", icon: Square },
-    { label: "Vídeo", value: "16 / 9", icon: RectangleHorizontal },
+    { label: "16:9", value: "16 / 9" },
+    { label: "1:1", value: "1 / 1" },
+    { label: "4:3", value: "4 / 3" },
+    { label: "3:2", value: "3 / 2" },
+    { label: "9:16", value: "9 / 16" },
+    { label: "21:9", value: "21 / 9" },
 ];
 
 interface SidebarProps {
@@ -46,7 +49,7 @@ export function Sidebar({
                     <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-2">
                         PROPORÇÃO DA TELA
                     </h2>
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-2 gap-2">
                         {aspectRatios.map((ratio) => (
                             <Button
                                 key={ratio.value}
@@ -54,10 +57,10 @@ export function Sidebar({
                                 variant={
                                     aspectRatio === ratio.value ? "default" : "outline"
                                 }
-                                className="flex flex-col h-20 gap-1"
+                                className="shrink-0"
+                                size="sm"
                             >
-                                <ratio.icon className="h-6 w-6" />
-                                <span className="text-xs">{ratio.label}</span>
+                                {ratio.label}
                             </Button>
                         ))}
                     </div>
