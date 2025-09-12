@@ -88,8 +88,9 @@ function ControleTipoFundo({ setBaseBgColor }: { setBaseBgColor: (color: string)
             {activeTab === 'solid' && (
                 <div className="space-y-2">
                      <Label>Cor do Fundo</Label>
-                    <div className="relative h-10 w-full">
-                        <Input type="color" value={""} onChange={e => handleSolidColorChange(e.target.value)} className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer" />
+                    <div className="relative h-10 w-full rounded-md border overflow-hidden">
+                        <Input type="color" value={""} onChange={e => handleSolidColorChange(e.target.value)} className="absolute inset-0 w-full h-full p-0 border-none opacity-0 cursor-pointer" />
+                         <div className="w-full h-full" style={{ backgroundColor: '#000000' }}></div>
                     </div>
                 </div>
             )}
@@ -405,19 +406,29 @@ export function Sidebar({
                 );
             case 'cores':
                  return (
-                     <div className="p-4">
-                        <div className="grid grid-cols-1 gap-4">
-                            <div className="space-y-2">
-                                <Label>Cor do Fundo</Label>
-                                <div className="relative h-10 w-full">
-                                    <Input type="color" value={baseBgColor} onChange={(e) => setBaseBgColor(e.target.value)} className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer" />
-                                </div>
+                     <div className="p-4 space-y-4">
+                        <div className="space-y-2">
+                            <Label>Cor do Fundo</Label>
+                            <div className="relative h-10 w-full rounded-md border overflow-hidden cursor-pointer">
+                                <div className="w-full h-full" style={{ backgroundColor: baseBgColor }} />
+                                <Input 
+                                    type="color" 
+                                    value={baseBgColor} 
+                                    onChange={(e) => setBaseBgColor(e.target.value)} 
+                                    className="absolute inset-0 w-full h-full p-0 border-none opacity-0 cursor-pointer"
+                                />
                             </div>
-                            <div className="space-y-2">
-                                <Label>Cor do Texto</Label>
-                                <div className="relative h-10 w-full">
-                                    <Input type="color" value={fgColor} onChange={e => setFgColor(e.target.value)} className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer" />
-                                </div>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Cor do Texto</Label>
+                             <div className="relative h-10 w-full rounded-md border overflow-hidden cursor-pointer">
+                                <div className="w-full h-full" style={{ backgroundColor: fgColor }} />
+                                <Input 
+                                    type="color" 
+                                    value={fgColor} 
+                                    onChange={e => setFgColor(e.target.value)} 
+                                    className="absolute inset-0 w-full h-full p-0 border-none opacity-0 cursor-pointer"
+                                />
                             </div>
                         </div>
                     </div>
@@ -470,7 +481,7 @@ export function Sidebar({
     );
 
     return (
-        <aside className="hidden shrink-0 bg-card md:flex md:flex-col md:border-r">
+        <aside className="hidden shrink-0 bg-card md:flex md:flex-col md:border-r w-96">
             
             {mainToolbar}
 
@@ -480,3 +491,5 @@ export function Sidebar({
         </aside>
     );
 }
+
+    

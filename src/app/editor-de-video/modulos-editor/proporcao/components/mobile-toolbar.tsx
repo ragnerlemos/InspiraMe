@@ -436,19 +436,29 @@ export function MobileToolbar({
         </div>
       ),
       cores: (
-        <div className="p-4">
-            <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                    <Label>Cor do Fundo</Label>
-                    <div className="relative h-10">
-                        <Input type="color" value={baseBgColor} onChange={(e) => setBaseBgColor(e.target.value)} className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer" />
-                    </div>
+        <div className="p-4 space-y-4">
+            <div className="space-y-2">
+                <Label>Cor do Fundo</Label>
+                <div className="relative h-10 w-full rounded-md border overflow-hidden cursor-pointer">
+                    <div className="w-full h-full" style={{ backgroundColor: baseBgColor }} />
+                    <Input 
+                        type="color" 
+                        value={baseBgColor} 
+                        onChange={(e) => setBaseBgColor(e.target.value)} 
+                        className="absolute inset-0 w-full h-full p-0 border-none opacity-0 cursor-pointer"
+                    />
                 </div>
-                <div className="space-y-2">
-                    <Label>Cor do Texto</Label>
-                    <div className="relative h-10">
-                        <Input type="color" value={fgColor} onChange={(e) => setFgColor(e.target.value)} className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer" />
-                    </div>
+            </div>
+            <div className="space-y-2">
+                <Label>Cor do Texto</Label>
+                 <div className="relative h-10 w-full rounded-md border overflow-hidden cursor-pointer">
+                    <div className="w-full h-full" style={{ backgroundColor: fgColor }} />
+                    <Input 
+                        type="color" 
+                        value={fgColor} 
+                        onChange={e => setFgColor(e.target.value)} 
+                        className="absolute inset-0 w-full h-full p-0 border-none opacity-0 cursor-pointer"
+                    />
                 </div>
             </div>
         </div>
@@ -534,3 +544,5 @@ export function MobileToolbar({
     </>
   );
 }
+
+    

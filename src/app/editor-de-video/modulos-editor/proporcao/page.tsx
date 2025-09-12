@@ -59,10 +59,14 @@ export default function AspectWeaver() {
   const [logoOpacity, setLogoOpacity] = useState(100);
 
   useEffect(() => {
-    if (aspectRatio === "9 / 16" && !isDesktop) {
-      setScale(0.80);
-    } else if (scale !== 1 && (aspectRatio !== "9 / 16" || isDesktop)) {
-      setScale(1);
+    if (isDesktop) {
+        setScale(1);
+    } else {
+        if (aspectRatio === "9 / 16") {
+            setScale(0.8);
+        } else {
+            setScale(1);
+        }
     }
   }, [aspectRatio, isDesktop]);
 
@@ -112,7 +116,7 @@ export default function AspectWeaver() {
 
   return (
     <div className="flex flex-col w-full bg-background font-body text-foreground h-[calc(100vh-4rem)]">
-      <div className="flex-1 flex md:grid md:grid-cols-[288px_1fr] min-h-0">
+      <div className="flex-1 flex md:grid md:grid-cols-[384px_1fr] min-h-0">
         <Sidebar {...commonProps} />
 
         <main className="flex-1 w-full overflow-auto">
@@ -145,3 +149,5 @@ export default function AspectWeaver() {
     </div>
   );
 }
+
+    
