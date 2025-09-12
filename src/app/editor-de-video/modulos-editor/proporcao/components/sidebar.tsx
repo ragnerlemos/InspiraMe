@@ -446,12 +446,8 @@ export function Sidebar({
             case 'estilo':
                  return (
                      <div className="w-full flex-1 flex flex-col">
-                        <div className="p-4 flex-1 overflow-y-auto">
-                            {!activeSubControl && <p className="text-center text-muted-foreground text-sm">Selecione um controle de estilo abaixo.</p>}
-                            {activeSubControl && <p className="text-center text-muted-foreground text-sm">Controles para '{activeSubControl}' aqui.</p>}
-                        </div>
-                        <div className="w-full whitespace-nowrap border-t mt-auto">
-                            <div className="flex h-14 items-center justify-around flex-wrap bg-background/90 backdrop-blur-sm px-2">
+                        <ScrollArea className="w-full whitespace-nowrap border-b">
+                            <div className="flex w-max space-x-1 p-2">
                                 <BotaoRecurso icon={Type} label="Fonte" onClick={() => setActiveSubControl('fonte')} isActive={activeSubControl === 'fonte'}/>
                                 <BotaoRecurso icon={CaseSensitive} label="Tamanho" onClick={() => setActiveSubControl('tamanho')} isActive={activeSubControl === 'tamanho'}/>
                                 <BotaoRecurso icon={Pipette} label="Cor" onClick={() => setActiveSubControl('cor')} isActive={activeSubControl === 'cor'}/>
@@ -461,6 +457,11 @@ export function Sidebar({
                                 <BotaoRecurso icon={Baseline} label="Contorno" onClick={() => setActiveSubControl('contorno')} isActive={activeSubControl === 'contorno'}/>
                                 <BotaoRecurso icon={Paintbrush} label="Sombra" onClick={() => setActiveSubControl('sombra')} isActive={activeSubControl === 'sombra'}/>
                             </div>
+                            <ScrollBar orientation="horizontal" className="h-2" />
+                        </ScrollArea>
+                        <div className="p-4 flex-1 overflow-y-auto">
+                            {!activeSubControl && <p className="text-center text-muted-foreground text-sm">Selecione um controle de estilo abaixo.</p>}
+                            {activeSubControl && <p className="text-center text-muted-foreground text-sm">Controles para '{activeSubControl}' aqui.</p>}
                         </div>
                      </div>
                  );
@@ -501,3 +502,5 @@ export function Sidebar({
         </aside>
     );
 }
+
+    
