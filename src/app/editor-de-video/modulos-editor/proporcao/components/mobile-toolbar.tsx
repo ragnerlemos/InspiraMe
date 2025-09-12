@@ -35,6 +35,12 @@ import {
   Image as ImageIcon,
   Palette,
   Layers,
+  Check,
+  Edit,
+  User,
+  MoveHorizontal,
+  ZoomIn,
+  AtSign,
 } from "lucide-react";
 import { BotaoRecurso } from "../../botao-recurso";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -44,6 +50,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
+import type { ProfileData } from "@/hooks/use-profile";
 
 
 const aspectRatios = [
@@ -65,6 +72,21 @@ interface MobileToolbarProps {
   setActiveControl: (control: string | null) => void;
   text: string;
   setText: (text: string) => void;
+  profile: ProfileData;
+  showProfileSignature: boolean;
+  onShowProfileSignatureChange: (show: boolean) => void;
+  signaturePositionX: number;
+  onSignaturePositionXChange: (x: number) => void;
+  signaturePositionY: number;
+  onSignaturePositionYChange: (y: number) => void;
+  signatureScale: number;
+  onSignatureScaleChange: (scale: number) => void;
+  showSignaturePhoto: boolean;
+  onShowSignaturePhotoChange: (show: boolean) => void;
+  showSignatureUsername: boolean;
+  onShowSignatureUsernameChange: (show: boolean) => void;
+  showSignatureSocial: boolean;
+  onShowSignatureSocialChange: (show: boolean) => void;
 }
 
 type ActivePanel = "texto" | "proporcao" | "escala" | "cores" | "fundo" | "assinatura" | "logo" | "estilo" | null;
@@ -173,6 +195,82 @@ function ControleTipoFundo({ bgColor, setBgColor }: { bgColor: string, setBgColo
     )
 }
 
+function ControleAssinatura(props: Omit<MobileToolbarProps, 'aspectRatio' | 'setAspectRatio' | 'scale' | 'setScale' | 'bgColor' | 'setBgColor' | 'fgColor' | 'setFgColor' | 'activeControl' | 'setActiveControl' | 'text' | 'setText'>) {
+    const { 
+        showProfileSignature, onShowProfileSignatureChange,
+        signaturePositionX, onSignaturePositionXChange,
+        signaturePositionY, onSignaturePositionYChange,
+        signatureScale, onSignatureScaleChange,
+        showSignaturePhoto, onShowSignaturePhotoChange,
+        showSignatureUsername, onShowSignatureUsernameChange,
+        showSignatureSocial, onShowSignatureSocialChange,
+        profile,
+    } = props;
+    
+    const isProfileConfigured = profile.username && profile.username !== 'Seu Nome' && profile.social && profile.social !== '@seuusario';
+
+     return (
+        <div className="space-y-4">
+            <Button 
+                variant={showProfileSignature ? 'secondary' : 'outline'} 
+                onClick={() => onShowProfileSignatureChange(!showProfileSignature)}
+                className="w-full"
+            >
+                {showProfileSignature ? <Check className="mr-2 h-4 w-4" /> : <Edit className="mr-2 h-4 w-4" />}
+                {showProfileSignature ? 'Assinatura Ativada' : 'Ativar Assinatura'}
+            </Button>
+            
+            {!isProfileConfigured && !showProfileSignature && (
+                <Link href="/perfil" passHref>
+                    <Button variant="link" className="w-full text-center">
+                        <User className="mr-2 h-4 w-4" />
+                        Configurar Assinatura no Perfil
+                    </Button>
+                </Link>
+            )}
+
+            {showProfileSignature && (
+                <div className="space-y-4 pt-2 border-t mt-4">
+                    <Label>Elementos Visíveis</Label>
+                    <div className="grid grid-cols-3 gap-2">
+                         <Button size="sm" variant={showSignaturePhoto ? 'secondary' : 'outline'} onClick={() => onShowSignaturePhotoChange(!showSignaturePhoto)}>
+                             <ImageIcon className="mr-2 h-4 w-4" /> Foto
+                        </Button>
+                         <Button size="sm" variant={showSignatureUsername ? 'secondary' : 'outline'} onClick={() => onShowSignatureUsernameChange(!showSignatureUsername)}>
+                            <CaseSensitive className="mr-2 h-4 w-4" /> Nome
+                        </Button>
+                         <Button size="sm" variant={showSignatureSocial ? 'secondary' : 'outline'} onClick={() => onShowSignatureSocialChange(!showSignatureSocial)}>
+                            <AtSign className="mr-2 h-4 w-4" /> Social
+                        </Button>
+                    </div>
+                     <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                            <Label htmlFor="signature-position-x-mobile" className="text-xs flex items-center"><MoveHorizontal className="mr-2 h-3 w-3" />Posição Horizontal</Label>
+                            <span className="text-xs text-muted-foreground">{signaturePositionX}%</span>
+                        </div>
+                        <Slider id="signature-position-x-mobile" min={0} max={100} step={1} value={[signaturePositionX]} onValueChange={(value) => onSignaturePositionXChange(value[0])}/>
+                    </div>
+                     <div className="space-y-2">
+                         <div className="flex justify-between items-center">
+                            <Label htmlFor="signature-position-y-mobile" className="text-xs flex items-center"><MoveVertical className="mr-2 h-3 w-3" />Posição Vertical</Label>
+                            <span className="text-xs text-muted-foreground">{signaturePositionY}%</span>
+                        </div>
+                        <Slider id="signature-position-y-mobile" min={0} max={100} step={1} value={[signaturePositionY]} onValueChange={(value) => onSignaturePositionYChange(value[0])}/>
+                    </div>
+                    <div className="space-y-2">
+                         <div className="flex justify-between items-center">
+                            <Label htmlFor="signature-scale-mobile" className="text-xs flex items-center"><ZoomIn className="mr-2 h-3 w-3" />Escala</Label>
+                            <span className="text-xs text-muted-foreground">{signatureScale}%</span>
+                        </div>
+                        <Slider id="signature-scale-mobile" min={50} max={150} step={1} value={[signatureScale]} onValueChange={(value) => onSignatureScaleChange(value[0])}/>
+                    </div>
+                </div>
+            )}
+        </div>
+     )
+}
+
+
 export function MobileToolbar({
   aspectRatio,
   setAspectRatio,
@@ -186,6 +284,7 @@ export function MobileToolbar({
   setActiveControl,
   text,
   setText,
+  ...signatureProps
 }: MobileToolbarProps) {
   const [activePanel, setActivePanel] = useState<ActivePanel>(null);
   const [activeSubControl, setActiveSubControl] = useState<string | null>(null);
@@ -279,7 +378,7 @@ export function MobileToolbar({
        </div>
       ),
       fundo: <div className="p-4"><ControleTipoFundo bgColor={bgColor} setBgColor={setBgColor} /></div>,
-      assinatura: <div className="p-4"><p className="text-center text-muted-foreground">Controles de Assinatura aqui.</p></div>,
+      assinatura: <div className="p-4"><ControleAssinatura {...signatureProps} /></div>,
       logo: <div className="p-4"><p className="text-center text-muted-foreground">Controles de Logo aqui.</p></div>,
     };
 
@@ -340,5 +439,3 @@ export function MobileToolbar({
     </>
   );
 }
-
-    

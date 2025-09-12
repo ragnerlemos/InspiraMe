@@ -3,9 +3,31 @@
 
 import { useState, useEffect } from "react";
 import { useWindowSize } from "react-use";
+import { useProfile } from "@/hooks/use-profile";
 import { Sidebar } from "./components/sidebar";
 import { PreviewCanva } from "./components/preview-canva";
 import { MobileToolbar } from "./components/mobile-toolbar";
+import { Skeleton } from "@/components/ui/skeleton";
+
+function ProporcaoSkeleton() {
+    return (
+        <div className="flex flex-col w-full bg-background font-body text-foreground h-[calc(100vh-4rem)]">
+            <div className="flex-1 flex md:grid md:grid-cols-[288px_1fr] min-h-0">
+                <div className="hidden shrink-0 bg-card md:flex md:flex-col md:border-r p-4">
+                     <Skeleton className="h-10 w-48 mb-4" />
+                     <Skeleton className="h-16 w-full mb-4" />
+                     <Skeleton className="h-full w-full" />
+                </div>
+                 <main className="flex-1 w-full overflow-auto p-4 flex items-center justify-center">
+                    <Skeleton className="w-full h-full max-w-md aspect-[9/16]" />
+                </main>
+            </div>
+             <div className="md:hidden fixed bottom-0 left-0 w-full z-10 bg-background border-t p-2">
+                <Skeleton className="h-14 w-full" />
+            </div>
+        </div>
+    )
+}
 
 export default function AspectWeaver() {
   const [aspectRatio, setAspectRatioState] = useState("9 / 16");
@@ -16,6 +38,17 @@ export default function AspectWeaver() {
   const { width } = useWindowSize();
   const isDesktop = width >= 768;
   const [text, setText] = useState("A única maneira de fazer um ótimo trabalho é amar o que você faz.");
+  const { profile, isLoaded: isProfileLoaded } = useProfile();
+
+  // Signature State
+  const [showProfileSignature, setShowProfileSignature] = useState(false);
+  const [signaturePositionX, setSignaturePositionX] = useState(50);
+  const [signaturePositionY, setSignaturePositionY] = useState(90);
+  const [signatureScale, setSignatureScale] = useState(63);
+  const [showSignaturePhoto, setShowSignaturePhoto] = useState(false);
+  const [showSignatureUsername, setShowSignatureUsername] = useState(true);
+  const [showSignatureSocial, setShowSignatureSocial] = useState(true);
+
 
   const setAspectRatio = (ratio: string) => {
     setAspectRatioState(ratio);
@@ -28,6 +61,10 @@ export default function AspectWeaver() {
       setScale(1);
     }
   }, [aspectRatio, isDesktop]);
+
+  if (!isProfileLoaded) {
+    return <ProporcaoSkeleton />;
+  }
 
 
   return (
@@ -46,6 +83,21 @@ export default function AspectWeaver() {
           setActiveControl={setActiveControl}
           text={text}
           setText={setText}
+          profile={profile}
+          showProfileSignature={showProfileSignature}
+          onShowProfileSignatureChange={setShowProfileSignature}
+          signaturePositionX={signaturePositionX}
+          onSignaturePositionXChange={setSignaturePositionX}
+          signaturePositionY={signaturePositionY}
+          onSignaturePositionYChange={setSignaturePositionY}
+          signatureScale={signatureScale}
+          onSignatureScaleChange={setSignatureScale}
+          showSignaturePhoto={showSignaturePhoto}
+          onShowSignaturePhotoChange={setShowSignaturePhoto}
+          showSignatureUsername={showSignatureUsername}
+          onShowSignatureUsernameChange={setShowSignatureUsername}
+          showSignatureSocial={showSignatureSocial}
+          onShowSignatureSocialChange={setShowSignatureSocial}
         />
 
         <main className="flex-1 w-full overflow-auto">
@@ -55,6 +107,14 @@ export default function AspectWeaver() {
                 fgColor={fgColor}
                 scale={scale}
                 text={text}
+                profile={profile}
+                showProfileSignature={showProfileSignature}
+                signaturePositionX={signaturePositionX}
+                signaturePositionY={signaturePositionY}
+                signatureScale={signatureScale}
+                showSignaturePhoto={showSignaturePhoto}
+                showSignatureUsername={showSignatureUsername}
+                showSignatureSocial={showSignatureSocial}
             />
         </main>
       </div>
@@ -72,6 +132,21 @@ export default function AspectWeaver() {
         setActiveControl={setActiveControl}
         text={text}
         setText={setText}
+        profile={profile}
+        showProfileSignature={showProfileSignature}
+        onShowProfileSignatureChange={setShowProfileSignature}
+        signaturePositionX={signaturePositionX}
+        onSignaturePositionXChange={setSignaturePositionX}
+        signaturePositionY={signaturePositionY}
+        onSignaturePositionYChange={setSignaturePositionY}
+        signatureScale={signatureScale}
+        onSignatureScaleChange={setSignatureScale}
+        showSignaturePhoto={showSignaturePhoto}
+        onShowSignaturePhotoChange={setShowSignaturePhoto}
+        showSignatureUsername={showSignatureUsername}
+        onShowSignatureUsernameChange={setShowSignatureUsername}
+        showSignatureSocial={showSignatureSocial}
+        onShowSignatureSocialChange={setShowSignatureSocial}
       />
     </div>
   );
