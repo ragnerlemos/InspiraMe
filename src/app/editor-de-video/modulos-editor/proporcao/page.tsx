@@ -61,7 +61,7 @@ export default function AspectWeaver() {
         setScale={setScale}
         bgColor={bgColor}
         setBgColor={setBgColor}
-        fgColor={fgGColor}
+        fgColor={fgColor}
         setFgColor={setFgColor}
       />
     </div>
