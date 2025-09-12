@@ -156,3 +156,5 @@ export function PainelEstilo(props: PainelEstiloProps & { onClose: () => void })
        </div>
     );
 }
+
+    
