@@ -21,6 +21,11 @@ interface PreviewCanvaProps {
   showSignaturePhoto: boolean;
   showSignatureUsername: boolean;
   showSignatureSocial: boolean;
+  showLogo: boolean;
+  logoPositionX: number;
+  logoPositionY: number;
+  logoScale: number;
+  logoOpacity: number;
 }
 
 export function PreviewCanva({
@@ -37,6 +42,11 @@ export function PreviewCanva({
   showSignaturePhoto,
   showSignatureUsername,
   showSignatureSocial,
+  showLogo,
+  logoPositionX,
+  logoPositionY,
+  logoScale,
+  logoOpacity,
 }: PreviewCanvaProps) {
   return (
     <main className="w-full h-full p-4 flex items-start justify-center overflow-hidden">
@@ -77,7 +87,23 @@ export function PreviewCanva({
               />
             </div>
         )}
+
+        {showLogo && profile.logo && (
+            <div
+              className="absolute"
+              style={{
+                top: `${logoPositionY}%`,
+                left: `${logoPositionX}%`,
+                transform: `translate(-50%, -50%) scale(${logoScale / 100})`,
+                opacity: logoOpacity / 100,
+              }}
+            >
+                <img src={profile.logo} alt="Logomarca" className="max-w-[150px] max-h-[150px]" />
+            </div>
+        )}
       </div>
     </main>
   );
 }
+
+    

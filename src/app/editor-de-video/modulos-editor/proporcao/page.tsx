@@ -49,6 +49,13 @@ export default function AspectWeaver() {
   const [showSignatureUsername, setShowSignatureUsername] = useState(true);
   const [showSignatureSocial, setShowSignatureSocial] = useState(true);
 
+  // Logo State
+  const [showLogo, setShowLogo] = useState(false);
+  const [logoPositionX, setLogoPositionX] = useState(85);
+  const [logoPositionY, setLogoPositionY] = useState(10);
+  const [logoScale, setLogoScale] = useState(40);
+  const [logoOpacity, setLogoOpacity] = useState(100);
+
 
   const setAspectRatio = (ratio: string) => {
     setAspectRatioState(ratio);
@@ -66,39 +73,50 @@ export default function AspectWeaver() {
     return <ProporcaoSkeleton />;
   }
 
+  const sidebarProps = {
+    aspectRatio,
+    setAspectRatio,
+    scale,
+    setScale,
+    bgColor,
+    setBgColor,
+    fgColor,
+    setFgColor,
+    activeControl,
+    setActiveControl,
+    text,
+    setText,
+    profile,
+    showProfileSignature,
+    onShowProfileSignatureChange: setShowProfileSignature,
+    signaturePositionX,
+    onSignaturePositionXChange: setSignaturePositionX,
+    signaturePositionY,
+    onSignaturePositionYChange: setSignaturePositionY,
+    signatureScale,
+    onSignatureScaleChange: setSignatureScale,
+    showSignaturePhoto,
+    onShowSignaturePhotoChange: setShowSignaturePhoto,
+    showSignatureUsername,
+    onShowSignatureUsernameChange: setShowSignatureUsername,
+    showSignatureSocial,
+    onShowSignatureSocialChange: setShowSignatureSocial,
+    showLogo,
+    onShowLogoChange: setShowLogo,
+    logoPositionX,
+    onLogoPositionXChange: setLogoPositionX,
+    logoPositionY,
+    onLogoPositionYChange: setLogoPositionY,
+    logoScale,
+    onLogoScaleChange: setLogoScale,
+    logoOpacity,
+    onLogoOpacityChange: setLogoOpacity,
+  };
 
   return (
     <div className="flex flex-col w-full bg-background font-body text-foreground h-[calc(100vh-4rem)]">
       <div className="flex-1 flex md:grid md:grid-cols-[288px_1fr] min-h-0">
-        <Sidebar
-          aspectRatio={aspectRatio}
-          setAspectRatio={setAspectRatio}
-          scale={scale}
-          setScale={setScale}
-          bgColor={bgColor}
-          setBgColor={setBgColor}
-          fgColor={fgColor}
-          setFgColor={setFgColor}
-          activeControl={activeControl}
-          setActiveControl={setActiveControl}
-          text={text}
-          setText={setText}
-          profile={profile}
-          showProfileSignature={showProfileSignature}
-          onShowProfileSignatureChange={setShowProfileSignature}
-          signaturePositionX={signaturePositionX}
-          onSignaturePositionXChange={setSignaturePositionX}
-          signaturePositionY={signaturePositionY}
-          onSignaturePositionYChange={setSignaturePositionY}
-          signatureScale={signatureScale}
-          onSignatureScaleChange={setSignatureScale}
-          showSignaturePhoto={showSignaturePhoto}
-          onShowSignaturePhotoChange={setShowSignaturePhoto}
-          showSignatureUsername={showSignatureUsername}
-          onShowSignatureUsernameChange={setShowSignatureUsername}
-          showSignatureSocial={showSignatureSocial}
-          onShowSignatureSocialChange={setShowSignatureSocial}
-        />
+        <Sidebar {...sidebarProps} />
 
         <main className="flex-1 w-full overflow-auto">
             <PreviewCanva
@@ -115,39 +133,18 @@ export default function AspectWeaver() {
                 showSignaturePhoto={showSignaturePhoto}
                 showSignatureUsername={showSignatureUsername}
                 showSignatureSocial={showSignatureSocial}
+                showLogo={showLogo}
+                logoPositionX={logoPositionX}
+                logoPositionY={logoPositionY}
+                logoScale={logoScale}
+                logoOpacity={logoOpacity}
             />
         </main>
       </div>
 
-      <MobileToolbar
-        aspectRatio={aspectRatio}
-        setAspectRatio={setAspectRatio}
-        scale={scale}
-        setScale={setScale}
-        bgColor={bgColor}
-        setBgColor={setBgColor}
-        fgColor={fgColor}
-        setFgColor={setFgColor}
-        activeControl={activeControl}
-        setActiveControl={setActiveControl}
-        text={text}
-        setText={setText}
-        profile={profile}
-        showProfileSignature={showProfileSignature}
-        onShowProfileSignatureChange={setShowProfileSignature}
-        signaturePositionX={signaturePositionX}
-        onSignaturePositionXChange={setSignaturePositionX}
-        signaturePositionY={signaturePositionY}
-        onSignaturePositionYChange={setSignaturePositionY}
-        signatureScale={signatureScale}
-        onSignatureScaleChange={setSignatureScale}
-        showSignaturePhoto={showSignaturePhoto}
-        onShowSignaturePhotoChange={setShowSignaturePhoto}
-        showSignatureUsername={showSignatureUsername}
-        onShowSignatureUsernameChange={setShowSignatureUsername}
-        showSignatureSocial={showSignatureSocial}
-        onShowSignatureSocialChange={setShowSignatureSocial}
-      />
+      <MobileToolbar {...sidebarProps} />
     </div>
   );
 }
+
+    

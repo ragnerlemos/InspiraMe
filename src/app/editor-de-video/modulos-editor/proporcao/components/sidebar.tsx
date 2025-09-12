@@ -3,7 +3,7 @@
 
 import { useState, useRef } from "react";
 import Link from 'next/link';
-import { Wand2, RectangleHorizontal, RectangleVertical, Square, LayoutTemplate, UserCheck, ImageUp, Scaling, Paintbrush, Type, CaseSensitive, Pipette, AlignLeft, Bold, MoveVertical, Baseline, Upload, Image as ImageIcon, Palette, Layers, Check, Edit, User, MoveHorizontal, ZoomIn, AtSign } from "lucide-react";
+import { Wand2, RectangleHorizontal, RectangleVertical, Square, LayoutTemplate, UserCheck, ImageUp, Scaling, Paintbrush, Type, CaseSensitive, Pipette, AlignLeft, Bold, MoveVertical, Baseline, Upload, Image as ImageIcon, Palette, Layers, Check, Edit, User, MoveHorizontal, ZoomIn, AtSign, BadgePercent } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -25,6 +25,54 @@ const aspectRatios = [
 ];
 
 type TipoFundoAtivo = 'media' | 'solid' | 'gradient';
+
+interface ControleAssinaturaProps {
+  showProfileSignature: boolean;
+  onShowProfileSignatureChange: (show: boolean) => void;
+  signaturePositionX: number;
+  onSignaturePositionXChange: (x: number) => void;
+  signaturePositionY: number;
+  onSignaturePositionYChange: (y: number) => void;
+  signatureScale: number;
+  onSignatureScaleChange: (scale: number) => void;
+  showSignaturePhoto: boolean;
+  onShowSignaturePhotoChange: (show: boolean) => void;
+  showSignatureUsername: boolean;
+  onShowSignatureUsernameChange: (show: boolean) => void;
+  showSignatureSocial: boolean;
+  onShowSignatureSocialChange: (show: boolean) => void;
+  profile: ProfileData;
+}
+
+interface ControleLogoProps {
+    showLogo: boolean;
+    onShowLogoChange: (show: boolean) => void;
+    logoPositionX: number;
+    onLogoPositionXChange: (x: number) => void;
+    logoPositionY: number;
+    onLogoPositionYChange: (y: number) => void;
+    logoScale: number;
+    onLogoScaleChange: (scale: number) => void;
+    logoOpacity: number;
+    onLogoOpacityChange: (opacity: number) => void;
+    profile: ProfileData;
+}
+
+interface SidebarProps extends ControleAssinaturaProps, ControleLogoProps {
+    aspectRatio: string;
+    setAspectRatio: (ratio: string) => void;
+    scale: number;
+    setScale: (scale: number) => void;
+    bgColor: string;
+    setBgColor: (color: string) => void;
+    fgColor: string;
+    setFgColor: (color: string) => void;
+    activeControl: string | null;
+    setActiveControl: (control: string | null) => void;
+    text: string;
+    setText: (text: string) => void;
+    profile: ProfileData;
+}
 
 
 function ControleTipoFundo({ setBgColor }: { setBgColor: (color: string) => void }) {
@@ -143,23 +191,7 @@ function ControleTipoFundo({ setBgColor }: { setBgColor: (color: string) => void
     )
 }
 
-function ControleAssinatura(props: {
-  showProfileSignature: boolean;
-  onShowProfileSignatureChange: (show: boolean) => void;
-  signaturePositionX: number;
-  onSignaturePositionXChange: (x: number) => void;
-  signaturePositionY: number;
-  onSignaturePositionYChange: (y: number) => void;
-  signatureScale: number;
-  onSignatureScaleChange: (scale: number) => void;
-  showSignaturePhoto: boolean;
-  onShowSignaturePhotoChange: (show: boolean) => void;
-  showSignatureUsername: boolean;
-  onShowSignatureUsernameChange: (show: boolean) => void;
-  showSignatureSocial: boolean;
-  onShowSignatureSocialChange: (show: boolean) => void;
-  profile: ProfileData;
-}) {
+function ControleAssinatura(props: ControleAssinaturaProps) {
     const { 
         showProfileSignature, onShowProfileSignatureChange,
         signaturePositionX, onSignaturePositionXChange,
@@ -234,35 +266,73 @@ function ControleAssinatura(props: {
      )
 }
 
+function ControleLogo(props: ControleLogoProps) {
+    const {
+        showLogo, onShowLogoChange,
+        logoPositionX, onLogoPositionXChange,
+        logoPositionY, onLogoPositionYChange,
+        logoScale, onLogoScaleChange,
+        logoOpacity, onLogoOpacityChange,
+        profile,
+    } = props;
+    
+    const isLogoConfigured = !!profile.logo;
 
-interface SidebarProps {
-    aspectRatio: string;
-    setAspectRatio: (ratio: string) => void;
-    scale: number;
-    setScale: (scale: number) => void;
-    bgColor: string;
-    setBgColor: (color: string) => void;
-    fgColor: string;
-    setFgColor: (color: string) => void;
-    activeControl: string | null;
-    setActiveControl: (control: string | null) => void;
-    text: string;
-    setText: (text: string) => void;
-    profile: ProfileData;
-    showProfileSignature: boolean;
-    onShowProfileSignatureChange: (show: boolean) => void;
-    signaturePositionX: number;
-    onSignaturePositionXChange: (x: number) => void;
-    signaturePositionY: number;
-    onSignaturePositionYChange: (y: number) => void;
-    signatureScale: number;
-    onSignatureScaleChange: (scale: number) => void;
-    showSignaturePhoto: boolean;
-    onShowSignaturePhotoChange: (show: boolean) => void;
-    showSignatureUsername: boolean;
-    onShowSignatureUsernameChange: (show: boolean) => void;
-    showSignatureSocial: boolean;
-    onShowSignatureSocialChange: (show: boolean) => void;
+    return (
+        <div className="space-y-4">
+            <Button
+                variant={showLogo ? 'secondary' : 'outline'}
+                onClick={() => onShowLogoChange(!showLogo)}
+                className="w-full"
+                disabled={!isLogoConfigured}
+            >
+                {showLogo ? <Check className="mr-2 h-4 w-4" /> : <Edit className="mr-2 h-4 w-4" />}
+                {showLogo ? 'Logomarca Ativada' : 'Ativar Logomarca'}
+            </Button>
+            
+             {!isLogoConfigured && (
+                <Link href="/perfil" passHref>
+                    <Button variant="link" className="w-full text-center">
+                        <ImageUp className="mr-2 h-4 w-4" />
+                        Adicionar Logomarca no Perfil
+                    </Button>
+                </Link>
+            )}
+
+            {showLogo && isLogoConfigured && (
+                <div className="space-y-4 pt-2 border-t mt-4">
+                    <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                            <Label htmlFor="logo-position-x" className="text-xs flex items-center"><MoveHorizontal className="mr-2 h-3 w-3" />Posição Horizontal</Label>
+                            <span className="text-xs text-muted-foreground">{logoPositionX}%</span>
+                        </div>
+                        <Slider id="logo-position-x" min={0} max={100} step={1} value={[logoPositionX]} onValueChange={(v) => onLogoPositionXChange(v[0])} />
+                    </div>
+                    <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                            <Label htmlFor="logo-position-y" className="text-xs flex items-center"><MoveVertical className="mr-2 h-3 w-3" />Posição Vertical</Label>
+                            <span className="text-xs text-muted-foreground">{logoPositionY}%</span>
+                        </div>
+                        <Slider id="logo-position-y" min={0} max={100} step={1} value={[logoPositionY]} onValueChange={(v) => onLogoPositionYChange(v[0])} />
+                    </div>
+                    <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                            <Label htmlFor="logo-scale" className="text-xs flex items-center"><ZoomIn className="mr-2 h-3 w-3" />Escala</Label>
+                            <span className="text-xs text-muted-foreground">{logoScale}%</span>
+                        </div>
+                        <Slider id="logo-scale" min={10} max={200} step={1} value={[logoScale]} onValueChange={(v) => onLogoScaleChange(v[0])} />
+                    </div>
+                    <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                            <Label htmlFor="logo-opacity" className="text-xs flex items-center"><BadgePercent className="mr-2 h-3 w-3" />Opacidade</Label>
+                            <span className="text-xs text-muted-foreground">{logoOpacity}%</span>
+                        </div>
+                        <Slider id="logo-opacity" min={0} max={100} step={1} value={[logoOpacity]} onValueChange={(v) => onLogoOpacityChange(v[0])} />
+                    </div>
+                </div>
+            )}
+        </div>
+    )
 }
 
 export function Sidebar({
@@ -278,7 +348,7 @@ export function Sidebar({
     setActiveControl,
     text,
     setText,
-    ...signatureProps
+    ...props
 }: SidebarProps) {
 
     const [activeSubControl, setActiveSubControl] = useState<string | null>(null);
@@ -300,7 +370,7 @@ export function Sidebar({
         switch (activeControl) {
             case 'texto':
                 return (
-                    <div className="p-4 flex-1 flex flex-col">
+                    <div className="p-2 flex-1 flex flex-col">
                         <Label htmlFor="text-input" className="sr-only">Texto da Frase</Label>
                         <TextareaAutosize
                             id="text-input"
@@ -310,7 +380,7 @@ export function Sidebar({
                             placeholder="Digite sua frase aqui..."
                             className={cn(
                                 'flex w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
-                                ''
+                                'h-full'
                             )}
                         />
                     </div>
@@ -390,9 +460,9 @@ export function Sidebar({
             case 'fundo':
                 return <div className="p-4"><ControleTipoFundo setBgColor={setBgColor} /></div>;
             case 'assinatura':
-                return <div className="p-4"><ControleAssinatura {...signatureProps} /></div>;
+                return <div className="p-4"><ControleAssinatura {...props} /></div>;
             case 'logo':
-                return <div className="p-4"><p className="text-center text-muted-foreground p-4">Controles de Logo aqui.</p></div>;
+                return <div className="p-4"><ControleLogo {...props} /></div>;
             default:
                 return null;
         }
