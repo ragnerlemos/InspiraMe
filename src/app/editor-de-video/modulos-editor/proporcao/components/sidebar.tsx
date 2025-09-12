@@ -100,11 +100,11 @@ export function Sidebar({
                     </div>
                  );
             case 'fundo':
-                return <p className="text-center text-muted-foreground">Controles de Fundo aqui.</p>;
+                return <p className="text-center text-muted-foreground p-4">Controles de Fundo aqui.</p>;
             case 'assinatura':
-                return <p className="text-center text-muted-foreground">Controles de Assinatura aqui.</p>;
+                return <p className="text-center text-muted-foreground p-4">Controles de Assinatura aqui.</p>;
             case 'logo':
-                return <p className="text-center text-muted-foreground">Controles de Logo aqui.</p>;
+                return <p className="text-center text-muted-foreground p-4">Controles de Logo aqui.</p>;
             default:
                 return null;
         }
