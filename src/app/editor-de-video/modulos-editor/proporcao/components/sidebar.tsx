@@ -326,10 +326,6 @@ interface SidebarProps extends ControleAssinaturaProps, ControleLogoProps {
     setBaseBgColor: (color: string) => void;
     fgColor: string;
     setFgColor: (color: string) => void;
-    filmColor: string;
-    setFilmColor: (color: string) => void;
-    filmOpacity: number;
-    setFilmOpacity: (opacity: number) => void;
     activeControl: string | null;
     setActiveControl: (control: string | null) => void;
     text: string;
@@ -346,10 +342,6 @@ export function Sidebar({
     setBaseBgColor,
     fgColor,
     setFgColor,
-    filmColor,
-    setFilmColor,
-    filmOpacity,
-    setFilmOpacity,
     activeControl,
     setActiveControl,
     text,
@@ -430,14 +422,20 @@ export function Sidebar({
                      <div className="space-y-4 p-4">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label htmlFor="bg-color">Fundo</Label>
-                                <Input id="bg-color" type="text" value={baseBgColor} onChange={(e) => setBaseBgColor(e.target.value)} className="h-10" />
-                                <Input type="color" value={baseBgColor} onChange={e => setBaseBgColor(e.target.value)} className="h-10 w-full p-0 border-none cursor-pointer" />
+                                <div className="flex items-center gap-2">
+                                    <Input id="bg-color" type="text" value={baseBgColor} onChange={(e) => setBaseBgColor(e.target.value)} className="flex-1" />
+                                    <div className="relative h-10 w-10">
+                                       <Input type="color" value={baseBgColor} onChange={(e) => setBaseBgColor(e.target.value)} className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer" />
+                                    </div>
+                                </div>
                             </div>
                              <div className="space-y-2">
-                                <Label htmlFor="fg-color">Primeiro Plano</Label>
-                                <Input id="fg-color" type="text" value={fgColor} onChange={(e) => setFgColor(e.target.value)} className="h-10" />
-                                <Input type="color" value={fgColor} onChange={e => setFgColor(e.target.value)} className="h-10 w-full p-0 border-none cursor-pointer" />
+                                <div className="flex items-center gap-2">
+                                    <Input id="fg-color" type="text" value={fgColor} onChange={(e) => setFgColor(e.target.value)} className="flex-1" />
+                                    <div className="relative h-10 w-10">
+                                        <Input type="color" value={fgColor} onChange={e => setFgColor(e.target.value)} className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer" />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
