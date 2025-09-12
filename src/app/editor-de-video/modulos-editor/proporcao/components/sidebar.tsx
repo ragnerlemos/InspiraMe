@@ -1,20 +1,147 @@
 
 "use client";
 
-import { useState } from "react";
-import { Wand2, RectangleHorizontal, RectangleVertical, Square, LayoutTemplate, UserCheck, ImageUp, Scaling, Paintbrush, Type, CaseSensitive, Pipette, AlignLeft, Bold, MoveVertical, Baseline } from "lucide-react";
+import { useState, useRef } from "react";
+import Link from 'next/link';
+import { Wand2, RectangleHorizontal, RectangleVertical, Square, LayoutTemplate, UserCheck, ImageUp, Scaling, Paintbrush, Type, CaseSensitive, Pipette, AlignLeft, Bold, MoveVertical, Baseline, Upload, Image as ImageIcon, Palette, Layers } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
+import { Input } from "@/components/ui/input";
 import { BotaoRecurso } from "../../botao-recurso";
 import TextareaAutosize from 'react-textarea-autosize';
 import { cn } from "@/lib/utils";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/hooks/use-toast";
+
 
 const aspectRatios = [
     { label: "Story", value: "9 / 16", icon: RectangleVertical },
     { label: "Quadrado", value: "1 / 1", icon: Square },
     { label: "Vídeo", value: "16 / 9", icon: RectangleHorizontal },
 ];
+
+type TipoFundoAtivo = 'media' | 'solid' | 'gradient';
+
+
+function ControleTipoFundo({ setBgColor }: { setBgColor: (color: string) => void }) {
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const { toast } = useToast();
+    const [activeTab, setActiveTab] = useState<TipoFundoAtivo>('solid');
+    
+    // Simulating state for gradient, as we don't have full state persistence here yet
+    const [gradient, setGradient] = useState({
+        type: 'linear' as 'linear' | 'radial',
+        colors: ['#A06CD5', '#45B8AC'],
+        direction: 'to right'
+    });
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+            toast({ variant: "destructive", title: "Arquivo Inválido", description: "Por favor, selecione um arquivo de imagem ou vídeo." });
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            // In a real scenario, this would update a different state for media background
+            toast({ title: "Carregado!", description: "Mídia carregada (efeito visual não aplicado nesta tela)." });
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const handleSolidColorChange = (color: string) => {
+        setBgColor(color);
+    };
+
+    return (
+        <div className="space-y-4">
+            <div className="grid grid-cols-3 gap-2">
+                <Button variant={activeTab === 'media' ? "secondary" : "ghost"} onClick={() => setActiveTab('media')}><ImageIcon className="mr-2 h-4 w-4" /> Mídia</Button>
+                <Button variant={activeTab === 'solid' ? "secondary" : "ghost"} onClick={() => setActiveTab('solid')}><Palette className="mr-2 h-4 w-4" /> Cor</Button>
+                <Button variant={activeTab === 'gradient' ? "secondary" : "ghost"} onClick={() => setActiveTab('gradient')}><Layers className="mr-2 h-4 w-4" /> Gradiente</Button>
+            </div>
+            
+            <Separator />
+
+            {activeTab === 'media' && (
+                <div className="space-y-4">
+                    <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*,video/*" className="hidden"/>
+                    <Button onClick={() => fileInputRef.current?.click()} className="w-full" variant="outline"><Upload className="mr-2 h-4 w-4" /> Carregar do Dispositivo</Button>
+                     <Link href="/galeria?fromEditor=true" passHref>
+                        <Button className="w-full" variant="outline">
+                            <ImageIcon className="mr-2 h-4 w-4" /> Carregar da Galeria
+                        </Button>
+                    </Link>
+                </div>
+            )}
+
+            {activeTab === 'solid' && (
+                <div className="space-y-2">
+                    <Label>Cor de Fundo</Label>
+                    <div className="flex items-center gap-2">
+                        <Input type="text" value={"#ffffff"} onChange={(e) => handleSolidColorChange(e.target.value)} className="w-full h-10"/>
+                        <Popover><PopoverTrigger asChild><Button variant="outline" size="icon" style={{ backgroundColor: "#ffffff" }} className="h-10 w-10 border-2" /></PopoverTrigger><PopoverContent className="w-auto p-0 border-none"><input type="color" value={"#ffffff"} onChange={e => handleSolidColorChange(e.target.value)} className="w-16 h-16 cursor-pointer" /></PopoverContent></Popover>
+                    </div>
+                </div>
+            )}
+            
+            {activeTab === 'gradient' && (
+                 <div className="space-y-4">
+                    <div className="space-y-2">
+                        <Label>Tipo</Label>
+                        <div className="grid grid-cols-2 gap-2">
+                            <Button variant={gradient.type === 'linear' ? 'secondary' : 'outline'} onClick={() => setGradient(g => ({...g, type: 'linear'}))}>Linear</Button>
+                            <Button variant={gradient.type === 'radial' ? 'secondary' : 'outline'} onClick={() => setGradient(g => ({...g, type: 'radial'}))}>Radial</Button>
+                        </div>
+                    </div>
+
+                    {gradient.type === 'linear' && (
+                        <div className="space-y-2">
+                            <Label htmlFor="gradient-direction">Direção</Label>
+                            <Select value={gradient.direction} onValueChange={(dir) => setGradient(g => ({...g, direction: dir}))}>
+                                <SelectTrigger id="gradient-direction">
+                                    <SelectValue placeholder="Selecione a direção" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="to right">Para Direita</SelectItem>
+                                    <SelectItem value="to left">Para Esquerda</SelectItem>
+                                    <SelectItem value="to bottom">Para Baixo</SelectItem>
+                                    <SelectItem value="to top">Para Cima</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
+                    <div className="space-y-2">
+                        <Label>Cores do Gradiente</Label>
+                        <div className="grid grid-cols-2 gap-4">
+                            {[0, 1].map((index) => (
+                                <Popover key={index}>
+                                    <PopoverTrigger asChild>
+                                        <div className="w-full h-10 rounded-md border-2" style={{ backgroundColor: gradient.colors[index as 0 | 1] }} />
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0 border-none">
+                                        <input type="color" value={gradient.colors[index as 0 | 1]} onChange={(e) => {
+                                            const newColors = [...gradient.colors];
+                                            newColors[index] = e.target.value;
+                                            setGradient(g => ({...g, colors: newColors as [string, string]}));
+                                        }} className="w-16 h-16 cursor-pointer" />
+                                    </PopoverContent>
+                                </Popover>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    )
+}
+
 
 interface SidebarProps {
     aspectRatio: string;
@@ -65,7 +192,7 @@ export function Sidebar({
         switch (activeControl) {
             case 'texto':
                 return (
-                    <div className="p-4">
+                    <div className="p-4 flex-1 flex flex-col">
                         <Label htmlFor="text-input" className="sr-only">Texto da Frase</Label>
                         <TextareaAutosize
                             id="text-input"
@@ -75,7 +202,7 @@ export function Sidebar({
                             placeholder="Digite sua frase aqui..."
                             className={cn(
                                 'flex w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
-                                'resize-y' // Permite redimensionamento vertical
+                                'resize-y'
                             )}
                         />
                     </div>
@@ -134,7 +261,10 @@ export function Sidebar({
             case 'estilo':
                  return (
                      <div className="w-full flex-1 flex flex-col">
-                        <div className="p-4">{!activeSubControl && <p className="text-center text-muted-foreground text-sm">Selecione um controle de estilo abaixo.</p>}</div>
+                        <div className="p-4 flex-1 overflow-y-auto">
+                            {!activeSubControl && <p className="text-center text-muted-foreground text-sm">Selecione um controle de estilo abaixo.</p>}
+                            {activeSubControl && <p className="text-center text-muted-foreground text-sm">Controles para '{activeSubControl}' aqui.</p>}
+                        </div>
                         <div className="w-full whitespace-nowrap border-t mt-auto">
                             <div className="flex h-14 items-center justify-around flex-wrap bg-background/90 backdrop-blur-sm px-2">
                                 <BotaoRecurso icon={Type} label="Fonte" onClick={() => setActiveSubControl('fonte')} isActive={activeSubControl === 'fonte'}/>
@@ -150,7 +280,7 @@ export function Sidebar({
                      </div>
                  );
             case 'fundo':
-                return <div className="p-4"><p className="text-center text-muted-foreground p-4">Controles de Fundo aqui.</p></div>;
+                return <div className="p-4"><ControleTipoFundo setBgColor={setBgColor} /></div>;
             case 'assinatura':
                 return <div className="p-4"><p className="text-center text-muted-foreground p-4">Controles de Assinatura aqui.</p></div>;
             case 'logo':

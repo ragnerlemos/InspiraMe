@@ -1,10 +1,12 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
+import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
+import { Input } from "@/components/ui/input";
 import {
   Sheet,
   SheetContent,
@@ -29,11 +31,19 @@ import {
   Bold,
   MoveVertical,
   Baseline,
+  Upload,
+  Image as ImageIcon,
+  Palette,
+  Layers,
 } from "lucide-react";
 import { BotaoRecurso } from "../../botao-recurso";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import TextareaAutosize from 'react-textarea-autosize';
 import { cn } from "@/lib/utils";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/hooks/use-toast";
 
 
 const aspectRatios = [
@@ -58,6 +68,110 @@ interface MobileToolbarProps {
 }
 
 type ActivePanel = "texto" | "proporcao" | "escala" | "cores" | "fundo" | "assinatura" | "logo" | "estilo" | null;
+type TipoFundoAtivo = 'media' | 'solid' | 'gradient';
+
+function ControleTipoFundo({ setBgColor }: { setBgColor: (color: string) => void }) {
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const { toast } = useToast();
+    const [activeTab, setActiveTab] = useState<TipoFundoAtivo>('solid');
+    
+    // Simulating state for gradient, as we don't have full state persistence here yet
+    const [gradient, setGradient] = useState({
+        type: 'linear' as 'linear' | 'radial',
+        colors: ['#A06CD5', '#45B8AC'],
+        direction: 'to right'
+    });
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+            toast({ variant: "destructive", title: "Arquivo Inválido", description: "Por favor, selecione um arquivo de imagem ou vídeo." });
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            // In a real scenario, this would update a different state for media background
+            toast({ title: "Carregado!", description: "Mídia carregada (efeito visual não aplicado nesta tela)." });
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const handleSolidColorChange = (color: string) => {
+        setBgColor(color);
+    };
+
+    return (
+        <div className="space-y-4">
+            <div className="grid grid-cols-3 gap-2">
+                <Button variant={activeTab === 'media' ? "secondary" : "ghost"} onClick={() => setActiveTab('media')}><ImageIcon className="mr-2 h-4 w-4" /> Mídia</Button>
+                <Button variant={activeTab === 'solid' ? "secondary" : "ghost"} onClick={() => setActiveTab('solid')}><Palette className="mr-2 h-4 w-4" /> Cor</Button>
+                <Button variant={activeTab === 'gradient' ? "secondary" : "ghost"} onClick={() => setActiveTab('gradient')}><Layers className="mr-2 h-4 w-4" /> Gradiente</Button>
+            </div>
+            
+            <Separator />
+
+            {activeTab === 'media' && (
+                <div className="space-y-4">
+                    <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*,video/*" className="hidden"/>
+                    <Button onClick={() => fileInputRef.current?.click()} className="w-full" variant="outline"><Upload className="mr-2 h-4 w-4" /> Carregar do Dispositivo</Button>
+                     <Link href="/galeria?fromEditor=true" passHref>
+                        <Button className="w-full" variant="outline">
+                            <ImageIcon className="mr-2 h-4 w-4" /> Carregar da Galeria
+                        </Button>
+                    </Link>
+                </div>
+            )}
+
+            {activeTab === 'solid' && (
+                 <div className="space-y-1">
+                    <Label htmlFor="bg-color-mobile">Cor de Fundo</Label>
+                    <input id="bg-color-mobile" type="color" value={bgColor} onChange={(e) => handleSolidColorChange(e.target.value)} className="w-full h-10 rounded-md border cursor-pointer" />
+                </div>
+            )}
+            
+            {activeTab === 'gradient' && (
+                 <div className="space-y-4">
+                    <div className="space-y-2">
+                        <Label>Tipo</Label>
+                        <div className="grid grid-cols-2 gap-2">
+                            <Button variant={gradient.type === 'linear' ? 'secondary' : 'outline'} onClick={() => setGradient(g => ({...g, type: 'linear'}))}>Linear</Button>
+                            <Button variant={gradient.type === 'radial' ? 'secondary' : 'outline'} onClick={() => setGradient(g => ({...g, type: 'radial'}))}>Radial</Button>
+                        </div>
+                    </div>
+                     {gradient.type === 'linear' && (
+                        <div className="space-y-2">
+                            <Label htmlFor="gradient-direction-mobile">Direção</Label>
+                            <Select value={gradient.direction} onValueChange={(dir) => setGradient(g => ({...g, direction: dir}))}>
+                                <SelectTrigger id="gradient-direction-mobile"><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="to right">Para Direita</SelectItem>
+                                    <SelectItem value="to left">Para Esquerda</SelectItem>
+                                    <SelectItem value="to bottom">Para Baixo</SelectItem>
+                                    <SelectItem value="to top">Para Cima</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
+                    <div className="space-y-2">
+                        <Label>Cores</Label>
+                        <div className="grid grid-cols-2 gap-4">
+                            {[0, 1].map((index) => (
+                                <input key={index} type="color" value={gradient.colors[index]} onChange={(e) => {
+                                    const newColors = [...gradient.colors];
+                                    newColors[index] = e.target.value;
+                                    setGradient(g => ({...g, colors: newColors as [string, string]}));
+                                }} className="w-full h-10 rounded-md border cursor-pointer" />
+                            ))}
+                        </div>
+                    </div>
+                 </div>
+            )}
+        </div>
+    )
+}
 
 export function MobileToolbar({
   aspectRatio,
@@ -87,7 +201,7 @@ export function MobileToolbar({
 
     const panels: Record<string, JSX.Element | null> = {
       texto: (
-          <div className="p-4">
+          <div className="p-4 flex-1 flex flex-col">
               <Label htmlFor="text-input-mobile" className="sr-only">Texto da Frase</Label>
               <TextareaAutosize
                   id="text-input-mobile"
@@ -148,6 +262,7 @@ export function MobileToolbar({
         <div className="w-full h-full flex flex-col">
             <div className="flex-1 overflow-y-auto">
                 {!activeSubControl && <p className="text-muted-foreground text-center p-4">Selecione uma opção abaixo para editar.</p>}
+                 {activeSubControl && <div className="p-4"><p className="text-center text-muted-foreground">Controles para '{activeSubControl}' aqui.</p></div>}
             </div>
              <div className="w-full whitespace-nowrap border-t">
                 <div className="flex h-14 items-center justify-around flex-wrap bg-background/90 backdrop-blur-sm px-2">
@@ -163,7 +278,7 @@ export function MobileToolbar({
             </div>
        </div>
       ),
-      fundo: <div className="p-4"><p className="text-center text-muted-foreground">Controles de Fundo aqui.</p></div>,
+      fundo: <div className="p-4"><ControleTipoFundo setBgColor={setBgColor} /></div>,
       assinatura: <div className="p-4"><p className="text-center text-muted-foreground">Controles de Assinatura aqui.</p></div>,
       logo: <div className="p-4"><p className="text-center text-muted-foreground">Controles de Logo aqui.</p></div>,
     };
