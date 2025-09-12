@@ -135,39 +135,43 @@ function ControleTipoFundo({ setBaseBgColor }: { setBaseBgColor: (color: string)
             
             {activeTab === 'gradient' && (
                  <div className="space-y-4">
-                    <div className="space-y-2">
-                        <Label>Tipo</Label>
-                        <div className="grid grid-cols-2 gap-2">
-                            <Button variant={gradient.type === 'linear' ? 'secondary' : 'outline'} onClick={() => setGradient(g => ({...g, type: 'linear'}))}>Linear</Button>
-                            <Button variant={gradient.type === 'radial' ? 'secondary' : 'outline'} onClick={() => setGradient(g => ({...g, type: 'radial'}))}>Radial</Button>
-                        </div>
-                    </div>
-                     {gradient.type === 'linear' && (
+                    <div className="flex items-end gap-2">
                         <div className="space-y-2">
-                            <Label htmlFor="gradient-direction-mobile">Direção</Label>
-                            <Select value={gradient.direction} onValueChange={(dir) => setGradient(g => ({...g, direction: dir}))}>
-                                <SelectTrigger id="gradient-direction-mobile"><SelectValue /></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="to right">Para Direita</SelectItem>
-                                    <SelectItem value="to left">Para Esquerda</SelectItem>
-                                    <SelectItem value="to bottom">Para Baixo</SelectItem>
-                                    <SelectItem value="to top">Para Cima</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    )}
-                    <div className="space-y-2">
-                        <Label>Cores</Label>
-                        <div className="grid grid-cols-1 gap-2">
-                            {[0, 1].map((index) => (
-                                <div key={index} className="flex items-center gap-2">
-                                    <div className="relative h-10 w-full">
-                                         <Input type="color" value={gradient.colors[index]} onChange={(e) => handleGradientColorChange(index as 0 | 1, e.target.value)} className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer" />
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                           <Label>Tipo</Label>
+                           <div className="flex gap-1">
+                               <Button size="sm" variant={gradient.type === 'linear' ? 'secondary' : 'outline'} onClick={() => setGradient(g => ({...g, type: 'linear'}))}>Linear</Button>
+                               <Button size="sm" variant={gradient.type === 'radial' ? 'secondary' : 'outline'} onClick={() => setGradient(g => ({...g, type: 'radial'}))}>Radial</Button>
+                           </div>
+                       </div>
+
+                       {gradient.type === 'linear' && (
+                           <div className="space-y-2 flex-1">
+                               <Label htmlFor="gradient-direction-mobile">Direção</Label>
+                               <Select value={gradient.direction} onValueChange={(dir) => setGradient(g => ({...g, direction: dir}))}>
+                                   <SelectTrigger id="gradient-direction-mobile" className="h-9"><SelectValue /></SelectTrigger>
+                                   <SelectContent>
+                                       <SelectItem value="to right">Direita</SelectItem>
+                                       <SelectItem value="to left">Esquerda</SelectItem>
+                                       <SelectItem value="to bottom">Abaixo</SelectItem>
+                                       <SelectItem value="to top">Acima</SelectItem>
+                                   </SelectContent>
+                               </Select>
+                           </div>
+                       )}
+                   </div>
+                   <div className="space-y-2">
+                       <Label>Cores</Label>
+                       <div className="flex items-center gap-4">
+                           {[0, 1].map((index) => (
+                               <div key={index} className="flex-1 space-y-1">
+                                   <Label className="text-xs text-muted-foreground">Cor {index + 1}</Label>
+                                   <div className="relative h-9 w-full">
+                                       <Input type="color" value={gradient.colors[index]} onChange={(e) => handleGradientColorChange(index as 0 | 1, e.target.value)} className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer" />
+                                   </div>
+                               </div>
+                           ))}
+                       </div>
+                   </div>
                  </div>
             )}
         </div>
@@ -437,9 +441,9 @@ export function MobileToolbar({
       ),
       cores: (
         <div className="p-4 grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-                <Label>Cor do Fundo</Label>
-                <div className="relative h-10 w-full rounded-md border overflow-hidden cursor-pointer">
+             <div className="space-y-2">
+                <Label className="text-left">Cor do Fundo</Label>
+                 <div className="relative h-10 w-full rounded-md border overflow-hidden cursor-pointer">
                     <div className="w-full h-full" style={{ backgroundColor: baseBgColor }} />
                     <Input 
                         type="color" 
@@ -449,8 +453,8 @@ export function MobileToolbar({
                     />
                 </div>
             </div>
-            <div className="space-y-2">
-                <Label>Cor do Texto</Label>
+             <div className="space-y-2">
+                <Label className="text-left">Cor do Texto</Label>
                  <div className="relative h-10 w-full rounded-md border overflow-hidden cursor-pointer">
                     <div className="w-full h-full" style={{ backgroundColor: fgColor }} />
                     <Input 
@@ -507,7 +511,7 @@ export function MobileToolbar({
 
   const mainToolbar = (
      <ScrollArea className="w-full whitespace-nowrap">
-        <div className="flex h-16 items-center justify-start gap-1 px-2 border-t bg-background">
+        <div className="flex h-16 items-center w-max space-x-1 px-2 border-t bg-background">
             <BotaoRecurso icon={Type} label="Texto" onClick={() => handlePanelChange("texto")} isActive={activePanel === "texto"} />
             <BotaoRecurso icon={RectangleHorizontal} label="Canvas" onClick={() => handlePanelChange("canvas")} isActive={activePanel === "canvas"} />
             <BotaoRecurso icon={Paintbrush} label="Cores" onClick={() => handlePanelChange("cores")} isActive={activePanel === "cores"} />

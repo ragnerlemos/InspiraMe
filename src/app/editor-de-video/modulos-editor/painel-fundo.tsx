@@ -188,47 +188,48 @@ function ControleTipoFundo(props: {
             
             {activeTab === 'gradient' && (
                  <div className="space-y-4">
-                    <div className="space-y-2">
-                        <Label>Tipo</Label>
-                        <div className="grid grid-cols-2 gap-2">
-                            <Button variant={gradient.type === 'linear' ? 'secondary' : 'outline'} onClick={() => handleGradientTypeChange('linear')}>
-                                Linear
-                            </Button>
-                            <Button variant={gradient.type === 'radial' ? 'secondary' : 'outline'} onClick={() => handleGradientTypeChange('radial')}>
-                                Radial
-                            </Button>
+                    <div className="flex items-end gap-2">
+                         <div className="space-y-2">
+                            <Label>Tipo</Label>
+                            <div className="flex gap-1">
+                                <Button size="sm" variant={gradient.type === 'linear' ? 'secondary' : 'outline'} onClick={() => handleGradientTypeChange('linear')}>Linear</Button>
+                                <Button size="sm" variant={gradient.type === 'radial' ? 'secondary' : 'outline'} onClick={() => handleGradientTypeChange('radial')}>Radial</Button>
+                            </div>
                         </div>
-                    </div>
 
-                    {gradient.type === 'linear' && (
-                        <div className="space-y-2">
-                            <Label htmlFor="gradient-direction">Direção</Label>
-                            <Select value={gradient.direction} onValueChange={handleGradientDirectionChange}>
-                                <SelectTrigger id="gradient-direction">
-                                    <SelectValue placeholder="Selecione a direção" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="to right">Para Direita</SelectItem>
-                                    <SelectItem value="to left">Para Esquerda</SelectItem>
-                                    <SelectItem value="to bottom">Para Baixo</SelectItem>
-                                    <SelectItem value="to top">Para Cima</SelectItem>
-                                    <SelectItem value="to bottom right">Diagonal (↓→)</SelectItem>
-                                    <SelectItem value="to top left">Diagonal (↑←)</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    )}
+                        {gradient.type === 'linear' && (
+                            <div className="space-y-2 flex-1">
+                                <Label htmlFor="gradient-direction">Direção</Label>
+                                <Select value={gradient.direction} onValueChange={handleGradientDirectionChange}>
+                                    <SelectTrigger id="gradient-direction" className="h-9">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="to right">Direita</SelectItem>
+                                        <SelectItem value="to left">Esquerda</SelectItem>
+                                        <SelectItem value="to bottom">Abaixo</SelectItem>
+                                        <SelectItem value="to top">Acima</SelectItem>
+                                        <SelectItem value="to bottom right">Diag. (↓→)</SelectItem>
+                                        <SelectItem value="to top left">Diag. (↑←)</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        )}
+                    </div>
                     <div className="space-y-2">
                         <Label>Cores do Gradiente</Label>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="flex items-center gap-4">
                             {[0, 1].map((index) => (
-                                <div key={index} className="relative h-10 w-full">
-                                    <Input
-                                        type="color"
-                                        value={gradient.colors[index as 0 | 1]}
-                                        onChange={(e) => handleGradientColorChange(index as 0 | 1, e.target.value)}
-                                        className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer"
-                                    />
+                                <div key={index} className="flex-1 space-y-1">
+                                    <Label className="text-xs text-muted-foreground">Cor {index + 1}</Label>
+                                    <div className="relative h-9 w-full">
+                                        <Input
+                                            type="color"
+                                            value={gradient.colors[index as 0 | 1]}
+                                            onChange={(e) => handleGradientColorChange(index as 0 | 1, e.target.value)}
+                                            className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer"
+                                        />
+                                    </div>
                                 </div>
                             ))}
                         </div>
