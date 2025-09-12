@@ -64,21 +64,21 @@ export function Sidebar({
         switch (activeControl) {
             case 'texto':
                 return (
-                    <div className="p-4">
+                    <div className="px-2 py-4 h-full">
                         <Label htmlFor="text-input" className="sr-only">Texto da Frase</Label>
                         <Textarea
                             id="text-input"
                             value={text}
                             onChange={(e) => setText(e.target.value)}
-                            rows={5}
+                            rows={6}
                             placeholder="Digite sua frase aqui..."
-                            className="text-base"
+                            className="text-base w-full h-full resize-none"
                         />
                     </div>
                 );
             case 'proporcao':
                 return (
-                    <div className="space-y-2">
+                    <div className="space-y-2 p-4">
                         <Label>Proporção da Tela</Label>
                         <div className="grid grid-cols-3 gap-2">
                             {aspectRatios.map((ratio) => (
@@ -97,7 +97,7 @@ export function Sidebar({
                 );
             case 'escala':
                 return (
-                    <div className="space-y-2">
+                    <div className="space-y-2 p-4">
                          <div className="flex justify-between items-center">
                             <Label>Escala do Canvas</Label>
                             <span className="text-sm font-mono text-muted-foreground">{Math.round(scale * 100)}%</span>
@@ -113,7 +113,7 @@ export function Sidebar({
                 );
             case 'cores':
                  return (
-                     <div className="space-y-4">
+                     <div className="space-y-4 p-4">
                         <Label>Cores</Label>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1">
@@ -146,11 +146,11 @@ export function Sidebar({
                      </div>
                  );
             case 'fundo':
-                return <p className="text-center text-muted-foreground p-4">Controles de Fundo aqui.</p>;
+                return <div className="p-4"><p className="text-center text-muted-foreground p-4">Controles de Fundo aqui.</p></div>;
             case 'assinatura':
-                return <p className="text-center text-muted-foreground p-4">Controles de Assinatura aqui.</p>;
+                return <div className="p-4"><p className="text-center text-muted-foreground p-4">Controles de Assinatura aqui.</p></div>;
             case 'logo':
-                return <p className="text-center text-muted-foreground p-4">Controles de Logo aqui.</p>;
+                return <div className="p-4"><p className="text-center text-muted-foreground p-4">Controles de Logo aqui.</p></div>;
             default:
                 return null;
         }
@@ -185,7 +185,7 @@ export function Sidebar({
             
             {mainToolbar}
 
-            <div className="flex-1 overflow-y-auto p-2 flex flex-col">
+            <div className="flex-1 overflow-y-auto flex flex-col">
                 {renderActiveControl()}
             </div>
 

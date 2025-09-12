@@ -85,20 +85,20 @@ export function MobileToolbar({
 
     const panels: Record<string, JSX.Element | null> = {
       texto: (
-          <div className="p-4">
+          <div className="px-2 py-4 h-full">
               <Label htmlFor="text-input-mobile" className="sr-only">Texto da Frase</Label>
               <Textarea
                   id="text-input-mobile"
                   value={text}
                   onChange={(e) => setText(e.target.value)}
-                  rows={4}
+                  rows={6}
                   placeholder="Digite sua frase aqui..."
-                  className="text-base"
+                  className="text-base w-full h-full resize-none"
               />
           </div>
       ),
       proporcao: (
-        <div className="space-y-2">
+        <div className="space-y-2 p-4">
           <Label>Proporção da Tela</Label>
           <div className="grid grid-cols-3 gap-2">
             {aspectRatios.map(({ value, icon: Icon, label }) => (
@@ -116,7 +116,7 @@ export function MobileToolbar({
         </div>
       ),
       escala: (
-        <div className="space-y-2">
+        <div className="space-y-2 p-4">
           <div className="flex justify-between items-center">
             <Label>Escala do Canvas</Label>
             <span className="text-sm font-mono">{Math.round(scale * 100)}%</span>
@@ -125,7 +125,7 @@ export function MobileToolbar({
         </div>
       ),
       cores: (
-        <div className="space-y-4">
+        <div className="space-y-4 p-4">
           <Label>Cores</Label>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
@@ -158,9 +158,9 @@ export function MobileToolbar({
             </div>
        </div>
       ),
-      fundo: <p className="text-center text-muted-foreground">Controles de Fundo aqui.</p>,
-      assinatura: <p className="text-center text-muted-foreground">Controles de Assinatura aqui.</p>,
-      logo: <p className="text-center text-muted-foreground">Controles de Logo aqui.</p>,
+      fundo: <div className="p-4"><p className="text-center text-muted-foreground">Controles de Fundo aqui.</p></div>,
+      assinatura: <div className="p-4"><p className="text-center text-muted-foreground">Controles de Assinatura aqui.</p></div>,
+      logo: <div className="p-4"><p className="text-center text-muted-foreground">Controles de Logo aqui.</p></div>,
     };
 
     return panels[activePanel];
