@@ -107,6 +107,13 @@ export function PainelEstilo(props: PainelEstiloProps & { onClose: () => void })
                         </div>
                         <div className="space-y-2">
                             <div className="flex justify-between items-center">
+                                <Label htmlFor="word-spacing" className="flex items-center"><Text className="mr-2 h-4 w-4" />Espaç. Palavras</Label>
+                                <span className="text-sm text-muted-foreground">{(props.wordSpacing / 10).toFixed(1)}</span>
+                            </div>
+                            <Slider id="word-spacing" min={-10} max={50} step={0.5} value={[props.wordSpacing]} onValueChange={(v) => props.onWordSpacingChange(v[0])} />
+                        </div>
+                        <div className="space-y-2">
+                            <div className="flex justify-between items-center">
                                 <Label htmlFor="line-height" className="flex items-center"><Pilcrow className="mr-2 h-4 w-4" />Altura da Linha</Label>
                                 <span className="text-sm text-muted-foreground">{props.lineHeight.toFixed(2)}</span>
                             </div>
@@ -174,5 +181,3 @@ export function PainelEstilo(props: PainelEstiloProps & { onClose: () => void })
        </div>
     );
 }
-
-    

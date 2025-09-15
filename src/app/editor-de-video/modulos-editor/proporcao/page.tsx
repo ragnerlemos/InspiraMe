@@ -70,6 +70,7 @@ export default function AspectWeaver() {
   const [textStrokeWidth, setTextStrokeWidth] = useState(0.2);
   const [letterSpacing, setLetterSpacing] = useState(0);
   const [lineHeight, setLineHeight] = useState(1.3);
+  const [wordSpacing, setWordSpacing] = useState(0);
 
 
   // Signature State
@@ -132,9 +133,10 @@ export default function AspectWeaver() {
         textAlign,
         lineHeight,
         letterSpacing: `${letterSpacing / 100}em`,
+        wordSpacing: `${wordSpacing / 100}em`,
         textShadow: textStrokeShadow !== "none" && mainTextShadow !== "none" ? `${textStrokeShadow}, ${mainTextShadow}` : textStrokeShadow !== "none" ? textStrokeShadow : mainTextShadow,
     }
-  }, [fontFamily, fontSize, fontWeight, fontStyle, fgColor, textAlign, textShadowBlur, textStrokeColor, textStrokeWidth, letterSpacing, lineHeight]);
+  }, [fontFamily, fontSize, fontWeight, fontStyle, fgColor, textAlign, textShadowBlur, textStrokeColor, textStrokeWidth, letterSpacing, lineHeight, wordSpacing]);
 
 
   if (!isProfileLoaded) {
@@ -176,6 +178,7 @@ export default function AspectWeaver() {
     textStrokeWidth, onTextStrokeWidthChange: setTextStrokeWidth,
     letterSpacing, onLetterSpacingChange: setLetterSpacing,
     lineHeight, onLineHeightChange: setLineHeight,
+    wordSpacing, onWordSpacingChange: setWordSpacing,
   };
 
   return (
@@ -221,5 +224,3 @@ export default function AspectWeaver() {
     </div>
   );
 }
-
-    

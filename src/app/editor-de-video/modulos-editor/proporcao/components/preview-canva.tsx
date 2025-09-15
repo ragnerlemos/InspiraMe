@@ -89,20 +89,22 @@ export function PreviewCanva({
         )}
       >
         <div className="absolute inset-0 z-20" style={{ backgroundColor: filmBackgroundColor }} />
-        <div className="relative z-30 flex items-center justify-center h-full">
-            <div className="relative w-full h-full p-8 flex items-center justify-center">
-                <div
-                    className="break-words max-w-full transition-all duration-200"
-                    style={{
-                        ...textStyle,
-                        position: 'absolute',
-                        top: `${textVerticalPosition}%`,
-                        left: '50%',
-                        transform: "translate(-50%, -50%)",
-                    }}
-                >
-                    {text}
-                </div>
+        <div className="relative z-30 flex h-full p-8"
+            style={{
+                alignItems: 'flex-start',
+                justifyContent: 'center'
+            }}
+        >
+            <div
+                className="break-words max-w-full transition-all duration-200"
+                style={{
+                    ...textStyle,
+                    position: 'relative',
+                    top: `${textVerticalPosition}%`,
+                    transform: "translateY(-50%)",
+                }}
+            >
+                {text}
             </div>
         </div>
         

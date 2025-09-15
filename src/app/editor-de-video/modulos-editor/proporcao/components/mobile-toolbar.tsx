@@ -49,6 +49,7 @@ import {
   Box,
   Pilcrow,
   CaseUpper,
+  Text,
 } from "lucide-react";
 import { BotaoRecurso } from "../../botao-recurso";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -213,6 +214,8 @@ interface CommonStyleProps {
   onLetterSpacingChange: (spacing: number) => void;
   lineHeight: number;
   onLineHeightChange: (height: number) => void;
+  wordSpacing: number;
+  onWordSpacingChange: (spacing: number) => void;
 }
 
 
@@ -511,6 +514,13 @@ function renderEstiloControl(subControl: string | null, props: EstiloControlProp
                             <span className="text-sm text-muted-foreground">{(props.letterSpacing / 10).toFixed(1)}</span>
                         </div>
                         <Slider id="letter-spacing" min={-10} max={50} step={0.5} value={[props.letterSpacing]} onValueChange={(v) => props.onLetterSpacingChange(v[0])} />
+                    </div>
+                    <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                            <Label htmlFor="word-spacing" className="flex items-center"><Text className="mr-2 h-4 w-4" />Espaç. Palavras</Label>
+                            <span className="text-sm text-muted-foreground">{(props.wordSpacing / 10).toFixed(1)}</span>
+                        </div>
+                        <Slider id="word-spacing" min={-10} max={50} step={0.5} value={[props.wordSpacing]} onValueChange={(v) => props.onWordSpacingChange(v[0])} />
                     </div>
                     <div className="space-y-2">
                         <div className="flex justify-between items-center">
