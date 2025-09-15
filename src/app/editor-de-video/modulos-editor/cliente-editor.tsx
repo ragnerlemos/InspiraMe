@@ -22,7 +22,7 @@ const getInitialState = (): EditorState => ({
     text: "",
     fontFamily: "Poppins",
     fontSize: 5, // Agora representa um percentual da largura do container (cqw)
-    fontWeight: "normal",
+    fontWeight: "bold",
     fontStyle: "normal",
     textColor: "#FFFFFF",
     textAlign: "center",
@@ -426,3 +426,5 @@ export function EditorClient() {
     </PanelGroup>
   );
 }
+
+    

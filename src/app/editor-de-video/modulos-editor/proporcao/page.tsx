@@ -52,7 +52,7 @@ export default function AspectWeaver() {
   const [text, setText] = useState("A única maneira de fazer um ótimo trabalho é amar o que você faz.");
   const [fontFamily, setFontFamily] = useState("Poppins");
   const [fontSize, setFontSize] = useState(5);
-  const [fontWeight, setFontWeight] = useState<"normal" | "bold">("normal");
+  const [fontWeight, setFontWeight] = useState<"normal" | "bold">("bold");
   const [fontStyle, setFontStyle] = useState<"normal" | "italic">("normal");
   const [textAlign, setTextAlign] = useState<"left" | "center" | "right">("center");
   const [textVerticalPosition, setTextVerticalPosition] = useState(50);
@@ -153,6 +153,8 @@ export default function AspectWeaver() {
     scale, setScale,
     backgroundColorValue, setBackgroundColorValue,
     backgroundStyle, setBackgroundStyle,
+    filmColor, setFilmColor,
+    filmOpacity, setFilmOpacity,
     fgColor, setFgColor,
     activeControl, setActiveControl,
     text, setText,
@@ -230,3 +232,5 @@ export default function AspectWeaver() {
     </div>
   );
 }
+
+    

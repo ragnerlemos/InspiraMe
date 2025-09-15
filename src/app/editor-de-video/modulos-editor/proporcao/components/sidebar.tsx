@@ -587,6 +587,10 @@ interface SidebarProps extends ControleAssinaturaProps, ControleLogoProps, Commo
     setBackgroundColorValue: (color: string) => void;
     backgroundStyle: EstiloFundo;
     setBackgroundStyle: (style: EstiloFundo) => void;
+    filmColor: string;
+    setFilmColor: (color: string) => void;
+    filmOpacity: number;
+    setFilmOpacity: (opacity: number) => void;
     fgColor: string;
     setFgColor: (color: string) => void;
     activeControl: string | null;
@@ -605,6 +609,10 @@ export function Sidebar({
     setBackgroundColorValue,
     backgroundStyle,
     setBackgroundStyle,
+    filmColor,
+    setFilmColor,
+    filmOpacity,
+    setFilmOpacity,
     fgColor,
     setFgColor,
     activeControl,
@@ -702,6 +710,29 @@ export function Sidebar({
                         </div>
                     </div>
                  );
+            case 'filtro':
+                return (
+                    <div className="space-y-4 p-4">
+                        <div className="space-y-2">
+                            <Label>Cor da Película</Label>
+                            <div className="relative h-10 w-full">
+                                <Input
+                                    type="color"
+                                    value={filmColor}
+                                    onChange={(e) => setFilmColor(e.target.value)}
+                                    className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer"
+                                />
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <div className="flex justify-between items-center">
+                                <Label htmlFor="film-opacity">Opacidade da Película</Label>
+                                <span className="text-sm text-muted-foreground">{filmOpacity}%</span>
+                            </div>
+                            <Slider id="film-opacity" min={0} max={100} step={1} value={[filmOpacity]} onValueChange={(v) => setFilmOpacity(v[0])} />
+                        </div>
+                    </div>
+                );
             case 'estilo':
                  return (
                      <div className="w-full flex-1 flex flex-col">
@@ -740,6 +771,7 @@ export function Sidebar({
                 <BotaoRecurso icon={Type} label="Texto" onClick={() => handleSetControleAtivo('texto')} isActive={activeControl === 'texto'}/>
                 <BotaoRecurso icon={RectangleHorizontal} label="Canvas" onClick={() => handleSetControleAtivo('canvas')} isActive={activeControl === 'canvas'}/>
                 <BotaoRecurso icon={Paintbrush} label="Cores" onClick={() => handleSetControleAtivo('cores')} isActive={activeControl === 'cores'}/>
+                <BotaoRecurso icon={Film} label="Película" onClick={() => handleSetControleAtivo('filtro')} isActive={activeControl === 'filtro'} />
                 <BotaoRecurso icon={Wand2} label="Estilo" onClick={() => handleSetControleAtivo('estilo')} isActive={activeControl === 'estilo'}/>
                 <BotaoRecurso icon={LayoutTemplate} label="Fundo" onClick={() => handleSetControleAtivo('fundo')} isActive={activeControl === 'fundo'}/>
                 <BotaoRecurso icon={UserCheck} label="Assinatura" onClick={() => handleSetControleAtivo('assinatura')} isActive={activeControl === 'assinatura'}/>
@@ -760,3 +792,5 @@ export function Sidebar({
         </aside>
     );
 }
+
+    

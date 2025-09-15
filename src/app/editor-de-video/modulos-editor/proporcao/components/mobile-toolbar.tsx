@@ -627,6 +627,10 @@ interface MobileToolbarProps extends ControleAssinaturaProps, ControleLogoProps,
   setBackgroundColorValue: (color: string) => void;
   backgroundStyle: EstiloFundo;
   setBackgroundStyle: (style: EstiloFundo) => void;
+  filmColor: string;
+  setFilmColor: (color: string) => void;
+  filmOpacity: number;
+  setFilmOpacity: (opacity: number) => void;
   fgColor: string;
   setFgColor: (color: string) => void;
   activeControl: string | null;
@@ -645,6 +649,10 @@ export function MobileToolbar({
   setBackgroundColorValue,
   backgroundStyle,
   setBackgroundStyle,
+  filmColor,
+  setFilmColor,
+  filmOpacity,
+  setFilmOpacity,
   fgColor,
   setFgColor,
   activeControl,
@@ -737,6 +745,28 @@ export function MobileToolbar({
           </div>
         </div>
       ),
+      filtro: (
+         <div className="space-y-4 p-4">
+            <div className="space-y-2">
+                <Label>Cor da Película</Label>
+                <div className="relative h-10 w-full">
+                    <Input
+                        type="color"
+                        value={filmColor}
+                        onChange={(e) => setFilmColor(e.target.value)}
+                        className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer"
+                    />
+                </div>
+            </div>
+            <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                    <Label htmlFor="film-opacity-mobile">Opacidade da Película</Label>
+                    <span className="text-sm text-muted-foreground">{filmOpacity}%</span>
+                </div>
+                <Slider id="film-opacity-mobile" min={0} max={100} step={1} value={[filmOpacity]} onValueChange={(v) => setFilmOpacity(v[0])} />
+            </div>
+        </div>
+      ),
       estilo: (
         <div className="w-full h-full flex flex-col">
             <div className="flex-1 overflow-y-auto p-4">
@@ -770,7 +800,7 @@ export function MobileToolbar({
       texto: "Editar Texto",
       canvas: "Editar Canvas",
       cores: "Editar Cores",
-      filtro: "Editar Filtro",
+      filtro: "Editar Película",
       estilo: "Editar Estilo",
       fundo: "Editar Fundo",
       assinatura: "Editar Assinatura",
@@ -785,6 +815,7 @@ export function MobileToolbar({
             <BotaoRecurso icon={Type} label="Texto" onClick={() => handlePanelChange("texto")} isActive={activePanel === "texto"} />
             <BotaoRecurso icon={RectangleHorizontal} label="Canvas" onClick={() => handlePanelChange("canvas")} isActive={activePanel === "canvas"} />
             <BotaoRecurso icon={Paintbrush} label="Cores" onClick={() => handlePanelChange("cores")} isActive={activePanel === "cores"} />
+            <BotaoRecurso icon={Film} label="Película" onClick={() => handlePanelChange("filtro")} isActive={activePanel === "filtro"} />
             <BotaoRecurso icon={Wand2} label="Estilo" onClick={() => handlePanelChange("estilo")} isActive={activePanel === "estilo"} />
             <BotaoRecurso icon={LayoutTemplate} label="Fundo" onClick={() => handlePanelChange("fundo")} isActive={activePanel === "fundo"} />
             <BotaoRecurso icon={UserCheck} label="Assinatura" onClick={() => handlePanelChange("assinatura")} isActive={activePanel === "assinatura"} />
@@ -818,3 +849,5 @@ export function MobileToolbar({
     </>
   );
 }
+
+    
