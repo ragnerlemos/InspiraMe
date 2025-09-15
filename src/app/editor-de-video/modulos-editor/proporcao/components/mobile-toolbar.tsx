@@ -50,6 +50,7 @@ import {
   Pilcrow,
   CaseUpper,
   Text,
+  LineHeight,
 } from "lucide-react";
 import { BotaoRecurso } from "../../botao-recurso";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -524,7 +525,7 @@ function renderEstiloControl(subControl: string | null, props: EstiloControlProp
                     </div>
                     <div className="space-y-2">
                         <div className="flex justify-between items-center">
-                            <Label htmlFor="line-height" className="flex items-center"><Pilcrow className="mr-2 h-4 w-4" />Altura da Linha</Label>
+                            <Label htmlFor="line-height" className="flex items-center"><LineHeight className="mr-2 h-4 w-4" />Altura da Linha</Label>
                             <span className="text-sm text-muted-foreground">{props.lineHeight.toFixed(2)}</span>
                         </div>
                         <Slider id="line-height" min={0.8} max={2.5} step={0.05} value={[props.lineHeight]} onValueChange={(v) => props.onLineHeightChange(v[0])} />
