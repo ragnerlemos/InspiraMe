@@ -10,11 +10,12 @@ import { AssinaturaPerfil } from "../../assinatura-perfil";
 interface PreviewCanvaProps {
   aspectRatio: string;
   bgColor: string;
-  fgColor: string;
   filmColor: string;
   filmOpacity: number;
   scale: number;
   text: string;
+  textStyle: React.CSSProperties;
+  textVerticalPosition: number;
   profile: ProfileData;
   showProfileSignature: boolean;
   signaturePositionX: number;
@@ -33,11 +34,12 @@ interface PreviewCanvaProps {
 export function PreviewCanva({
   aspectRatio,
   bgColor,
-  fgColor,
   filmColor,
   filmOpacity,
   scale,
   text,
+  textStyle,
+  textVerticalPosition,
   profile,
   showProfileSignature,
   signaturePositionX,
@@ -81,13 +83,19 @@ export function PreviewCanva({
         )}
       >
         <div className="absolute inset-0 z-20" style={{ backgroundColor: filmBackgroundColor }} />
-        <div className="relative z-30 flex items-center justify-center h-full p-8">
-            <p
-              className="font-semibold text-3xl text-center break-words"
-              style={{ color: fgColor, textShadow: '2px 2px 4px rgba(0,0,0,0.3)' }}
-            >
-              {text}
-            </p>
+        <div className="relative z-30 flex items-center justify-center h-full">
+            <div className="relative w-full h-full p-8">
+                <div
+                    className="break-words w-full absolute transition-all duration-200"
+                    style={{
+                        ...textStyle,
+                        top: `${textVerticalPosition}%`,
+                        transform: "translateY(-50%)",
+                    }}
+                >
+                    {text}
+                </div>
+            </div>
         </div>
         
         {showProfileSignature && (

@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useWindowSize } from "react-use";
 import { useProfile } from "@/hooks/use-profile";
 import { Sidebar } from "./components/sidebar";
@@ -17,16 +17,21 @@ import {
 function ProporcaoSkeleton() {
     return (
         <div className="flex flex-col w-full bg-background font-body text-foreground h-[calc(100vh-4rem)]">
-            <div className="flex-1 flex md:grid md:grid-cols-[288px_1fr] min-h-0">
-                <div className="hidden shrink-0 bg-card md:flex md:flex-col md:border-r p-4">
-                     <Skeleton className="h-10 w-48 mb-4" />
-                     <Skeleton className="h-16 w-full mb-4" />
-                     <Skeleton className="h-full w-full" />
-                </div>
-                 <main className="flex-1 w-full overflow-auto p-4 flex items-center justify-center">
-                    <Skeleton className="w-full h-full max-w-md aspect-[9/16]" />
-                </main>
-            </div>
+            <PanelGroup direction="horizontal" className="flex-1 min-h-0">
+                <Panel defaultSize={30} minSize={25} maxSize={40} className="hidden md:flex flex-col">
+                     <Skeleton className="h-16 w-full border-b" />
+                     <div className="flex-1 p-4 space-y-4">
+                        <Skeleton className="h-24 w-full" />
+                        <Skeleton className="h-full w-full" />
+                     </div>
+                </Panel>
+                <PanelResizeHandle />
+                <Panel>
+                    <main className="flex-1 w-full h-full overflow-auto p-4 flex items-center justify-center">
+                        <Skeleton className="w-full h-full max-w-md aspect-[9/16]" />
+                    </main>
+                </Panel>
+            </PanelGroup>
              <div className="md:hidden fixed bottom-0 left-0 w-full z-10 bg-background border-t p-2">
                 <Skeleton className="h-14 w-full" />
             </div>
@@ -36,16 +41,33 @@ function ProporcaoSkeleton() {
 
 export default function AspectWeaver() {
   const [aspectRatio, setAspectRatio] = useState("9 / 16");
-  const [baseBgColor, setBaseBgColor] = useState("#333333");
-  const [fgColor, setFgColor] = useState("#ffffff");
-  const [filmColor, setFilmColor] = useState("#000000");
-  const [filmOpacity, setFilmOpacity] = useState(0);
   const [scale, setScale] = useState(1);
   const [activeControl, setActiveControl] = useState<string | null>('texto');
   const { width } = useWindowSize();
   const isDesktop = width >= 768;
-  const [text, setText] = useState("A única maneira de fazer um ótimo trabalho é amar o que você faz.");
   const { profile, isLoaded: isProfileLoaded } = useProfile();
+
+  // Text state
+  const [text, setText] = useState("A única maneira de fazer um ótimo trabalho é amar o que você faz.");
+  const [fontFamily, setFontFamily] = useState("Poppins");
+  const [fontSize, setFontSize] = useState(5);
+  const [fontWeight, setFontWeight] = useState<"normal" | "bold">("normal");
+  const [fontStyle, setFontStyle] = useState<"normal" | "italic">("normal");
+  const [textAlign, setTextAlign] = useState<"left" | "center" | "right">("center");
+  const [textVerticalPosition, setTextVerticalPosition] = useState(50);
+  
+  // Color State
+  const [baseBgColor, setBaseBgColor] = useState("#333333");
+  const [fgColor, setFgColor] = useState("#ffffff");
+
+  // Filter State
+  const [filmColor, setFilmColor] = useState("#000000");
+  const [filmOpacity, setFilmOpacity] = useState(0);
+
+  // Advanced Style State
+  const [textShadowBlur, setTextShadowBlur] = useState(1);
+  const [textStrokeColor, setTextStrokeColor] = useState("#000000");
+  const [textStrokeWidth, setTextStrokeWidth] = useState(0.2);
 
   // Signature State
   const [showProfileSignature, setShowProfileSignature] = useState(false);
@@ -74,49 +96,74 @@ export default function AspectWeaver() {
         }
     }
   }, [aspectRatio, isDesktop]);
+  
+  const textStyle = useMemo(() => {
+    const createTextStrokeShadow = (width: number, color: string): string => {
+        if (width === 0) return "none";
+        const shadows = [];
+        const numPoints = 12;
+        for (let i = 0; i < numPoints; i++) {
+            const angle = (i / numPoints) * 2 * Math.PI;
+            const x = Math.cos(angle) * (width * 0.1);
+            const y = Math.sin(angle) * (width * 0.1);
+            shadows.push(`${x.toFixed(2)}cqw ${y.toFixed(2)}cqw 0 ${color}`);
+        }
+        return shadows.join(', ');
+    };
+    const createMainShadow = (blur: number): string => {
+        if (blur === 0) return "none";
+        return `0 0 ${blur * 0.1}cqw rgba(0,0,0,0.5)`;
+    };
+    const textStrokeShadow = createTextStrokeShadow(textStrokeWidth, textStrokeColor);
+    const mainTextShadow = createMainShadow(textShadowBlur);
+
+    return {
+        fontFamily,
+        fontSize: `${fontSize}cqw`,
+        fontWeight,
+        fontStyle,
+        color: fgColor,
+        textAlign,
+        lineHeight: 1.3,
+        textShadow: textStrokeShadow !== "none" && mainTextShadow !== "none" ? `${textStrokeShadow}, ${mainTextShadow}` : textStrokeShadow !== "none" ? textStrokeShadow : mainTextShadow,
+    }
+  }, [fontFamily, fontSize, fontWeight, fontStyle, fgColor, textAlign, textShadowBlur, textStrokeColor, textStrokeWidth]);
+
 
   if (!isProfileLoaded) {
     return <ProporcaoSkeleton />;
   }
 
   const commonProps = {
-    aspectRatio,
-    setAspectRatio,
-    scale,
-    setScale,
-    baseBgColor,
-    setBaseBgColor,
-    fgColor,
-    setFgColor,
-    activeControl,
-    setActiveControl,
-    text,
-    setText,
+    aspectRatio, setAspectRatio,
+    scale, setScale,
+    baseBgColor, setBaseBgColor,
+    fgColor, setFgColor,
+    activeControl, setActiveControl,
+    text, setText,
     profile,
-    showProfileSignature,
-    onShowProfileSignatureChange: setShowProfileSignature,
-    signaturePositionX,
-    onSignaturePositionXChange: setSignaturePositionX,
-    signaturePositionY,
-    onSignaturePositionYChange: setSignaturePositionY,
-    signatureScale,
-    onSignatureScaleChange: setSignatureScale,
-    showSignaturePhoto,
-    onShowSignaturePhotoChange: setShowSignaturePhoto,
-    showSignatureUsername,
-    onShowSignatureUsernameChange: setShowSignatureUsername,
-    showSignatureSocial,
-    onShowSignatureSocialChange: setShowSignatureSocial,
-    showLogo,
-    onShowLogoChange: setShowLogo,
-    logoPositionX,
-    onLogoPositionXChange: setLogoPositionX,
-    logoPositionY,
-    onLogoPositionYChange: setLogoPositionY,
-    logoScale,
-    onLogoScaleChange: setLogoScale,
-    logoOpacity,
-    onLogoOpacityChange: setLogoOpacity,
+    showProfileSignature, onShowProfileSignatureChange: setShowProfileSignature,
+    signaturePositionX, onSignaturePositionXChange: setSignaturePositionX,
+    signaturePositionY, onSignaturePositionYChange: setSignaturePositionY,
+    signatureScale, onSignatureScaleChange: setSignatureScale,
+    showSignaturePhoto, onShowSignaturePhotoChange: setShowSignaturePhoto,
+    showSignatureUsername, onShowSignatureUsernameChange: setShowSignatureUsername,
+    showSignatureSocial, onShowSignatureSocialChange: setShowSignatureSocial,
+    showLogo, onShowLogoChange: setShowLogo,
+    logoPositionX, onLogoPositionXChange: setLogoPositionX,
+    logoPositionY, onLogoPositionYChange: setLogoPositionY,
+    logoScale, onLogoScaleChange: setLogoScale,
+    logoOpacity, onLogoOpacityChange: setLogoOpacity,
+    // Estilo do texto
+    fontFamily, onFontFamilyChange: setFontFamily,
+    fontSize, onFontSizeChange: setFontSize,
+    fontWeight, onFontWeightChange: setFontWeight,
+    fontStyle, onFontStyleChange: setFontStyle,
+    textAlign, onTextAlignChange: setTextAlign,
+    textVerticalPosition, onTextVerticalPositionChange: setTextVerticalPosition,
+    textShadowBlur, onTextShadowBlurChange: setTextShadowBlur,
+    textStrokeColor, onTextStrokeColorChange: setTextStrokeColor,
+    textStrokeWidth, onTextStrokeWidthChange: setTextStrokeWidth,
   };
 
   return (
@@ -131,11 +178,12 @@ export default function AspectWeaver() {
                 <PreviewCanva
                     aspectRatio={aspectRatio}
                     bgColor={baseBgColor}
-                    fgColor={fgColor}
                     filmColor={filmColor}
                     filmOpacity={filmOpacity}
                     scale={scale}
                     text={text}
+                    textStyle={textStyle}
+                    textVerticalPosition={textVerticalPosition}
                     profile={profile}
                     showProfileSignature={showProfileSignature}
                     signaturePositionX={signaturePositionX}

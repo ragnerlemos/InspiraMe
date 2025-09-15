@@ -3,7 +3,7 @@
 
 import { useState, useRef } from "react";
 import Link from 'next/link';
-import { Wand2, RectangleHorizontal, RectangleVertical, Square, LayoutTemplate, UserCheck, ImageUp, Paintbrush, Type, CaseSensitive, Pipette, AlignLeft, Bold, MoveVertical, Baseline, Upload, Image as ImageIcon, Palette, Layers, Check, Edit, User, MoveHorizontal, ZoomIn, AtSign, BadgePercent, Film } from "lucide-react";
+import { Wand2, RectangleHorizontal, RectangleVertical, Square, LayoutTemplate, UserCheck, ImageUp, Paintbrush, Type, CaseSensitive, Pipette, AlignLeft, Bold, MoveVertical, Baseline, Upload, Image as ImageIcon, Palette, Layers, Check, Edit, User, MoveHorizontal, ZoomIn, AtSign, BadgePercent, Film, AlignCenter, AlignRight, Italic } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -88,9 +88,8 @@ function ControleTipoFundo({ baseBgColor, setBaseBgColor }: { baseBgColor: strin
             {activeTab === 'solid' && (
                  <div className="space-y-2">
                     <Label className="text-left">Cor do Fundo</Label>
-                    <div className="relative h-10 w-full rounded-md border overflow-hidden cursor-pointer">
-                        <div className="w-full h-full" style={{ backgroundColor: baseBgColor }} />
-                        <Input type="color" value={baseBgColor} onChange={e => handleSolidColorChange(e.target.value)} className="absolute inset-0 w-full h-full p-0 border-none opacity-0 cursor-pointer" />
+                    <div className="relative h-10 w-full">
+                        <Input type="color" value={baseBgColor} onChange={e => handleSolidColorChange(e.target.value)} className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer" />
                     </div>
                 </div>
             )}
@@ -148,6 +147,28 @@ function ControleTipoFundo({ baseBgColor, setBaseBgColor }: { baseBgColor: strin
         </div>
     )
 }
+
+interface CommonStyleProps {
+  fontFamily: string;
+  onFontFamilyChange: (font: string) => void;
+  fontSize: number;
+  onFontSizeChange: (size: number) => void;
+  fontWeight: "normal" | "bold";
+  onFontWeightChange: (weight: "normal" | "bold") => void;
+  fontStyle: "normal" | "italic";
+  onFontStyleChange: (style: "normal" | "italic") => void;
+  textAlign: "left" | "center" | "right";
+  onTextAlignChange: (align: "left" | "center" | "right") => void;
+  textVerticalPosition: number;
+  onTextVerticalPositionChange: (position: number) => void;
+  textShadowBlur: number;
+  onTextShadowBlurChange: (blur: number) => void;
+  textStrokeColor: string;
+  onTextStrokeColorChange: (color: string) => void;
+  textStrokeWidth: number;
+  onTextStrokeWidthChange: (width: number) => void;
+}
+
 
 interface ControleAssinaturaProps {
   showProfileSignature: boolean;
@@ -323,7 +344,125 @@ function ControleLogo(props: ControleLogoProps) {
     )
 }
 
-interface SidebarProps extends ControleAssinaturaProps, ControleLogoProps {
+type EstiloControlProps = CommonStyleProps & {
+    fgColor: string;
+    onFgColorChange: (color: string) => void;
+};
+
+function renderEstiloControl(subControl: string | null, props: EstiloControlProps) {
+    if (!subControl) return <p className="text-center text-muted-foreground text-sm">Selecione um controle de estilo abaixo.</p>;
+
+    switch (subControl) {
+        case 'fonte':
+            return (
+                <div className="space-y-2">
+                    <Label htmlFor="font-family">Fonte</Label>
+                    <Select value={props.fontFamily} onValueChange={props.onFontFamilyChange}>
+                        <SelectTrigger id="font-family"><SelectValue placeholder="Selecione a fonte" /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="Poppins">Poppins</SelectItem>
+                            <SelectItem value="PT Sans">PT Sans</SelectItem>
+                            <SelectItem value="Merriweather">Merriweather</SelectItem>
+                            <SelectItem value="Lobster">Lobster</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+            );
+        case 'tamanho':
+            return (
+                <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                        <Label htmlFor="font-size">Tamanho da Fonte</Label>
+                        <span className="text-sm text-muted-foreground">{props.fontSize.toFixed(1)} pt</span>
+                    </div>
+                    <Slider id="font-size" min={1} max={20} step={0.1} value={[props.fontSize]} onValueChange={(v) => props.onFontSizeChange(v[0])} />
+                </div>
+            );
+        case 'cor':
+            return (
+                <div className="space-y-2">
+                    <Label>Cor do Texto</Label>
+                    <div className="relative h-10 w-full">
+                       <Input
+                            type="color"
+                            value={props.fgColor}
+                            onChange={(e) => props.onFgColorChange(e.target.value)}
+                            className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer"
+                        />
+                    </div>
+                </div>
+            );
+        case 'alinhamento':
+            return (
+                <div className="space-y-2">
+                    <Label>Alinhamento do Texto</Label>
+                    <div className="grid grid-cols-3 gap-2">
+                        <BotaoRecurso icon={AlignLeft} label="Esquerda" onClick={() => props.onTextAlignChange('left')} isActive={props.textAlign === 'left'} />
+                        <BotaoRecurso icon={AlignCenter} label="Centro" onClick={() => props.onTextAlignChange('center')} isActive={props.textAlign === 'center'} />
+                        <BotaoRecurso icon={AlignRight} label="Direita" onClick={() => props.onTextAlignChange('right')} isActive={props.textAlign === 'right'} />
+                    </div>
+                </div>
+            );
+        case 'estilo':
+            return (
+                 <div className="space-y-2">
+                    <Label>Estilo</Label>
+                    <div className="grid grid-cols-2 gap-2">
+                        <Button variant={props.fontWeight === 'bold' ? 'secondary' : 'ghost'} onClick={() => props.onFontWeightChange(props.fontWeight === 'bold' ? 'normal' : 'bold')}><Bold className="mr-2" />Negrito</Button>
+                        <Button variant={props.fontStyle === 'italic' ? 'secondary' : 'ghost'} onClick={() => props.onFontStyleChange(props.fontStyle === 'italic' ? 'normal' : 'italic')}><Italic className="mr-2" />Itálico</Button>
+                    </div>
+                </div>
+            );
+        case 'posicao':
+             return (
+                <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                        <Label htmlFor="vertical-position" className="flex items-center"><MoveVertical className="mr-2 h-4 w-4" />Posição Vertical</Label>
+                        <span className="text-sm text-muted-foreground">{props.textVerticalPosition}%</span>
+                    </div>
+                    <Slider id="vertical-position" min={0} max={100} step={1} value={[props.textVerticalPosition]} onValueChange={(v) => props.onTextVerticalPositionChange(v[0])} />
+                </div>
+            );
+        case 'contorno':
+             return (
+                 <div className="space-y-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="stroke-color" className="text-xs text-muted-foreground">Cor</Label>
+                         <div className="relative h-10 w-full">
+                            <Input
+                                type="color"
+                                value={props.textStrokeColor}
+                                onChange={(e) => props.onTextStrokeColorChange(e.target.value)}
+                                className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer"
+                            />
+                        </div>
+                    </div>
+                    <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                            <Label htmlFor="stroke-width" className="text-xs text-muted-foreground">Espessura</Label>
+                            <span className="text-xs text-muted-foreground">{props.textStrokeWidth.toFixed(1)} pt</span>
+                        </div>
+                        <Slider id="stroke-width" min={0} max={10} step={0.1} value={[props.textStrokeWidth]} onValueChange={(v) => props.onTextStrokeWidthChange(v[0])} />
+                    </div>
+                </div>
+            );
+        case 'sombra':
+             return (
+                <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                        <Label htmlFor="shadow-blur" className="text-xs text-muted-foreground">Desfoque</Label>
+                        <span className="text-xs text-muted-foreground">{props.textShadowBlur.toFixed(1)} pt</span>
+                    </div>
+                    <Slider id="shadow-blur" min={0} max={10} step={0.1} value={[props.textShadowBlur]} onValueChange={(v) => props.onTextShadowBlurChange(v[0])} />
+                </div>
+            );
+        default:
+            return null;
+    }
+}
+
+
+interface SidebarProps extends ControleAssinaturaProps, ControleLogoProps, CommonStyleProps {
     aspectRatio: string;
     setAspectRatio: (ratio: string) => void;
     scale: number;
@@ -418,27 +557,27 @@ export function Sidebar({
                  return (
                     <div className="p-4 grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label className="text-left">Cor do Fundo</Label>
-                            <div className="relative h-10 w-full rounded-md border overflow-hidden cursor-pointer">
-                                <div className="w-full h-full" style={{ backgroundColor: baseBgColor }} />
-                                <Input 
-                                    type="color" 
-                                    value={baseBgColor} 
-                                    onChange={(e) => setBaseBgColor(e.target.value)} 
-                                    className="absolute inset-0 w-full h-full p-0 border-none opacity-0 cursor-pointer"
+                            <Label className="text-left block">Cor do Fundo</Label>
+                             <div className="relative h-10 w-full rounded-md border overflow-hidden">
+                                 <Input
+                                    type="color"
+                                    value={baseBgColor}
+                                    onChange={(e) => setBaseBgColor(e.target.value)}
+                                    className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer opacity-0"
                                 />
+                                <div className="w-full h-full" style={{ backgroundColor: baseBgColor }} />
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <Label className="text-left">Cor do Texto</Label>
-                            <div className="relative h-10 w-full rounded-md border overflow-hidden cursor-pointer">
-                                <div className="w-full h-full" style={{ backgroundColor: fgColor }} />
-                                <Input 
-                                    type="color" 
-                                    value={fgColor} 
-                                    onChange={e => setFgColor(e.target.value)} 
-                                    className="absolute inset-0 w-full h-full p-0 border-none opacity-0 cursor-pointer"
+                            <Label className="text-left block">Cor do Texto</Label>
+                             <div className="relative h-10 w-full rounded-md border overflow-hidden">
+                                 <Input
+                                    type="color"
+                                    value={fgColor}
+                                    onChange={e => setFgColor(e.target.value)}
+                                    className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer opacity-0"
                                 />
+                                <div className="w-full h-full" style={{ backgroundColor: fgColor }} />
                             </div>
                         </div>
                     </div>
@@ -447,11 +586,10 @@ export function Sidebar({
                  return (
                      <div className="w-full flex-1 flex flex-col">
                         <div className="p-4 flex-1 overflow-y-auto">
-                            {!activeSubControl && <p className="text-center text-muted-foreground text-sm">Selecione um controle de estilo abaixo.</p>}
-                            {activeSubControl && <p className="text-center text-muted-foreground text-sm">Controles para '{activeSubControl}' aqui.</p>}
+                            {renderEstiloControl(activeSubControl, { ...props, fgColor, onFgColorChange: setFgColor })}
                         </div>
                         <ScrollArea className="w-full whitespace-nowrap border-t mt-auto">
-                            <div className="flex h-16 items-center justify-start w-max space-x-1 bg-background/90 backdrop-blur-sm px-2">
+                            <div className="flex h-16 items-center w-max space-x-1 bg-background/90 backdrop-blur-sm px-2">
                                 <BotaoRecurso icon={Type} label="Fonte" onClick={() => setActiveSubControl('fonte')} isActive={activeSubControl === 'fonte'}/>
                                 <BotaoRecurso icon={CaseSensitive} label="Tamanho" onClick={() => setActiveSubControl('tamanho')} isActive={activeSubControl === 'tamanho'}/>
                                 <BotaoRecurso icon={Pipette} label="Cor" onClick={() => setActiveSubControl('cor')} isActive={activeSubControl === 'cor'}/>
