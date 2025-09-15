@@ -86,7 +86,6 @@ function ControleTipoFundo({ backgroundStyle, setBackgroundStyle }: { background
         const reader = new FileReader();
         reader.onload = (e) => {
             setBackgroundStyle({ type: 'media', value: e.target?.result as string });
-            toast({ title: "Carregado!", description: "Mídia carregada." });
         };
         reader.readAsDataURL(file);
     };
@@ -792,5 +791,3 @@ export function Sidebar({
         </aside>
     );
 }
-
-    

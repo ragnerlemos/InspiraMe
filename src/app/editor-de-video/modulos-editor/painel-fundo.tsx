@@ -55,12 +55,13 @@ function ControleTipoFundo(props: {
     const { backgroundStyle, onBackgroundStyleChange, filmColor, onFilmColorChange, filmOpacity, onFilmOpacityChange } = props;
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { toast } = useToast();
+    const [activeTab, setActiveTab] = useState<'media' | 'film' | 'gradient'>(backgroundStyle.type === 'solid' ? 'media' : backgroundStyle.type);
 
-     const { activeTab, gradient } = useMemo(() => {
-        const activeTab: TipoFundoAtivo = backgroundStyle.type === 'media' ? 'media' : backgroundStyle.type === 'solid' ? 'film' : 'gradient';
-        let gradient = { type: 'linear' as 'linear'|'radial', colors: ['#A06CD5', '#45B8AC'] as [string, string], direction: 'to right' };
 
-        if (activeTab === 'gradient' && backgroundStyle.value) {
+     const { gradient } = useMemo(() => {
+        let grad = { type: 'linear' as 'linear'|'radial', colors: ['#A06CD5', '#45B8AC'] as [string, string], direction: 'to right' };
+
+        if (backgroundStyle.type === 'gradient' && backgroundStyle.value) {
              try {
                 const type = backgroundStyle.value.startsWith('linear') ? 'linear' : 'radial';
                 const parts = backgroundStyle.value.match(/\((.*)\)/)?.[1].split(', ');
@@ -75,38 +76,28 @@ function ControleTipoFundo(props: {
                         colors = [parts[0], parts[1]] as [string, string];
                     }
                 } else {
-                    // For radial, we just get colors
                     const colorParts = backgroundStyle.value.match(/#(?:[0-9a-fA-F]{3}){1,2}|rgb\([^)]+\)/g);
                      if (colorParts && colorParts.length >= 2) {
                         colors = [colorParts[0], colorParts[1]] as [string, string];
                     }
                 }
-                gradient = { type, colors, direction };
+                grad = { type, colors, direction };
             } catch {
                 // fallback
             }
         }
-        return { activeTab, gradient };
+        return { gradient: grad };
     }, [backgroundStyle]);
 
-    const handleTabChange = (tab: TipoFundoAtivo) => {
-         let newStyle;
+    const handleTabChange = (tab: 'media' | 'film' | 'gradient') => {
+        setActiveTab(tab);
         if (tab === 'film') {
-            // Ao mudar para película, se o fundo for mídia, mantém, senão, põe preto.
-            if (backgroundStyle.type !== 'media') {
-                 onBackgroundStyleChange({ type: 'solid', value: '#000000' });
-            }
-            onFilmOpacityChange(50); // Opacidade padrão ao ativar
+            onFilmOpacityChange(filmOpacity > 0 ? filmOpacity : 50);
         } else if (tab === 'gradient') {
             const gradValue = `${gradient.type}-gradient(${gradient.type === 'linear' ? `${gradient.direction}, ` : `circle at center, `}${gradient.colors[0]}, ${gradient.colors[1]})`;
-            newStyle = { type: 'gradient' as const, value: gradValue };
-            onBackgroundStyleChange(newStyle);
-            onFilmOpacityChange(0);
-        } else { // media
-            const mediaValue = templates.find(t => t.id === 1)?.thumbnail ?? '';
-            newStyle = { type: 'media' as const, value: mediaValue };
-            onBackgroundStyleChange(newStyle);
-            onFilmOpacityChange(0);
+            onBackgroundStyleChange({ type: 'gradient', value: gradValue });
+        } else if (tab === 'media') {
+             // Apenas muda a aba, não altera o fundo a menos que o usuário carregue um novo
         }
     };
 
@@ -245,7 +236,6 @@ function ControleTipoFundo(props: {
 }
 
 type ControleAtivo = 'proporcao' | 'tipo' | 'assinatura' | 'logo' | null;
-type TipoFundoAtivo = 'media' | 'film' | 'gradient';
 
 function ControleAssinatura(props: Omit<PainelFundoProps, 'backgroundStyle' | 'onBackgroundStyleChange' | 'aspectRatio' | 'onAspectRatioChange' | 'showLogo' | 'onShowLogoChange' | 'logoPositionX' | 'onLogoPositionXChange' | 'logoPositionY' | 'onLogoPositionYChange' | 'logoScale' | 'onLogoScaleChange' | 'logoOpacity' | 'onLogoOpacityChange' | 'filmColor' | 'onFilmColorChange' | 'filmOpacity' | 'onFilmOpacityChange' > & { onClose: () => void }) {
     const { 
@@ -480,5 +470,3 @@ export function PainelFundo(props: PainelFundoProps & { onClose: () => void }) {
        </div>
     );
 }
-
-    
