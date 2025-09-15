@@ -28,6 +28,8 @@ export interface EditorState {
     textVerticalPosition: number;
     textStrokeColor: string;
     textStrokeWidth: number;
+    letterSpacing: number;
+    lineHeight: number;
     backgroundStyle: EstiloFundo;
     filmColor: string;
     filmOpacity: number;
@@ -123,6 +125,10 @@ export interface PainelEstiloProps {
     onTextStrokeColorChange: (color: string) => void;
     textStrokeWidth: number;
     onTextStrokeWidthChange: (width: number) => void;
+    letterSpacing: number;
+    onLetterSpacingChange: (spacing: number) => void;
+    lineHeight: number;
+    onLineHeightChange: (height: number) => void;
     activeTemplateId: number | null;
     profileVerticalPosition: number;
     onProfileVerticalPositionChange: (position: number) => void;
@@ -179,3 +185,5 @@ export interface VisualizacaoPerfilProps {
   textVerticalPosition: number;
   profileVerticalPosition: number;
 }
+
+    

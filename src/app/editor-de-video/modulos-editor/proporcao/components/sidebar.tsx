@@ -3,7 +3,7 @@
 
 import { useState, useRef } from "react";
 import Link from 'next/link';
-import { Wand2, RectangleHorizontal, RectangleVertical, Square, LayoutTemplate, UserCheck, ImageUp, Paintbrush, Type, CaseSensitive, Pipette, AlignLeft, Bold, MoveVertical, Baseline, Upload, Image as ImageIcon, Palette, Layers, Check, Edit, User, MoveHorizontal, ZoomIn, AtSign, BadgePercent, Film, AlignCenter, AlignRight, Italic, Box } from "lucide-react";
+import { Wand2, RectangleHorizontal, RectangleVertical, Square, LayoutTemplate, UserCheck, ImageUp, Paintbrush, Type, CaseSensitive, Pipette, AlignLeft, Bold, MoveVertical, Baseline, Upload, Image as ImageIcon, Palette, Layers, Check, Edit, User, MoveHorizontal, ZoomIn, AtSign, BadgePercent, Film, AlignCenter, AlignRight, Italic, Box, Pilcrow, CaseUpper } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -167,6 +167,10 @@ interface CommonStyleProps {
   onTextStrokeColorChange: (color: string) => void;
   textStrokeWidth: number;
   onTextStrokeWidthChange: (width: number) => void;
+  letterSpacing: number;
+  onLetterSpacingChange: (spacing: number) => void;
+  lineHeight: number;
+  onLineHeightChange: (height: number) => void;
 }
 
 
@@ -451,11 +455,27 @@ function renderEstiloControl(subControl: string | null, props: EstiloControlProp
         case 'posicao':
              return (
                 <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                        <Label htmlFor="vertical-position" className="flex items-center"><MoveVertical className="mr-2 h-4 w-4" />Posição Vertical</Label>
-                        <span className="text-sm text-muted-foreground">{props.textVerticalPosition}%</span>
+                    <div>
+                        <div className="flex justify-between items-center mb-2">
+                            <Label htmlFor="vertical-position" className="flex items-center"><MoveVertical className="mr-2 h-4 w-4" />Posição Vertical</Label>
+                            <span className="text-sm text-muted-foreground">{props.textVerticalPosition}%</span>
+                        </div>
+                        <Slider id="vertical-position" min={0} max={100} step={1} value={[props.textVerticalPosition]} onValueChange={(v) => props.onTextVerticalPositionChange(v[0])} />
                     </div>
-                    <Slider id="vertical-position" min={0} max={100} step={1} value={[props.textVerticalPosition]} onValueChange={(v) => props.onTextVerticalPositionChange(v[0])} />
+                    <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                            <Label htmlFor="letter-spacing" className="flex items-center"><CaseUpper className="mr-2 h-4 w-4" />Espaç. Letras</Label>
+                            <span className="text-sm text-muted-foreground">{(props.letterSpacing / 10).toFixed(1)}</span>
+                        </div>
+                        <Slider id="letter-spacing" min={-10} max={50} step={0.5} value={[props.letterSpacing]} onValueChange={(v) => props.onLetterSpacingChange(v[0])} />
+                    </div>
+                    <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                            <Label htmlFor="line-height" className="flex items-center"><Pilcrow className="mr-2 h-4 w-4" />Altura da Linha</Label>
+                            <span className="text-sm text-muted-foreground">{props.lineHeight.toFixed(2)}</span>
+                        </div>
+                        <Slider id="line-height" min={0.8} max={2.5} step={0.05} value={[props.lineHeight]} onValueChange={(v) => props.onLineHeightChange(v[0])} />
+                    </div>
                 </div>
             );
         case 'contorno':
@@ -675,3 +695,5 @@ export function Sidebar({
         </aside>
     );
 }
+
+    

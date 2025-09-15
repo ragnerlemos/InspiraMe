@@ -30,6 +30,8 @@ const getInitialState = (): EditorState => ({
     textVerticalPosition: 50,
     textStrokeColor: "#000000",
     textStrokeWidth: 0.2,
+    letterSpacing: 0,
+    lineHeight: 1.3,
     backgroundStyle: {
         type: 'media',
         value: "",
@@ -283,7 +285,8 @@ export function EditorClient() {
     color: currentState.textColor,
     textAlign: currentState.textAlign,
     textShadow: combinedTextShadow,
-    lineHeight: 1.3,
+    letterSpacing: `${currentState.letterSpacing / 100}em`,
+    lineHeight: currentState.lineHeight,
   };
   
   if (!isReady || !isProfileLoaded) {
@@ -342,6 +345,10 @@ export function EditorClient() {
         onTextStrokeColorChange={(textStrokeColor) => updateState({ textStrokeColor })}
         textStrokeWidth={currentState.textStrokeWidth}
         onTextStrokeWidthChange={(textStrokeWidth) => updateState({ textStrokeWidth })}
+        letterSpacing={currentState.letterSpacing}
+        onLetterSpacingChange={(letterSpacing) => updateState({ letterSpacing })}
+        lineHeight={currentState.lineHeight}
+        onLineHeightChange={(lineHeight) => updateState({ lineHeight })}
         backgroundStyle={currentState.backgroundStyle}
         onBackgroundStyleChange={(backgroundStyle) => updateState({ backgroundStyle })}
         filmColor={currentState.filmColor}
@@ -415,3 +422,5 @@ export function EditorClient() {
     </PanelGroup>
   );
 }
+
+    
