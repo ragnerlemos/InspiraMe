@@ -13,6 +13,7 @@ import {
   PanelGroup,
   PanelResizeHandle,
 } from "@/components/ui/resizable";
+import type { EstiloFundo } from "../tipos";
 
 function ProporcaoSkeleton() {
     return (
@@ -57,8 +58,12 @@ export default function AspectWeaver() {
   const [textVerticalPosition, setTextVerticalPosition] = useState(50);
   
   // Color State
-  const [baseBgColor, setBaseBgColor] = useState("#333333");
+  const [backgroundColorValue, setBackgroundColorValue] = useState("#ffffff");
   const [fgColor, setFgColor] = useState("#ffffff");
+
+  // Background state
+  const [backgroundStyle, setBackgroundStyle] = useState<EstiloFundo>({ type: 'solid', value: '#333333' });
+
 
   // Filter State
   const [filmColor, setFilmColor] = useState("#000000");
@@ -146,7 +151,8 @@ export default function AspectWeaver() {
   const commonProps = {
     aspectRatio, setAspectRatio,
     scale, setScale,
-    baseBgColor, setBaseBgColor,
+    backgroundColorValue, setBackgroundColorValue,
+    backgroundStyle, setBackgroundStyle,
     fgColor, setFgColor,
     activeControl, setActiveControl,
     text, setText,
@@ -192,7 +198,7 @@ export default function AspectWeaver() {
             <main className="flex-1 w-full h-full overflow-auto">
                 <PreviewCanva
                     aspectRatio={aspectRatio}
-                    bgColor={baseBgColor}
+                    backgroundStyle={backgroundStyle}
                     filmColor={filmColor}
                     filmOpacity={filmOpacity}
                     scale={scale}

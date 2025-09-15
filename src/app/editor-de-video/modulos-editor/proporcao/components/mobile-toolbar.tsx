@@ -1,8 +1,7 @@
 
-
 "use client";
 
-import { useState, useRef, ComponentType } from "react";
+import { useState, useRef, ComponentType, useMemo } from "react";
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -50,7 +49,6 @@ import {
   Pilcrow,
   CaseUpper,
   Text,
-  LineHeight,
 } from "lucide-react";
 import { BotaoRecurso } from "../../botao-recurso";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -60,6 +58,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import type { ProfileData } from "@/hooks/use-profile";
+import type { EstiloFundo } from "../../tipos";
 
 
 const aspectRatios = [
@@ -72,18 +71,51 @@ type ActivePanel = "texto" | "canvas" | "cores" | "filtro" | "fundo" | "assinatu
 type TipoFundoAtivo = 'media' | 'solid' | 'gradient';
 
 
-function ControleTipoFundo({ setBaseBgColor }: { setBaseBgColor: (color: string) => void }) {
+function ControleTipoFundo({ backgroundStyle, setBackgroundStyle }: { backgroundStyle: EstiloFundo, setBackgroundStyle: (style: EstiloFundo) => void }) {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { toast } = useToast();
-    const [activeTab, setActiveTab] = useState<TipoFundoAtivo>('solid');
     
-    // Simulating state for gradient, as we don't have full state persistence here yet
-    const [gradient, setGradient] = useState({
-        type: 'linear' as 'linear' | 'radial',
-        colors: ['#A06CD5', '#45B8AC'] as [string, string],
-        direction: 'to right'
-    });
+    const { activeTab, gradient } = useMemo(() => {
+        const type = backgroundStyle.type;
+        let grad = { type: 'linear' as 'linear'|'radial', colors: ['#A06CD5', '#45B8AC'] as [string, string], direction: 'to right' };
+        if (type === 'gradient' && backgroundStyle.value) {
+            try {
+                const gradType = backgroundStyle.value.startsWith('linear') ? 'linear' : 'radial';
+                const parts = backgroundStyle.value.match(/\((.*)\)/)?.[1].split(', ');
+                if (!parts) throw new Error("Invalid gradient string");
+                
+                let direction = 'to right';
+                let colors: [string, string] = ['#A06CD5', '#45B8AC'];
+                
+                if (gradType === 'linear') {
+                    if (parts[0].startsWith('to ')) {
+                        direction = parts[0];
+                        colors = [parts[1], parts[2]] as [string, string];
+                    } else {
+                        colors = [parts[0], parts[1]] as [string, string];
+                    }
+                } else {
+                     colors = [parts[0], parts[1]] as [string, string];
+                }
+                grad = { type: gradType, colors, direction };
 
+            } catch {}
+        }
+        return { activeTab: type, gradient: grad };
+    }, [backgroundStyle]);
+
+    const handleTabChange = (tab: TipoFundoAtivo) => {
+        if (tab === 'solid') {
+            setBackgroundStyle({ type: 'solid', value: '#333333' });
+        } else if (tab === 'gradient') {
+            const gradValue = `${gradient.type}-gradient(${gradient.type === 'linear' ? `${gradient.direction}, ` : 'circle, '}${gradient.colors[0]}, ${gradient.colors[1]})`;
+            setBackgroundStyle({ type: 'gradient', value: gradValue });
+        } else { // media
+             setBackgroundStyle({ type: 'media', value: '' });
+             toast({ title: "Pronto para carregar!", description: "Selecione um arquivo de mídia." });
+        }
+    };
+    
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (!file) return;
@@ -95,28 +127,41 @@ function ControleTipoFundo({ setBaseBgColor }: { setBaseBgColor: (color: string)
 
         const reader = new FileReader();
         reader.onload = (e) => {
-            // In a real scenario, this would update a different state for media background
-            toast({ title: "Carregado!", description: "Mídia carregada (efeito visual não aplicado nesta tela)." });
+            setBackgroundStyle({ type: 'media', value: e.target?.result as string });
+            toast({ title: "Carregado!", description: "Mídia carregada." });
         };
         reader.readAsDataURL(file);
     };
 
     const handleSolidColorChange = (color: string) => {
-        setBaseBgColor(color);
+        setBackgroundStyle({ type: 'solid', value: color });
     };
     
+    const handleGradientChange = (grad: { type: 'linear' | 'radial', colors: [string, string], direction: string }) => {
+        const gradValue = `${grad.type}-gradient(${grad.type === 'linear' ? `${grad.direction}, ` : 'circle, '}${grad.colors[0]}, ${grad.colors[1]})`;
+        setBackgroundStyle({ type: 'gradient', value: gradValue });
+    };
+
     const handleGradientColorChange = (index: 0 | 1, color: string) => {
-        const newColors = [...gradient.colors];
+        const newColors = [...gradient.colors] as [string, string];
         newColors[index] = color;
-        setGradient(g => ({...g, colors: newColors as [string, string]}));
+        handleGradientChange({ ...gradient, colors: newColors });
+    };
+    
+    const handleGradientDirectionChange = (direction: string) => {
+        handleGradientChange({ ...gradient, direction });
+    };
+
+    const handleGradientTypeChange = (type: 'linear' | 'radial') => {
+        handleGradientChange({ ...gradient, type });
     }
 
     return (
         <div className="space-y-4">
             <div className="grid grid-cols-3 gap-2">
-                <Button variant={activeTab === 'media' ? "secondary" : "ghost"} onClick={() => setActiveTab('media')}><ImageIcon className="mr-2 h-4 w-4" /> Mídia</Button>
-                <Button variant={activeTab === 'solid' ? "secondary" : "ghost"} onClick={() => setActiveTab('solid')}><Palette className="mr-2 h-4 w-4" /> Cor</Button>
-                <Button variant={activeTab === 'gradient' ? "secondary" : "ghost"} onClick={() => setActiveTab('gradient')}><Layers className="mr-2 h-4 w-4" /> Gradiente</Button>
+                <Button variant={activeTab === 'media' ? "secondary" : "ghost"} onClick={() => handleTabChange('media')}><ImageIcon className="mr-2 h-4 w-4" /> Mídia</Button>
+                <Button variant={activeTab === 'solid' ? "secondary" : "ghost"} onClick={() => handleTabChange('solid')}><Palette className="mr-2 h-4 w-4" /> Cor</Button>
+                <Button variant={activeTab === 'gradient' ? "secondary" : "ghost"} onClick={() => handleTabChange('gradient')}><Layers className="mr-2 h-4 w-4" /> Gradiente</Button>
             </div>
             
             <Separator />
@@ -139,7 +184,7 @@ function ControleTipoFundo({ setBaseBgColor }: { setBaseBgColor: (color: string)
                     <div className="relative h-10 w-full">
                        <Input
                            type="color"
-                           value={"#333333"}
+                           value={backgroundStyle.type === 'solid' ? backgroundStyle.value : '#333333'}
                            onChange={(e) => handleSolidColorChange(e.target.value)}
                            className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer"
                        />
@@ -153,15 +198,15 @@ function ControleTipoFundo({ setBaseBgColor }: { setBaseBgColor: (color: string)
                          <div className="space-y-2">
                             <Label>Tipo</Label>
                             <div className="flex gap-1">
-                                <Button size="sm" variant={gradient.type === 'linear' ? 'secondary' : 'outline'} onClick={() => setGradient(g => ({...g, type: 'linear'}))}>Linear</Button>
-                                <Button size="sm" variant={gradient.type === 'radial' ? 'secondary' : 'outline'} onClick={() => setGradient(g => ({...g, type: 'radial'}))}>Radial</Button>
+                                <Button size="sm" variant={gradient.type === 'linear' ? 'secondary' : 'outline'} onClick={() => handleGradientTypeChange('linear')}>Linear</Button>
+                                <Button size="sm" variant={gradient.type === 'radial' ? 'secondary' : 'outline'} onClick={() => handleGradientTypeChange('radial')}>Radial</Button>
                             </div>
                         </div>
 
                         {gradient.type === 'linear' && (
                             <div className="space-y-2 flex-1">
                                 <Label htmlFor="gradient-direction-mobile">Direção</Label>
-                                <Select value={gradient.direction} onValueChange={(dir) => setGradient(g => ({...g, direction: dir}))}>
+                                <Select value={gradient.direction} onValueChange={handleGradientDirectionChange}>
                                     <SelectTrigger id="gradient-direction-mobile" className="h-9"><SelectValue /></SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="to right">Direita</SelectItem>
@@ -525,7 +570,7 @@ function renderEstiloControl(subControl: string | null, props: EstiloControlProp
                     </div>
                     <div className="space-y-2">
                         <div className="flex justify-between items-center">
-                            <Label htmlFor="line-height" className="flex items-center"><LineHeight className="mr-2 h-4 w-4" />Altura da Linha</Label>
+                            <Label htmlFor="line-height" className="flex items-center"><Pilcrow className="mr-2 h-4 w-4" />Altura da Linha</Label>
                             <span className="text-sm text-muted-foreground">{props.lineHeight.toFixed(2)}</span>
                         </div>
                         <Slider id="line-height" min={0.8} max={2.5} step={0.05} value={[props.lineHeight]} onValueChange={(v) => props.onLineHeightChange(v[0])} />
@@ -576,8 +621,10 @@ interface MobileToolbarProps extends ControleAssinaturaProps, ControleLogoProps,
   setAspectRatio: (ratio: string) => void;
   scale: number;
   setScale: (scale: number) => void;
-  baseBgColor: string;
-  setBaseBgColor: (color: string) => void;
+  backgroundColorValue: string;
+  setBackgroundColorValue: (color: string) => void;
+  backgroundStyle: EstiloFundo;
+  setBackgroundStyle: (style: EstiloFundo) => void;
   fgColor: string;
   setFgColor: (color: string) => void;
   activeControl: string | null;
@@ -592,8 +639,10 @@ export function MobileToolbar({
   setAspectRatio,
   scale,
   setScale,
-  baseBgColor,
-  setBaseBgColor,
+  backgroundColorValue,
+  setBackgroundColorValue,
+  backgroundStyle,
+  setBackgroundStyle,
   fgColor,
   setFgColor,
   activeControl,
@@ -665,11 +714,11 @@ export function MobileToolbar({
             <div className="relative h-10 w-full rounded-md border overflow-hidden">
                 <Input
                     type="color"
-                    value={baseBgColor}
-                    onChange={(e) => setBaseBgColor(e.target.value)}
+                    value={backgroundColorValue}
+                    onChange={(e) => setBackgroundColorValue(e.target.value)}
                     className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer opacity-0"
                 />
-                 <div className="w-full h-full" style={{ backgroundColor: baseBgColor }} />
+                 <div className="w-full h-full" style={{ backgroundColor: backgroundColorValue }} />
             </div>
           </div>
           <div className="space-y-2">
@@ -706,7 +755,7 @@ export function MobileToolbar({
             </ScrollArea>
        </div>
       ),
-      fundo: <div className="p-4"><ControleTipoFundo setBaseBgColor={setBaseBgColor} /></div>,
+      fundo: <div className="p-4"><ControleTipoFundo backgroundStyle={backgroundStyle} setBackgroundStyle={setBackgroundStyle} /></div>,
       assinatura: <div className="p-4"><ControleAssinatura {...props} /></div>,
       logo: <div className="p-4"><ControleLogo {...props} /></div>,
     };
