@@ -25,6 +25,8 @@ interface PreviewCanvaProps {
   showSignatureUsername: boolean;
   showSignatureSocial: boolean;
   showSignatureBackground: boolean;
+  signatureBgColor: string;
+  signatureBgOpacity: number;
   showLogo: boolean;
   logoPositionX: number;
   logoPositionY: number;
@@ -50,6 +52,8 @@ export function PreviewCanva({
   showSignatureUsername,
   showSignatureSocial,
   showSignatureBackground,
+  signatureBgColor,
+  signatureBgOpacity,
   showLogo,
   logoPositionX,
   logoPositionY,
@@ -117,6 +121,8 @@ export function PreviewCanva({
                 showUsername={showSignatureUsername}
                 showSocial={showSignatureSocial}
                 showBackground={showSignatureBackground}
+                bgColor={signatureBgColor}
+                bgOpacity={signatureBgOpacity}
               />
             </div>
         )}

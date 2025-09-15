@@ -51,6 +51,8 @@ export function VisualizacaoEditor({
   showSignatureUsername,
   showSignatureSocial,
   showSignatureBackground,
+  signatureBgColor,
+  signatureBgOpacity,
   activeTemplateId,
   profileVerticalPosition,
   showLogo,
@@ -142,6 +144,8 @@ export function VisualizacaoEditor({
                 showUsername={showSignatureUsername}
                 showSocial={showSignatureSocial}
                 showBackground={showSignatureBackground}
+                bgColor={signatureBgColor}
+                bgOpacity={signatureBgOpacity}
               />
             </div>
           )}

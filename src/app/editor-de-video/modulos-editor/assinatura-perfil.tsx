@@ -1,3 +1,4 @@
+
 // Componente que exibe a assinatura do perfil do usuário na tela de visualização.
 // Inclui avatar, nome de usuário e rede social, com opções de customização.
 
@@ -12,6 +13,20 @@ interface AssinaturaPerfilProps {
   showUsername: boolean;
   showSocial: boolean;
   showBackground: boolean;
+  bgColor: string;
+  bgOpacity: number;
+}
+
+// Função para converter cor hexadecimal para RGB
+function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result
+        ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16),
+        }
+        : null;
 }
 
 export function AssinaturaPerfil({
@@ -20,15 +35,23 @@ export function AssinaturaPerfil({
   showUsername,
   showSocial,
   showBackground,
+  bgColor,
+  bgOpacity,
 }: AssinaturaPerfilProps) {
   // Define se o ícone da rede social deve ser exibido.
   const shouldShowIcon = profile.showIcon && (profile.iconUrl || profile.social.includes('twitter.com') || profile.social.includes('x.com'));
   
+  const bgRgb = hexToRgb(bgColor);
+  const backgroundColor = bgRgb ? `rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, ${bgOpacity / 100})` : `rgba(0, 0, 0, ${bgOpacity / 100})`;
+
+
   return (
-    <div className={cn(
-        "flex items-center gap-3 p-2 rounded-lg max-w-max",
-        showBackground && "bg-black/30 backdrop-blur-sm"
-    )}>
+    <div 
+        className={cn("flex items-center gap-3 p-2 rounded-lg max-w-max backdrop-blur-sm")}
+        style={{
+            backgroundColor: showBackground ? backgroundColor : 'transparent',
+        }}
+    >
       {showPhoto && (
         <Avatar className="h-10 w-10">
           <AvatarImage src={profile.photo || ""} alt={profile.username} />

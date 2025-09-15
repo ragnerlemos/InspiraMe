@@ -78,6 +78,8 @@ export default function AspectWeaver() {
   const [showSignatureUsername, setShowSignatureUsername] = useState(true);
   const [showSignatureSocial, setShowSignatureSocial] = useState(true);
   const [showSignatureBackground, setShowSignatureBackground] = useState(false);
+  const [signatureBgColor, setSignatureBgColor] = useState("#000000");
+  const [signatureBgOpacity, setSignatureBgOpacity] = useState(30);
 
   // Logo State
   const [showLogo, setShowLogo] = useState(false);
@@ -151,6 +153,8 @@ export default function AspectWeaver() {
     showSignatureUsername, onShowSignatureUsernameChange: setShowSignatureUsername,
     showSignatureSocial, onShowSignatureSocialChange: setShowSignatureSocial,
     showSignatureBackground, onShowSignatureBackgroundChange: setShowSignatureBackground,
+    signatureBgColor, onSignatureBgColorChange: setSignatureBgColor,
+    signatureBgOpacity, onSignatureBgOpacityChange: setSignatureBgOpacity,
     showLogo, onShowLogoChange: setShowLogo,
     logoPositionX, onLogoPositionXChange: setLogoPositionX,
     logoPositionY, onLogoPositionYChange: setLogoPositionY,
@@ -171,7 +175,7 @@ export default function AspectWeaver() {
   return (
     <div className="flex flex-col w-full bg-background font-body text-foreground h-[calc(100vh-4rem)]">
       <PanelGroup direction="horizontal" className="flex-1 min-h-0">
-         <Panel defaultSize={30} minSize={25} maxSize={40} className="hidden md:flex">
+         <Panel defaultSize={30} minSize={25} maxSize={40} className="hidden md:flex flex-col">
             <Sidebar {...commonProps} />
         </Panel>
         {isDesktop && <PanelResizeHandle />}
@@ -195,6 +199,8 @@ export default function AspectWeaver() {
                     showSignatureUsername={showSignatureUsername}
                     showSignatureSocial={showSignatureSocial}
                     showSignatureBackground={showSignatureBackground}
+                    signatureBgColor={signatureBgColor}
+                    signatureBgOpacity={signatureBgOpacity}
                     showLogo={showLogo}
                     logoPositionX={logoPositionX}
                     logoPositionY={logoPositionY}

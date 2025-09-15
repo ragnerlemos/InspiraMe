@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Upload, Image as ImageIcon, Palette, Layers, Redo, UserCheck, MoveVertical, MoveHorizontal, CaseSensitive, AtSign, RectangleHorizontal, Check, Edit, Edit2, LayoutTemplate, RectangleVertical, Square, ZoomIn, ImageUp, BadgePercent, User, X, Film, Box } from 'lucide-react';
+import { Upload, Image as ImageIcon, Palette, Layers, Redo, UserCheck, MoveVertical, MoveHorizontal, CaseSensitive, AtSign, RectangleHorizontal, Check, Edit, Edit2, LayoutTemplate, RectangleVertical, Square, ZoomIn, ImageUp, BadgePercent, User, X, Film, Box, Pipette } from 'lucide-react';
 import type { PainelFundoProps, ProporcaoTela } from './tipos';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { templates } from '@/lib/dados';
@@ -253,6 +253,8 @@ function ControleAssinatura(props: Omit<PainelFundoProps, 'backgroundStyle' | 'o
         showSignatureUsername, onShowSignatureUsernameChange,
         showSignatureSocial, onShowSignatureSocialChange,
         showSignatureBackground, onShowSignatureBackgroundChange,
+        signatureBgColor, onSignatureBgColorChange,
+        signatureBgOpacity, onSignatureBgOpacityChange,
         profile,
         onClose,
     } = props;
@@ -296,6 +298,31 @@ function ControleAssinatura(props: Omit<PainelFundoProps, 'backgroundStyle' | 'o
                             <Box className="mr-2 h-4 w-4" /> Fundo
                         </Button>
                     </div>
+
+                    {showSignatureBackground && (
+                        <div className="space-y-4 pt-4 border-t">
+                            <div className="space-y-2">
+                                <div className="flex justify-between items-center">
+                                    <Label className="text-xs flex items-center"><Pipette className="mr-2 h-3 w-3" />Cor do Fundo</Label>
+                                    <Input
+                                        type="color"
+                                        value={signatureBgColor}
+                                        onChange={(e) => onSignatureBgColorChange(e.target.value)}
+                                        className="h-6 w-10 p-0 border-none cursor-pointer"
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <div className="flex justify-between items-center">
+                                    <Label htmlFor="signature-bg-opacity" className="text-xs flex items-center"><BadgePercent className="mr-2 h-3 w-3" />Opacidade do Fundo</Label>
+                                    <span className="text-xs text-muted-foreground">{signatureBgOpacity}%</span>
+                                </div>
+                                <Slider id="signature-bg-opacity" min={0} max={100} step={1} value={[signatureBgOpacity]} onValueChange={(v) => onSignatureBgOpacityChange(v[0])}/>
+                            </div>
+                        </div>
+                    )}
+
+
                      <div className="space-y-2">
                         <div className="flex justify-between items-center">
                             <Label htmlFor="signature-position-x" className="text-xs flex items-center"><MoveHorizontal className="mr-2 h-3 w-3" />Posição Horizontal</Label>

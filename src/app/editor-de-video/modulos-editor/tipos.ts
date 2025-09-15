@@ -41,6 +41,8 @@ export interface EditorState {
     showSignatureUsername: boolean;
     showSignatureSocial: boolean;
     showSignatureBackground: boolean;
+    signatureBgColor: string;
+    signatureBgOpacity: number;
     profileVerticalPosition: number;
     showLogo: boolean;
     logoPositionX: number;
@@ -76,6 +78,8 @@ export interface VisualizacaoEditorProps {
     showSignatureUsername: boolean;
     showSignatureSocial: boolean;
     showSignatureBackground: boolean;
+    signatureBgColor: string;
+    signatureBgOpacity: number;
     activeTemplateId: number | null;
     profileVerticalPosition: number;
     showLogo: boolean;
@@ -150,6 +154,10 @@ export interface PainelFundoProps {
     onShowSignatureSocialChange: (show: boolean) => void;
     showSignatureBackground: boolean;
     onShowSignatureBackgroundChange: (show: boolean) => void;
+    signatureBgColor: string;
+    onSignatureBgColorChange: (color: string) => void;
+    signatureBgOpacity: number;
+    onSignatureBgOpacityChange: (opacity: number) => void;
     showLogo: boolean;
     onShowLogoChange: (show: boolean) => void;
     logoPositionX: number;

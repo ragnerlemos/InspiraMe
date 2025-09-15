@@ -226,6 +226,10 @@ interface ControleAssinaturaProps {
   onShowSignatureSocialChange: (show: boolean) => void;
   showSignatureBackground: boolean;
   onShowSignatureBackgroundChange: (show: boolean) => void;
+  signatureBgColor: string;
+  onSignatureBgColorChange: (color: string) => void;
+  signatureBgOpacity: number;
+  onSignatureBgOpacityChange: (opacity: number) => void;
   profile: ProfileData;
 }
 function ControleAssinatura(props: ControleAssinaturaProps) {
@@ -238,6 +242,8 @@ function ControleAssinatura(props: ControleAssinaturaProps) {
         showSignatureUsername, onShowSignatureUsernameChange,
         showSignatureSocial, onShowSignatureSocialChange,
         showSignatureBackground, onShowSignatureBackgroundChange,
+        signatureBgColor, onSignatureBgColorChange,
+        signatureBgOpacity, onSignatureBgOpacityChange,
         profile,
     } = props;
     
@@ -280,6 +286,30 @@ function ControleAssinatura(props: ControleAssinaturaProps) {
                            <Box className="mr-2 h-4 w-4" /> Fundo
                         </Button>
                     </div>
+
+                    {showSignatureBackground && (
+                         <div className="space-y-4 pt-4 border-t">
+                            <div className="space-y-2">
+                                <div className="flex justify-between items-center">
+                                    <Label className="text-xs flex items-center"><Pipette className="mr-2 h-3 w-3" />Cor do Fundo</Label>
+                                    <Input
+                                        type="color"
+                                        value={signatureBgColor}
+                                        onChange={(e) => onSignatureBgColorChange(e.target.value)}
+                                        className="h-6 w-10 p-0 border-none cursor-pointer"
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <div className="flex justify-between items-center">
+                                    <Label htmlFor="signature-bg-opacity-mobile" className="text-xs flex items-center"><BadgePercent className="mr-2 h-3 w-3" />Opacidade do Fundo</Label>
+                                    <span className="text-xs text-muted-foreground">{signatureBgOpacity}%</span>
+                                </div>
+                                <Slider id="signature-bg-opacity-mobile" min={0} max={100} step={1} value={[signatureBgOpacity]} onValueChange={(v) => onSignatureBgOpacityChange(v[0])}/>
+                            </div>
+                        </div>
+                    )}
+
                      <div className="space-y-2">
                         <div className="flex justify-between items-center">
                             <Label htmlFor="signature-position-x-mobile" className="text-xs flex items-center"><MoveHorizontal className="mr-2 h-3 w-3" />Posição Horizontal</Label>

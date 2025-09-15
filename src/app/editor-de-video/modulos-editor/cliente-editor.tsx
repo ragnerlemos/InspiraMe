@@ -46,6 +46,8 @@ const getInitialState = (): EditorState => ({
     showSignatureUsername: true,
     showSignatureSocial: true,
     showSignatureBackground: false,
+    signatureBgColor: "#000000",
+    signatureBgOpacity: 30,
     profileVerticalPosition: 25,
     showLogo: false,
     logoPositionX: 85,
@@ -305,6 +307,8 @@ export function EditorClient() {
     showSignatureUsername: currentState.showSignatureUsername,
     showSignatureSocial: currentState.showSignatureSocial,
     showSignatureBackground: currentState.showSignatureBackground,
+    signatureBgColor: currentState.signatureBgColor,
+    signatureBgOpacity: currentState.signatureBgOpacity,
     activeTemplateId: typeof currentState.activeTemplateId === 'number' ? currentState.activeTemplateId : null,
     profileVerticalPosition: currentState.profileVerticalPosition,
     showLogo: currentState.showLogo,
@@ -364,6 +368,10 @@ export function EditorClient() {
         onShowSignatureSocialChange={(show) => updateState({ showSignatureSocial: show })}
         showSignatureBackground={currentState.showSignatureBackground}
         onShowSignatureBackgroundChange={(show) => updateState({ showSignatureBackground: show })}
+        signatureBgColor={currentState.signatureBgColor}
+        onSignatureBgColorChange={(color) => updateState({ signatureBgColor: color })}
+        signatureBgOpacity={currentState.signatureBgOpacity}
+        onSignatureBgOpacityChange={(opacity) => updateState({ signatureBgOpacity: opacity })}
         activeTemplateId={typeof currentState.activeTemplateId === 'number' ? currentState.activeTemplateId : null}
         profileVerticalPosition={currentState.profileVerticalPosition}
         onProfileVerticalPositionChange={(profileVerticalPosition) => updateState({ profileVerticalPosition })}
