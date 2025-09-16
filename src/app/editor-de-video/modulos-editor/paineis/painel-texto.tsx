@@ -2,7 +2,7 @@
 
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import type { PainelTextoProps } from "./tipos";
+import type { PainelTextoProps } from "../tipos";
 
 export function PainelTexto({ text, onTextChange }: PainelTextoProps) {
     return (
@@ -19,4 +19,3 @@ export function PainelTexto({ text, onTextChange }: PainelTextoProps) {
         </div>
     );
 }
-

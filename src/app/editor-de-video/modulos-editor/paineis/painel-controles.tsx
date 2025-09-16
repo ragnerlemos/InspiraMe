@@ -5,15 +5,15 @@ import { useState } from 'react';
 import { Type, Palette, ImagePlus, ArrowLeft, Brush, RectangleHorizontal, UserCheck } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import type { PainelControlesProps } from "./tipos";
+import type { PainelControlesProps } from "../tipos";
 import { PainelTexto } from "./painel-texto";
 import { PainelEstilo } from "./painel-estilo";
 import { PainelFundo } from "./painel-fundo";
-import { BotaoRecurso } from './botao-recurso';
+import { BotaoRecurso } from '../botao-recurso';
 import { useWindowSize } from 'react-use';
-import { PainelCores } from './paineis/painel-cores';
-import { PainelCanva } from './paineis/painel-canva';
-import { PainelAssinatura } from './paineis/painel-assinatura';
+import { PainelCores } from './painel-cores';
+import { PainelCanva } from './painel-canva';
+import { PainelAssinatura } from './painel-assinatura';
 
 
 export function PainelControles(props: PainelControlesProps) {

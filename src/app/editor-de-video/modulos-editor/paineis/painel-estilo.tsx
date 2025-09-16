@@ -12,8 +12,8 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import type { PainelEstiloProps } from "./tipos";
-import { BotaoRecurso } from "./botao-recurso";
+import type { PainelEstiloProps } from "../tipos";
+import { BotaoRecurso } from "../botao-recurso";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 type ControleAtivo = 'fonte' | 'tamanho' | 'alinhamento' | 'estilo' | 'posicao' | 'sombra' | null;

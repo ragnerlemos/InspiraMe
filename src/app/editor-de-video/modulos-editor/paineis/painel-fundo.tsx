@@ -8,8 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Upload, Image as ImageIcon, ImageUp, Check, Edit, MoveHorizontal, MoveVertical, ZoomIn, BadgePercent } from 'lucide-react';
-import type { PainelFundoProps } from './tipos';
-import { BotaoRecurso } from './botao-recurso';
+import type { PainelFundoProps } from '../tipos';
+import { BotaoRecurso } from '../botao-recurso';
 import { Slider } from '@/components/ui/slider';
 
 
