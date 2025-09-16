@@ -527,8 +527,9 @@ function renderEstiloControl(subControl: string | null, props: EstiloControlProp
                             type="color"
                             value={props.fgColor}
                             onChange={(e) => props.onFgColorChange(e.target.value)}
-                            className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer"
+                            className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer opacity-0"
                         />
+                        <div className="w-full h-full" style={{ backgroundColor: props.fgColor }} />
                     </div>
                 </div>
             );
