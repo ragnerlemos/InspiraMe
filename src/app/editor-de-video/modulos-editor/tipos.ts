@@ -93,7 +93,7 @@ export interface VisualizacaoEditorProps {
 }
 
 // Define as propriedades para o componente que contém os painéis de controle.
-export interface PainelControlesProps extends PainelTextoProps, PainelEstiloProps, PainelFundoProps, PainelCoresProps {
+export interface PainelControlesProps extends PainelTextoProps, PainelEstiloProps, PainelFundoProps, PainelCoresProps, PainelCanvaProps {
     onUndo: () => void;
     canUndo: boolean;
 }
@@ -147,12 +147,10 @@ export interface PainelCoresProps {
     onFilmOpacityChange: (opacity: number) => void;
 }
 
-// Define as propriedades para o painel de upload de fundo.
+// Define as propriedades para o painel de fundo.
 export interface PainelFundoProps {
     backgroundStyle: EstiloFundo;
     onBackgroundStyleChange: (style: EstiloFundo) => void;
-    aspectRatio: ProporcaoTela;
-    onAspectRatioChange: (ratio: ProporcaoTela) => void;
     showProfileSignature: boolean;
     onShowProfileSignatureChange: (show: boolean) => void;
     signaturePositionX: number;
@@ -185,6 +183,13 @@ export interface PainelFundoProps {
     onLogoOpacityChange: (opacity: number) => void;
     profile: ProfileData;
 }
+
+// Propriedades para o painel do canvas
+export interface PainelCanvaProps {
+    aspectRatio: ProporcaoTela;
+    onAspectRatioChange: (ratio: ProporcaoTela) => void;
+}
+
 
 // Propriedades para o componente de visualização de perfil
 export interface VisualizacaoPerfilProps {

@@ -3,7 +3,7 @@
 // Componente da barra de ferramentas inferior que gerencia os painéis deslizantes.
 
 import { useState } from 'react';
-import { Type, Palette, ImagePlus, ArrowLeft, Brush } from "lucide-react";
+import { Type, Palette, ImagePlus, ArrowLeft, Brush, RectangleHorizontal } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import type { PainelControlesProps } from "./tipos";
@@ -13,14 +13,15 @@ import { PainelFundo } from "./painel-fundo";
 import { BotaoRecurso } from './botao-recurso';
 import { useWindowSize } from 'react-use';
 import { PainelCores } from './paineis/painel-cores';
+import { PainelCanva } from './paineis/painel-canva';
 
 
 export function PainelControles(props: PainelControlesProps) {
-    const [activePanel, setActivePanel] = useState<'text' | 'style' | 'background' | 'colors' | null>('text');
+    const [activePanel, setActivePanel] = useState<'text' | 'style' | 'background' | 'colors' | 'canvas' | null>('text');
     const { width } = useWindowSize();
     const isDesktop = width >= 768; // Tailwind's md breakpoint
     
-    const handlePanelChange = (panel: 'text' | 'style' | 'background' | 'colors') => {
+    const handlePanelChange = (panel: 'text' | 'style' | 'background' | 'colors' | 'canvas') => {
         // No mobile, clicar no mesmo botão não deve fechar o painel.
         // O fechamento será feito pelo botão "voltar" ou deslizando.
         setActivePanel(panel);
@@ -41,6 +42,8 @@ export function PainelControles(props: PainelControlesProps) {
                  return <PainelFundo {...props} {...commonProps} />;
             case 'colors':
                 return <PainelCores {...props} {...commonProps} />;
+            case 'canvas':
+                return <PainelCanva {...props} {...commonProps} />;
             default:
                 if (isDesktop) {
                     return <div className="p-4 text-center text-muted-foreground">Selecione uma ferramenta para começar a editar.</div>;
@@ -53,8 +56,9 @@ export function PainelControles(props: PainelControlesProps) {
         switch (activePanel) {
             case 'text': return "Editar Texto";
             case 'style': return "Editar Estilo";
-            case 'background': return "Editar Fundo e Formato";
+            case 'background': return "Editar Fundo";
             case 'colors': return "Editar Cores";
+            case 'canvas': return "Editar Canvas";
             default: return "";
         }
     }
@@ -64,7 +68,8 @@ export function PainelControles(props: PainelControlesProps) {
             <BotaoRecurso icon={Type} label="Texto" onClick={() => handlePanelChange('text')} isActive={isDesktop && activePanel === 'text'} />
             <BotaoRecurso icon={Brush} label="Estilo" onClick={() => handlePanelChange('style')} isActive={isDesktop && activePanel === 'style'} />
             <BotaoRecurso icon={Palette} label="Cores" onClick={() => handlePanelChange('colors')} isActive={isDesktop && activePanel === 'colors'} />
-            <BotaoRecurso icon={ImagePlus} label="Fundo" onClick={() => handlePanelChange('background')} isActive={isDesktop && active-panel === 'background'}/>
+            <BotaoRecurso icon={ImagePlus} label="Fundo" onClick={() => handlePanelChange('background')} isActive={isDesktop && activePanel === 'background'}/>
+            <BotaoRecurso icon={RectangleHorizontal} label="Canvas" onClick={() => handlePanelChange('canvas')} isActive={isDesktop && activePanel === 'canvas'}/>
         </div>
     );
     
@@ -74,6 +79,7 @@ export function PainelControles(props: PainelControlesProps) {
             <BotaoRecurso icon={Brush} label="Estilo" onClick={() => setActivePanel('style')} isActive={activePanel === 'style'} />
             <BotaoRecurso icon={Palette} label="Cores" onClick={() => setActivePanel('colors')} isActive={activePanel === 'colors'} />
             <BotaoRecurso icon={ImagePlus} label="Fundo" onClick={() => setActivePanel('background')} isActive={activePanel === 'background'}/>
+            <BotaoRecurso icon={RectangleHorizontal} label="Canvas" onClick={() => setActivePanel('canvas')} isActive={activePanel === 'canvas'}/>
         </div>
     )
 

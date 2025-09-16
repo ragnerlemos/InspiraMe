@@ -7,37 +7,12 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Upload, Image as ImageIcon, UserCheck, MoveVertical, MoveHorizontal, CaseSensitive, AtSign, RectangleHorizontal, Check, Edit, Edit2, LayoutTemplate, RectangleVertical, Square, ZoomIn, ImageUp, BadgePercent, User, X, Film } from 'lucide-react';
-import type { PainelFundoProps, ProporcaoTela } from './tipos';
+import { Upload, Image as ImageIcon, UserCheck, MoveVertical, MoveHorizontal, CaseSensitive, AtSign, Check, Edit, ImageUp, BadgePercent, User, X, Box, Pipette } from 'lucide-react';
+import type { PainelFundoProps } from './tipos';
 import { Slider } from '@/components/ui/slider';
 import { BotaoRecurso } from './botao-recurso';
 import { Separator } from '@/components/ui/separator';
-
-function ControleProporcao({ aspectRatio, onAspectRatioChange }: { aspectRatio: ProporcaoTela, onAspectRatioChange: (ratio: ProporcaoTela) => void }) {
-    const proportions: { ratio: ProporcaoTela; icon: React.ElementType; label: string }[] = [
-        { ratio: '9 / 16', icon: RectangleVertical, label: 'Story' },
-        { ratio: '1 / 1', icon: Square, label: 'Quadrado' },
-        { ratio: '16 / 9', icon: RectangleHorizontal, label: 'Vídeo' },
-    ];
-    return (
-        <div className="space-y-2">
-            <Label>Proporção da Tela</Label>
-            <div className="grid grid-cols-3 gap-2">
-                {proportions.map(({ ratio, icon: Icon, label }) => (
-                     <Button
-                        key={ratio}
-                        variant={aspectRatio === ratio ? 'secondary' : 'outline'}
-                        onClick={() => onAspectRatioChange(ratio)}
-                        className="flex flex-col h-16 gap-1"
-                    >
-                        <Icon className="h-5 w-5" />
-                        <span className="text-xs">{label} ({ratio.replace(/ /g, '')})</span>
-                    </Button>
-                ))}
-            </div>
-        </div>
-    )
-}
+import { Input } from '@/components/ui/input';
 
 
 function ControleTipoFundo(props: {
@@ -78,9 +53,9 @@ function ControleTipoFundo(props: {
     )
 }
 
-type ControleAtivo = 'proporcao' | 'tipo' | 'assinatura' | 'logo' | null;
+type ControleAtivo = 'tipo' | 'assinatura' | 'logo' | null;
 
-function ControleAssinatura(props: Omit<PainelFundoProps, 'backgroundStyle' | 'onBackgroundStyleChange' | 'aspectRatio' | 'onAspectRatioChange' | 'showLogo' | 'onShowLogoChange' | 'logoPositionX' | 'onLogoPositionXChange' | 'logoPositionY' | 'onLogoPositionYChange' | 'logoScale' | 'onLogoScaleChange' | 'logoOpacity' | 'onLogoOpacityChange' | 'filmColor' | 'onFilmColorChange' | 'filmOpacity' | 'onFilmOpacityChange' > & { onClose: () => void }) {
+function ControleAssinatura(props: Omit<PainelFundoProps, 'backgroundStyle' | 'onBackgroundStyleChange' | 'aspectRatio' | 'onAspectRatioChange' | 'showLogo' | 'onShowLogoChange' | 'logoPositionX' | 'onLogoPositionXChange' | 'logoPositionY' | 'onLogoPositionYChange' | 'logoScale' | 'onLogoScaleChange' | 'logoOpacity' | 'onLogoOpacityChange' > & { onClose: () => void }) {
     const { 
         showProfileSignature, onShowProfileSignatureChange,
         signaturePositionX, onSignaturePositionXChange,
@@ -259,7 +234,7 @@ function ControleLogo(props: Pick<PainelFundoProps, 'showLogo' | 'onShowLogoChan
 
 
 export function PainelFundo(props: PainelFundoProps & { onClose: () => void }) {
-    const [controleAtivo, setControleAtivo] = useState<ControleAtivo>('proporcao');
+    const [controleAtivo, setControleAtivo] = useState<ControleAtivo>('tipo');
 
     const handleSetControleAtivo = (controle: ControleAtivo) => {
         setControleAtivo(prev => prev === controle ? null : controle);
@@ -270,8 +245,6 @@ export function PainelFundo(props: PainelFundoProps & { onClose: () => void }) {
 
         const Content = () => {
             switch(controleAtivo) {
-                case 'proporcao':
-                    return <ControleProporcao aspectRatio={props.aspectRatio} onAspectRatioChange={props.onAspectRatioChange} />
                 case 'tipo':
                     return <ControleTipoFundo 
                                 backgroundStyle={props.backgroundStyle} 
@@ -295,7 +268,6 @@ export function PainelFundo(props: PainelFundoProps & { onClose: () => void }) {
 
     const subMenu = (
         <div className="flex h-full flex-col items-center gap-1 border-r bg-background/90 backdrop-blur-sm p-2">
-            <BotaoRecurso icon={RectangleHorizontal} label="Proporção" onClick={() => handleSetControleAtivo('proporcao')} isActive={controleAtivo === 'proporcao'}/>
             <BotaoRecurso icon={ImageIcon} label="Mídia" onClick={() => handleSetControleAtivo('tipo')} isActive={controleAtivo === 'tipo'}/>
             <BotaoRecurso icon={UserCheck} label="Assinatura" onClick={() => handleSetControleAtivo('assinatura')} isActive={controleAtivo === 'assinatura'}/>
              <BotaoRecurso icon={ImageUp} label="Logo" onClick={() => handleSetControleAtivo('logo')} isActive={controleAtivo === 'logo'}/>
