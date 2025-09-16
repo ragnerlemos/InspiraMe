@@ -193,18 +193,16 @@ export function PainelCores(props: PainelCoresProps & { onClose: () => void }) {
                 <Label className="flex items-center"><Film className="mr-2 h-4 w-4" /> Película de Cor</Label>
                 {/* Controle para a Cor da Película */}
                 <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                        <Label htmlFor="film-color" className="text-xs text-muted-foreground">Cor da Película</Label>
-                        <div className="relative h-7 w-10 rounded-md border overflow-hidden">
-                            <Input
-                                id="film-color"
-                                type="color"
-                                value={filmColor}
-                                onChange={(e) => onFilmColorChange(e.target.value)}
-                                className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer"
-                            />
-                            <div className="w-full h-full" style={{ backgroundColor: filmColor }} />
-                        </div>
+                    <Label htmlFor="film-color">Cor da Película</Label>
+                    <div className="relative h-10 w-full rounded-md border overflow-hidden">
+                        <Input
+                            id="film-color"
+                            type="color"
+                            value={filmColor}
+                            onChange={(e) => onFilmColorChange(e.target.value)}
+                            className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer"
+                        />
+                        <div className="w-full h-full" style={{ backgroundColor: filmColor }} />
                     </div>
                 </div>
                 {/* Controle para a Opacidade da Película */}
