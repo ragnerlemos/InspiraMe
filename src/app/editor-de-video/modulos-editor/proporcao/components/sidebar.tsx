@@ -18,6 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import type { ProfileData } from "@/hooks/use-profile";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import type { EstiloFundo } from "../../tipos";
+import { IconeGradiente } from "../../icone-gradiente";
 
 
 const aspectRatios = [
@@ -135,7 +136,9 @@ function ControleTipoFundo({
                 <Button variant={currentTab === 'media' ? "secondary" : "ghost"} onClick={() => handleTabChange('media')}><ImageIcon className="mr-2 h-4 w-4" /> Mídia</Button>
                 <Button variant={currentTab === 'film' ? "secondary" : "ghost"} onClick={() => setCurrentTab('film')}><Film className="mr-2 h-4 w-4" /> Película</Button>
                 <Button variant={currentTab === 'color' ? "secondary" : "ghost"} onClick={() => handleTabChange('color')}><Paintbrush className="mr-2 h-4 w-4" /> Cor</Button>
-                <Button variant={currentTab === 'gradient' ? "secondary" : "ghost"} onClick={() => handleTabChange('gradient')}><Layers className="mr-2 h-4 w-4" /> Gradiente</Button>
+                <Button variant={currentTab === 'gradient' ? 'secondary' : 'ghost'} onClick={() => handleTabChange('gradient')}>
+                    <IconeGradiente className="mr-2 h-4 w-4" /> Gradiente
+                </Button>
             </div>
             
             <Separator />

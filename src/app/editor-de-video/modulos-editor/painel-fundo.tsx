@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Upload, Image as ImageIcon, Palette, Layers, Redo, UserCheck, MoveVertical, MoveHorizontal, CaseSensitive, AtSign, RectangleHorizontal, Check, Edit, Edit2, LayoutTemplate, RectangleVertical, Square, ZoomIn, ImageUp, BadgePercent, User, X, Film, Box, Pipette, Pilcrow, PaintBrush } from 'lucide-react';
+import { Upload, Image as ImageIcon, PaintBrush, Layers, Redo, UserCheck, MoveVertical, MoveHorizontal, CaseSensitive, AtSign, RectangleHorizontal, Check, Edit, Edit2, LayoutTemplate, RectangleVertical, Square, ZoomIn, ImageUp, BadgePercent, User, X, Film, Box, Pipette, Pilcrow } from 'lucide-react';
 import type { PainelFundoProps, ProporcaoTela } from './tipos';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { templates } from '@/lib/dados';
@@ -16,6 +16,7 @@ import { Slider } from '@/components/ui/slider';
 import { BotaoRecurso } from './botao-recurso';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
+import { IconeGradiente } from './icone-gradiente';
 
 function ControleProporcao({ aspectRatio, onAspectRatioChange }: { aspectRatio: ProporcaoTela, onAspectRatioChange: (ratio: ProporcaoTela) => void }) {
     const proportions: { ratio: ProporcaoTela; icon: React.ElementType; label: string }[] = [
@@ -143,7 +144,9 @@ function ControleTipoFundo(props: {
                 <Button variant={activeTab === 'media' ? "secondary" : "ghost"} onClick={() => handleTabChange('media')}><ImageIcon className="mr-2 h-4 w-4" /> Mídia</Button>
                 <Button variant={activeTab === 'film' ? "secondary" : "ghost"} onClick={() => setActiveTab('film')}><Film className="mr-2 h-4 w-4" /> Película</Button>
                 <Button variant={activeTab === 'color' ? "secondary" : "ghost"} onClick={() => handleTabChange('color')}><PaintBrush className="mr-2 h-4 w-4" /> Cor</Button>
-                <Button variant={activeTab === 'gradient' ? "secondary" : "ghost"} onClick={() => handleTabChange('gradient')}><Layers className="mr-2 h-4 w-4" /> Gradiente</Button>
+                <Button variant={activeTab === 'gradient' ? 'secondary' : 'ghost'} onClick={() => handleTabChange('gradient')}>
+                    <IconeGradiente className="mr-2 h-4 w-4" /> Gradiente
+                </Button>
             </div>
             
             <Separator />
