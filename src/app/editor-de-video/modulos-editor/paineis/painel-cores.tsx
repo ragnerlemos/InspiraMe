@@ -60,7 +60,7 @@ export function PainelCores(props: PainelCoresProps & { onClose: () => void }) {
                 <Label className="flex items-center"><Film className="mr-2 h-4 w-4" /> Película de Cor</Label>
                 <div className="space-y-2">
                     <div className="flex justify-between items-center">
-                        <Label htmlFor="film-color" className="text-xs text-muted-foreground">Cor</Label>
+                        <Label htmlFor="film-color" className="text-xs text-muted-foreground">Cor da Película</Label>
                          <div className="relative h-7 w-10">
                             <Input
                                 id="film-color"
@@ -74,7 +74,7 @@ export function PainelCores(props: PainelCoresProps & { onClose: () => void }) {
                 </div>
                 <div className="space-y-2">
                     <div className="flex justify-between items-center">
-                        <Label htmlFor="film-opacity" className="text-xs text-muted-foreground">Opacidade</Label>
+                        <Label htmlFor="film-opacity" className="text-xs text-muted-foreground">Opacidade da Película</Label>
                         <span className="text-xs text-muted-foreground">{filmOpacity}%</span>
                     </div>
                     <Slider id="film-opacity" min={0} max={100} step={1} value={[filmOpacity]} onValueChange={(v) => onFilmOpacityChange(v[0])} />
