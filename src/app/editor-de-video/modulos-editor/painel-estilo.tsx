@@ -16,7 +16,7 @@ import type { PainelEstiloProps } from "./tipos";
 import { BotaoRecurso } from "./botao-recurso";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
-type ControleAtivo = 'fonte' | 'tamanho' | 'cor' | 'alinhamento' | 'estilo' | 'posicao' | 'contorno' | 'sombra' | null;
+type ControleAtivo = 'fonte' | 'tamanho' | 'alinhamento' | 'estilo' | 'posicao' | 'contorno' | 'sombra' | null;
 
 export function PainelEstilo(props: PainelEstiloProps & { onClose: () => void }) {
     const [controleAtivo, setControleAtivo] = useState<ControleAtivo>('fonte');
@@ -55,26 +55,13 @@ export function PainelEstilo(props: PainelEstiloProps & { onClose: () => void })
                         <Slider id="font-size" min={1} max={20} step={0.1} value={[props.fontSize]} onValueChange={(v) => props.onFontSizeChange(v[0])} />
                     </div>
                 )}
-                {controleAtivo === 'cor' && (
-                     <div className="space-y-2">
-                        <Label>Cor do Texto</Label>
-                        <div className="relative h-10 w-full">
-                           <Input
-                                type="color"
-                                value={props.textColor}
-                                onChange={(e) => props.onTextColorChange(e.target.value)}
-                                className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer"
-                            />
-                        </div>
-                    </div>
-                )}
                 {controleAtivo === 'alinhamento' && (
                     <div className="space-y-2">
                         <Label>Alinhamento do Texto</Label>
                         <div className="grid grid-cols-3 gap-2">
-                            <BotaoRecurso icon={AlignLeft} label="" onClick={() => props.onTextAlignChange('left')} isActive={props.textAlign === 'left'} />
-                            <BotaoRecurso icon={AlignCenter} label="" onClick={() => props.onTextAlignChange('center')} isActive={props.textAlign === 'center'} />
-                            <BotaoRecurso icon={AlignRight} label="" onClick={() => props.onTextAlignChange('right')} isActive={props.textAlign === 'right'} />
+                            <Button variant={props.textAlign === 'left' ? 'secondary' : 'ghost'} onClick={() => props.onTextAlignChange('left')}><AlignLeft className="mr-2" />Esquerda</Button>
+                            <Button variant={props.textAlign === 'center' ? 'secondary' : 'ghost'} onClick={() => props.onTextAlignChange('center')}><AlignCenter className="mr-2" />Centro</Button>
+                            <Button variant={props.textAlign === 'right' ? 'secondary' : 'ghost'} onClick={() => props.onTextAlignChange('right')}><AlignRight className="mr-2" />Direita</Button>
                         </div>
                     </div>
                 )}
@@ -159,7 +146,7 @@ export function PainelEstilo(props: PainelEstiloProps & { onClose: () => void })
             <div className="flex w-max space-x-1 p-2">
                 <BotaoRecurso icon={Type} label="Fonte" onClick={() => handleSetControleAtivo('fonte')} isActive={controleAtivo === 'fonte'}/>
                 <BotaoRecurso icon={CaseSensitive} label="Tamanho" onClick={() => handleSetControleAtivo('tamanho')} isActive={controleAtivo === 'tamanho'}/>
-                <BotaoRecurso icon={Pipette} label="Cor" onClick={() => handleSetControleAtivo('cor')} isActive={controleAtivo === 'cor'}/>
+                <BotaoRecurso icon={Pipette} label="Cor" onClick={() => props.onTextColorChange(props.textColor)} isActive={false}/>
                 <BotaoRecurso icon={AlignLeft} label="Alinhar" onClick={() => handleSetControleAtivo('alinhamento')} isActive={controleAtivo === 'alinhamento'}/>
                 <BotaoRecurso icon={Bold} label="Estilo" onClick={() => handleSetControleAtivo('estilo')} isActive={controleAtivo === 'estilo'}/>
                 <BotaoRecurso icon={MoveVertical} label="Posição" onClick={() => handleSetControleAtivo('posicao')} isActive={controleAtivo === 'posicao'}/>
