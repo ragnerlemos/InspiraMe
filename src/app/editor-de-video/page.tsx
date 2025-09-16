@@ -8,9 +8,9 @@ import { useProfile } from "@/hooks/use-profile";
 import { useTemplates } from "@/hooks/use-templates";
 import { useToast } from "@/hooks/use-toast";
 import { useEditor } from "./contexts/editor-context";
-import { Sidebar } from "./modulos-editor/proporcao/components/sidebar";
-import { PreviewCanva } from "./modulos-editor/proporcao/components/preview-canva";
-import { MobileToolbar } from "./modulos-editor/proporcao/components/mobile-toolbar";
+import { Sidebar } from "./modulos-editor/layout/sidebar";
+import { PreviewCanva } from "./modulos-editor/layout/preview-canva";
+import { MobileToolbar } from "./modulos-editor/layout/mobile-toolbar";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Panel,
