@@ -224,8 +224,7 @@ export function EditorClient() {
 
       if (template) {
         // Aplica o estado salvo no template
-        initialState = { ...initialState, ...template.editorState };
-        initialState.activeTemplateId = template.id === 'template-twitter' ? -2 : template.id === 'template-default' ? -1 : null;
+        initialState = { ...initialState, ...template.editorState, activeTemplateId: template.id };
       }
     } else {
          // Se nenhum template for selecionado, usa um fundo preto como padrão.
@@ -314,7 +313,7 @@ export function EditorClient() {
     showSignatureBackground: currentState.showSignatureBackground,
     signatureBgColor: currentState.signatureBgColor,
     signatureBgOpacity: currentState.signatureBgOpacity,
-    activeTemplateId: typeof currentState.activeTemplateId === 'number' ? currentState.activeTemplateId : null,
+    activeTemplateId: currentState.activeTemplateId,
     profileVerticalPosition: currentState.profileVerticalPosition,
     showLogo: currentState.showLogo,
     logoPositionX: currentState.logoPositionX,
@@ -383,7 +382,7 @@ export function EditorClient() {
         onSignatureBgColorChange={(color) => updateState({ signatureBgColor: color })}
         signatureBgOpacity={currentState.signatureBgOpacity}
         onSignatureBgOpacityChange={(opacity) => updateState({ signatureBgOpacity: opacity })}
-        activeTemplateId={typeof currentState.activeTemplateId === 'number' ? currentState.activeTemplateId : null}
+        activeTemplateId={currentState.activeTemplateId}
         profileVerticalPosition={currentState.profileVerticalPosition}
         onProfileVerticalPositionChange={(profileVerticalPosition) => updateState({ profileVerticalPosition })}
         showLogo={currentState.showLogo}

@@ -34,7 +34,7 @@ export interface EditorState {
     filmColor: string;
     filmOpacity: number;
     aspectRatio: ProporcaoTela;
-    activeTemplateId: number | string | null;
+    activeTemplateId: string | null;
     showProfileSignature: boolean;
     signaturePositionX: number;
     signaturePositionY: number;
@@ -82,7 +82,7 @@ export interface VisualizacaoEditorProps {
     showSignatureBackground: boolean;
     signatureBgColor: string;
     signatureBgOpacity: number;
-    activeTemplateId: number | null;
+    activeTemplateId: string | null;
     profileVerticalPosition: number;
     showLogo: boolean;
     logoPositionX: number;
@@ -126,7 +126,7 @@ export interface PainelEstiloProps {
     onLineHeightChange: (height: number) => void;
     wordSpacing: number;
     onWordSpacingChange: (spacing: number) => void;
-    activeTemplateId: number | null;
+    activeTemplateId: string | null;
     profileVerticalPosition: number;
     onProfileVerticalPositionChange: (position: number) => void;
 }

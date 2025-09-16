@@ -74,12 +74,12 @@ export function VisualizacaoEditor(props: VisualizacaoEditorProps) {
   };
 
   const renderContent = () => {
-    if (props.activeTemplateId === -2) {
+    if (props.activeTemplateId === 'template-twitter') {
       // Visual de perfil (tipo "Twitter")
       return <ModeloTwitter {...props} />;
     }
 
-    // Padrão
+    // Para todos os outros casos ('template-default', 'template-mountain', customizados, etc.)
     return <ModeloPadrao {...props} />;
   };
   

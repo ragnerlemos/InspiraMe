@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { nanoid } from 'nanoid';
-import type { EditorState, SavedVideo } from "@/app/editor-de-video/components/tipos";
+import type { EditorState } from "@/app/editor-de-video/modulos-editor/tipos";
 
 const TEMPLATES_KEY = "quotevid_templates";
 
@@ -18,9 +18,9 @@ export interface Template {
 
 // Modelos padrão que não são editáveis pelo usuário
 const defaultTemplatesData: Template[] = [
-  { id: 'template-twitter', name: "Modelo Twitter (do Perfil)", editorState: { aspectRatio: "1 / 1", activeTemplateId: -2 }, isCustom: false, thumbnail: null },
-  { id: 'template-default', name: "Modelo Padrão", editorState: { aspectRatio: "9 / 16", activeTemplateId: -1 }, isCustom: false, thumbnail: null },
-  { id: 'template-mountain', name: "Paisagem na Montanha", editorState: { aspectRatio: "9 / 16", backgroundStyle: { type: 'media', value: 'https://picsum.photos/id/1018/1080/1920' } }, isCustom: false, thumbnail: "https://picsum.photos/id/1018/400/400" },
+  { id: 'template-twitter', name: "Modelo Twitter (do Perfil)", editorState: { aspectRatio: "1 / 1", activeTemplateId: 'template-twitter' }, isCustom: false, thumbnail: null },
+  { id: 'template-default', name: "Modelo Padrão", editorState: { aspectRatio: "9 / 16", activeTemplateId: 'template-default' }, isCustom: false, thumbnail: null },
+  { id: 'template-mountain', name: "Paisagem na Montanha", editorState: { aspectRatio: "9 / 16", backgroundStyle: { type: 'media', value: 'https://picsum.photos/id/1018/1080/1920' }, activeTemplateId: 'template-mountain' }, isCustom: false, thumbnail: "https://picsum.photos/id/1018/400/400" },
 ];
 
 
