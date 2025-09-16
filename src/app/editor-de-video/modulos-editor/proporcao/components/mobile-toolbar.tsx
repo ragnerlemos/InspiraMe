@@ -264,9 +264,9 @@ function ControleTipoFundo({
                            {[0, 1].map((index) => (
                                <div key={index} className="flex-1 space-y-1">
                                    <Label className="text-xs text-muted-foreground">Cor {index + 1}</Label>
-                                   <div className="relative h-9 w-full">
+                                   <div className="relative h-9 w-full rounded-md overflow-hidden">
                                        <Input type="color" value={gradient.colors[index as 0 | 1]} onChange={(e) => handleGradientColorChange(index as 0 | 1, e.target.value)} className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer opacity-0" />
-                                       <div className="w-full h-full rounded-md" style={{ backgroundColor: gradient.colors[index as 0 | 1] }} />
+                                       <div className="w-full h-full" style={{ backgroundColor: gradient.colors[index as 0 | 1] }} />
                                    </div>
                                </div>
                            ))}
@@ -553,21 +553,6 @@ function renderEstiloControl(subControl: string | null, props: EstiloControlProp
                     <Slider id="font-size" min={1} max={20} step={0.1} value={[props.fontSize]} onValueChange={(v) => props.onFontSizeChange(v[0])} />
                 </div>
             );
-        case 'cor':
-            return (
-                <div className="space-y-2">
-                    <Label>Cor do Texto</Label>
-                    <div className="relative h-10 w-full">
-                       <Input
-                            type="color"
-                            value={props.fgColor}
-                            onChange={(e) => props.onFgColorChange(e.target.value)}
-                            className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer opacity-0"
-                        />
-                        <div className="w-full h-full rounded-md" style={{ backgroundColor: props.fgColor }} />
-                    </div>
-                </div>
-            );
         case 'alinhamento':
             return (
                 <div className="space-y-2">
@@ -798,7 +783,6 @@ export function MobileToolbar({
                 <div className="flex h-16 items-center w-max space-x-1 bg-background/90 backdrop-blur-sm px-2">
                     <BotaoRecurso icon={Type} label="Fonte" onClick={() => setActiveSubControl('fonte')} isActive={activeSubControl === 'fonte'}/>
                     <BotaoRecurso icon={CaseSensitive} label="Tamanho" onClick={() => setActiveSubControl('tamanho')} isActive={activeSubControl === 'tamanho'}/>
-                    <BotaoRecurso icon={Pipette} label="Cor" onClick={() => setActiveSubControl('cor')} isActive={activeSubControl === 'cor'}/>
                     <BotaoRecurso icon={AlignLeft} label="Alinhar" onClick={() => setActiveSubControl('alinhamento')} isActive={activeSubControl === 'alinhamento'}/>
                     <BotaoRecurso icon={Bold} label="Estilo" onClick={() => setActiveSubControl('estilo')} isActive={activeSubControl === 'estilo'}/>
                     <BotaoRecurso icon={MoveVertical} label="Posição" onClick={() => setActiveSubControl('posicao')} isActive={activeSubControl === 'posicao'}/>
