@@ -1,20 +1,20 @@
 // Componente para a aba "Texto", que contém a área de texto para editar a frase.
 
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import TextareaAutosize from 'react-textarea-autosize';
 import type { PainelTextoProps } from "./tipos";
 
 export function PainelTexto({ text, onTextChange }: PainelTextoProps) {
     return (
         <div className="p-4">
             <Label htmlFor="text-input" className="sr-only">Texto da Frase</Label>
-            <Textarea
+            <TextareaAutosize
                 id="text-input"
                 value={text}
                 onChange={(e) => onTextChange(e.target.value)}
-                rows={4}
+                minRows={4}
                 placeholder="Digite sua frase aqui..."
-                className="text-base"
+                className="w-full text-base rounded-md border border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             />
         </div>
     );
