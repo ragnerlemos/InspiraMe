@@ -35,7 +35,7 @@ export function PainelCores(props: PainelCoresProps & { onClose: () => void }) {
                 {/* Controle para a Cor do Fundo. */}
                 <div className="space-y-2">
                     <Label htmlFor="bg-color">Cor do Fundo</Label>
-                    <div className="relative h-10 w-full">
+                    <div className="relative h-10 w-full rounded-md border overflow-hidden">
                         <Input
                             id="bg-color"
                             type="color"
@@ -43,12 +43,13 @@ export function PainelCores(props: PainelCoresProps & { onClose: () => void }) {
                             onChange={(e) => handleBackgroundColorChange(e.target.value)}
                             className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer"
                         />
+                         <div className="w-full h-full" style={{ backgroundColor: backgroundColor }} />
                     </div>
                 </div>
                 {/* Controle para a Cor do Texto. */}
                  <div className="space-y-2">
                     <Label htmlFor="text-color">Cor do Texto</Label>
-                    <div className="relative h-10 w-full">
+                    <div className="relative h-10 w-full rounded-md border overflow-hidden">
                        <Input
                             id="text-color"
                             type="color"
@@ -56,6 +57,7 @@ export function PainelCores(props: PainelCoresProps & { onClose: () => void }) {
                             onChange={(e) => onTextColorChange(e.target.value)}
                             className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer"
                         />
+                         <div className="w-full h-full" style={{ backgroundColor: textColor }} />
                     </div>
                 </div>
             </div>
@@ -70,7 +72,7 @@ export function PainelCores(props: PainelCoresProps & { onClose: () => void }) {
                 <div className="space-y-2">
                     <div className="flex justify-between items-center">
                         <Label htmlFor="film-color" className="text-xs text-muted-foreground">Cor da Película</Label>
-                         <div className="relative h-7 w-10">
+                         <div className="relative h-7 w-10 rounded-md border overflow-hidden">
                             <Input
                                 id="film-color"
                                 type="color"
@@ -78,6 +80,7 @@ export function PainelCores(props: PainelCoresProps & { onClose: () => void }) {
                                 onChange={(e) => onFilmColorChange(e.target.value)}
                                 className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer"
                             />
+                             <div className="w-full h-full" style={{ backgroundColor: filmColor }} />
                         </div>
                     </div>
                 </div>
