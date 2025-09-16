@@ -193,8 +193,9 @@ function ControleTipoFundo({ backgroundStyle, setBackgroundStyle }: { background
                                             type="color"
                                             value={gradient.colors[index as 0 | 1]}
                                             onChange={(e) => handleGradientColorChange(index as 0 | 1, e.target.value)}
-                                            className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer"
+                                            className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer opacity-0"
                                         />
+                                        <div className="w-full h-full" style={{ backgroundColor: gradient.colors[index as 0 | 1] }} />
                                     </div>
                                 </div>
                             ))}

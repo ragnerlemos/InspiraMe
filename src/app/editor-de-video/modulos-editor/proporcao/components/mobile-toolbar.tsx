@@ -228,7 +228,13 @@ function ControleTipoFundo({ backgroundStyle, setBackgroundStyle }: { background
                                <div key={index} className="flex-1 space-y-1">
                                    <Label className="text-xs text-muted-foreground">Cor {index + 1}</Label>
                                    <div className="relative h-9 w-full rounded-md border overflow-hidden">
-                                       <Input type="color" value={gradient.colors[index as 0 | 1]} onChange={(e) => handleGradientColorChange(index as 0 | 1, e.target.value)} className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer" />
+                                       <Input 
+                                            type="color" 
+                                            value={gradient.colors[index as 0 | 1]} 
+                                            onChange={(e) => handleGradientColorChange(index as 0 | 1, e.target.value)} 
+                                            className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer opacity-0"
+                                        />
+                                        <div className="w-full h-full" style={{ backgroundColor: gradient.colors[index as 0 | 1] }} />
                                    </div>
                                </div>
                            ))}
