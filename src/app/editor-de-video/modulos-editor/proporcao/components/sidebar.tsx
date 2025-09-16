@@ -140,7 +140,7 @@ function ControleTipoFundo({ backgroundStyle, setBackgroundStyle }: { background
             {activeTab === 'solid' && (
                  <div className="space-y-2">
                     <Label className="text-left">Cor do Fundo</Label>
-                    <div className="relative h-10 w-full">
+                    <div className="relative h-10 w-full rounded-md border overflow-hidden">
                         <Input type="color" value={backgroundStyle.type === 'solid' ? backgroundStyle.value : '#333333'} onChange={e => handleSolidColorChange(e.target.value)} className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer" />
                     </div>
                 </div>
@@ -182,7 +182,7 @@ function ControleTipoFundo({ backgroundStyle, setBackgroundStyle }: { background
                             {[0, 1].map((index) => (
                                 <div key={index} className="flex-1 space-y-1">
                                     <Label className="text-xs text-muted-foreground">Cor {index + 1}</Label>
-                                    <div className="relative h-9 w-full">
+                                    <div className="relative h-9 w-full rounded-md border overflow-hidden">
                                         <Input
                                             type="color"
                                             value={gradient.colors[index as 0 | 1]}
@@ -475,7 +475,7 @@ function renderEstiloControl(subControl: string | null, props: EstiloControlProp
             return (
                 <div className="space-y-2">
                     <Label>Cor do Texto</Label>
-                    <div className="relative h-10 w-full">
+                    <div className="relative h-10 w-full rounded-md border overflow-hidden">
                        <Input
                             type="color"
                             value={props.fgColor}
@@ -544,7 +544,7 @@ function renderEstiloControl(subControl: string | null, props: EstiloControlProp
                  <div className="space-y-4">
                     <div className="space-y-2">
                         <Label htmlFor="stroke-color" className="text-xs text-muted-foreground">Cor</Label>
-                         <div className="relative h-10 w-full">
+                         <div className="relative h-10 w-full rounded-md border overflow-hidden">
                             <Input
                                 type="color"
                                 value={props.textStrokeColor}
@@ -715,7 +715,7 @@ export function Sidebar({
                     <div className="space-y-4 p-4">
                         <div className="space-y-2">
                             <Label>Cor da Película</Label>
-                            <div className="relative h-10 w-full">
+                            <div className="relative h-10 w-full rounded-md border overflow-hidden">
                                 <Input
                                     type="color"
                                     value={filmColor}
