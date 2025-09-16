@@ -112,6 +112,7 @@ export function PreviewCanva({
   return (
     <main className="w-full h-full p-4 flex items-start justify-center overflow-hidden">
       <div
+        id="preview-canva" // ID para o html2canvas
         style={{
           aspectRatio,
           transform: `scale(${scale})`,
@@ -120,7 +121,7 @@ export function PreviewCanva({
           backgroundImage: backgroundStyle.type === 'gradient' ? backgroundStyle.value : undefined,
         }}
         className={cn(
-          "transition-all duration-300 ease-in-out shadow-2xl rounded-xl w-full md:h-[83.5vh] md:w-auto relative overflow-hidden @container"
+          "transition-all duration-300 ease-in-out shadow-2xl rounded-xl w-full md:h-[calc(100%_-_2rem)] md:w-auto relative overflow-hidden @container"
         )}
       >
         {renderBackground()}

@@ -1,9 +1,15 @@
 
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useWindowSize } from "react-use";
+import html2canvas from "html2canvas";
 import { useProfile } from "@/hooks/use-profile";
+import { useTemplates } from "@/hooks/use-templates";
+import { useToast } from "@/hooks/use-toast";
+import { useEditor } from "../../contexts/editor-context";
+import { EditorProvider } from "../../contexts/editor-context";
+import { EditorHeader } from "@/app/cabecalho-app";
 import { Sidebar } from "./components/sidebar";
 import { PreviewCanva } from "./components/preview-canva";
 import { MobileToolbar } from "./components/mobile-toolbar";
@@ -13,11 +19,12 @@ import {
   PanelGroup,
   PanelResizeHandle,
 } from "@/components/ui/resizable";
-import type { EstiloFundo } from "../tipos";
+import type { EstiloFundo, EditorState } from "../tipos";
 
 function ProporcaoSkeleton() {
     return (
-        <div className="flex flex-col w-full bg-background font-body text-foreground h-[calc(100vh-4rem)]">
+        <div className="flex flex-col w-full bg-background font-body text-foreground h-full">
+            <Skeleton className="h-16 w-full border-b" />
             <PanelGroup direction="horizontal" className="flex-1 min-h-0">
                 <Panel defaultSize={30} minSize={25} maxSize={40} className="hidden md:flex flex-col">
                      <Skeleton className="h-16 w-full border-b" />
@@ -40,13 +47,16 @@ function ProporcaoSkeleton() {
     )
 }
 
-export default function AspectWeaver() {
+function AspectWeaverContent() {
   const [aspectRatio, setAspectRatio] = useState("9 / 16");
   const [scale, setScale] = useState(1);
   const [activeControl, setActiveControl] = useState<string | null>('texto');
   const { width } = useWindowSize();
   const isDesktop = width >= 768;
   const { profile, isLoaded: isProfileLoaded } = useProfile();
+  const { addTemplate } = useTemplates();
+  const { toast } = useToast();
+  const { setSaveActions, setUndoState } = useEditor();
 
   // Text state
   const [text, setText] = useState("A única maneira de fazer um ótimo trabalho é amar o que você faz.");
@@ -69,7 +79,6 @@ export default function AspectWeaver() {
     setBackgroundStyle({ type: 'solid', value: color });
   };
 
-
   // Filter State
   const [filmColor, setFilmColor] = useState("#000000");
   const [filmOpacity, setFilmOpacity] = useState(0);
@@ -81,7 +90,6 @@ export default function AspectWeaver() {
   const [letterSpacing, setLetterSpacing] = useState(0);
   const [lineHeight, setLineHeight] = useState(1.3);
   const [wordSpacing, setWordSpacing] = useState(0);
-
 
   // Signature State
   const [showProfileSignature, setShowProfileSignature] = useState(false);
@@ -101,6 +109,107 @@ export default function AspectWeaver() {
   const [logoPositionY, setLogoPositionY] = useState(72);
   const [logoScale, setLogoScale] = useState(40);
   const [logoOpacity, setLogoOpacity] = useState(100);
+  
+  const getCurrentEditorState = useCallback((): EditorState => {
+    return {
+        text, fontFamily, fontSize, fontWeight, fontStyle, textColor: fgColor, textAlign,
+        textShadowBlur, textVerticalPosition, textStrokeColor, textStrokeWidth, letterSpacing,
+        lineHeight, wordSpacing, backgroundStyle, filmColor, filmOpacity, aspectRatio,
+        activeTemplateId: null, showProfileSignature, signaturePositionX, signaturePositionY,
+        signatureScale, showSignaturePhoto, showSignatureUsername, showSignatureSocial,
+        showSignatureBackground, signatureBgColor, signatureBgOpacity, profileVerticalPosition: 50,
+        showLogo, logoPositionX, logoPositionY, logoScale, logoOpacity
+    }
+  }, [
+      text, fontFamily, fontSize, fontWeight, fontStyle, fgColor, textAlign, textShadowBlur,
+      textVerticalPosition, textStrokeColor, textStrokeWidth, letterSpacing, lineHeight, wordSpacing,
+      backgroundStyle, filmColor, filmOpacity, aspectRatio, showProfileSignature, signaturePositionX,
+      signaturePositionY, signatureScale, showSignaturePhoto, showSignatureUsername, showSignatureSocial,
+      showSignatureBackground, signatureBgColor, signatureBgOpacity, showLogo, logoPositionX,
+      logoPositionY, logoScale, logoOpacity
+  ]);
+  
+  const handleSaveAsTemplate = useCallback(async () => {
+    const templateName = prompt("Digite um nome para o novo modelo:");
+    if (!templateName) return;
+    const previewElement = document.getElementById('preview-canva');
+    if (previewElement) {
+        try {
+            const canvas = await html2canvas(previewElement, {
+                scale: 0.5,
+                useCORS: true,
+                backgroundColor: null, 
+            });
+            const thumbnail = canvas.toDataURL('image/jpeg', 0.8);
+            
+            const currentState = getCurrentEditorState();
+            addTemplate(templateName, currentState, thumbnail);
+
+            toast({
+                title: "Modelo Salvo!",
+                description: `O modelo "${templateName}" foi adicionado à sua coleção.`,
+            });
+        } catch (error) {
+            console.error("Erro ao criar thumbnail:", error);
+            toast({
+                variant: "destructive",
+                title: "Erro ao Salvar",
+                description: "Não foi possível gerar a pré-visualização do modelo.",
+            });
+        }
+    }
+}, [addTemplate, getCurrentEditorState, toast]);
+
+const captureCanvas = useCallback(async (format: 'jpeg' | 'png') => {
+    const previewElement = document.getElementById('preview-canva');
+    if (!previewElement) {
+        toast({ variant: 'destructive', title: 'Erro', description: 'Não foi possível encontrar a área de visualização.' });
+        return;
+    }
+
+    toast({ title: 'Exportando...', description: `Gerando imagem ${format.toUpperCase()}.` });
+    
+    try {
+        const canvas = await html2canvas(previewElement, {
+            useCORS: true,
+            backgroundColor: null, 
+            scale: 4,
+        });
+
+        const image = canvas.toDataURL(`image/${format}`, format === 'png' ? 1.0 : 0.9);
+        
+        const link = document.createElement('a');
+        link.href = image;
+        link.download = `quotevid-export.${format}`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        toast({ title: 'Sucesso!', description: `A imagem foi baixada como ${link.download}.` });
+
+    } catch (error) {
+        console.error('Erro ao exportar imagem:', error);
+        toast({ variant: 'destructive', title: 'Erro de Exportação', description: 'Não foi possível gerar a imagem.' });
+    }
+}, [toast]);
+
+const handleExportJPG = useCallback(() => captureCanvas('jpeg'), [captureCanvas]);
+const handleExportPNG = useCallback(() => captureCanvas('png'), [captureCanvas]);
+
+const handleExportMP4 = useCallback(() => {
+    toast({ title: 'Em breve!', description: 'A exportação de vídeo MP4 estará disponível em futuras atualizações.' });
+}, [toast]);
+
+useEffect(() => {
+    setSaveActions({
+        onSaveAsTemplate: handleSaveAsTemplate,
+        onExportJPG: handleExportJPG,
+        onExportPNG: handleExportPNG,
+        onExportMP4: handleExportMP4,
+    });
+    // For now, undo/redo is disabled on this page
+    setUndoState({ canUndo: false, undo: () => {}, canRedo: false, redo: () => {} });
+}, [handleSaveAsTemplate, handleExportJPG, handleExportPNG, handleExportMP4, setSaveActions, setUndoState]);
 
   useEffect(() => {
     if (isDesktop) {
@@ -195,7 +304,7 @@ export default function AspectWeaver() {
   };
 
   return (
-    <div className="flex flex-col w-full bg-background font-body text-foreground h-[calc(100vh-4rem)]">
+    <div className="flex flex-col w-full bg-background font-body text-foreground h-full">
       <PanelGroup direction="horizontal" className="flex-1 min-h-0">
          <Panel defaultSize={30} minSize={25} maxSize={40} className="hidden md:flex flex-col">
             <Sidebar {...commonProps} />
@@ -238,4 +347,16 @@ export default function AspectWeaver() {
   );
 }
 
+export default function AspectWeaver() {
+    return (
+        <EditorProvider>
+            <div className="h-[calc(100vh-4rem)] flex flex-col">
+                <EditorHeader />
+                <div className="flex-1 min-h-0">
+                     <AspectWeaverContent />
+                </div>
+            </div>
+        </EditorProvider>
+    );
+}
     
