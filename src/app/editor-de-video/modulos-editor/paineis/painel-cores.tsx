@@ -12,6 +12,7 @@ import { IconeGradiente } from '../icone-gradiente';
 import type { PainelCoresProps } from '../tipos';
 
 export function PainelCores(props: PainelCoresProps & { onClose: () => void }) {
+    // Desestrutura as propriedades para acessar facilmente os valores e as funções de atualização.
     const { 
         textColor, onTextColorChange,
         backgroundStyle, onBackgroundStyleChange,
@@ -19,15 +20,19 @@ export function PainelCores(props: PainelCoresProps & { onClose: () => void }) {
         filmOpacity, onFilmOpacityChange,
     } = props;
     
+    // Função para atualizar o estilo de fundo para uma cor sólida.
     const handleBackgroundColorChange = (color: string) => {
         onBackgroundStyleChange({ type: 'solid', value: color });
     }
 
+    // Define a cor de fundo a ser exibida no seletor, usando preto como padrão se o fundo não for sólido.
     const backgroundColor = backgroundStyle.type === 'solid' ? backgroundStyle.value : '#000000';
 
     return (
         <div className="p-4 space-y-4">
+            {/* Seção para os controles principais de cor: Fundo e Texto. */}
              <div className="grid grid-cols-2 gap-4">
+                {/* Controle para a Cor do Fundo. */}
                 <div className="space-y-2">
                     <Label htmlFor="bg-color">Cor do Fundo</Label>
                     <div className="relative h-10 w-full">
@@ -40,6 +45,7 @@ export function PainelCores(props: PainelCoresProps & { onClose: () => void }) {
                         />
                     </div>
                 </div>
+                {/* Controle para a Cor do Texto. */}
                  <div className="space-y-2">
                     <Label htmlFor="text-color">Cor do Texto</Label>
                     <div className="relative h-10 w-full">
@@ -54,10 +60,13 @@ export function PainelCores(props: PainelCoresProps & { onClose: () => void }) {
                 </div>
             </div>
             
+            {/* Separador visual para organizar as seções. */}
             <Separator />
             
+            {/* Seção para os controles da Película de Cor (filtro). */}
              <div className="space-y-4">
                 <Label className="flex items-center"><Film className="mr-2 h-4 w-4" /> Película de Cor</Label>
+                {/* Controle para a Cor da Película. */}
                 <div className="space-y-2">
                     <div className="flex justify-between items-center">
                         <Label htmlFor="film-color" className="text-xs text-muted-foreground">Cor da Película</Label>
@@ -72,6 +81,7 @@ export function PainelCores(props: PainelCoresProps & { onClose: () => void }) {
                         </div>
                     </div>
                 </div>
+                {/* Controle para a Opacidade da Película. */}
                 <div className="space-y-2">
                     <div className="flex justify-between items-center">
                         <Label htmlFor="film-opacity" className="text-xs text-muted-foreground">Opacidade da Película</Label>
