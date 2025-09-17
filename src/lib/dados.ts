@@ -1,3 +1,7 @@
+
+import { GoogleSpreadsheet } from 'google-spreadsheet';
+import { JWT } from 'google-auth-library';
+
 // Define o tipo para uma citação, incluindo seu ID, texto e categoria.
 export type Quote = {
   id: number;
@@ -9,37 +13,72 @@ export type Quote = {
 // Define o tipo para uma categoria, que é simplesmente uma string.
 export type Category = string;
 
-// Array de categorias de citações disponíveis no aplicativo.
-export const categories: Category[] = [
-  "Inspiração",
-  "Motivação",
-  "Sabedoria",
-  "Amor",
-  "Vida",
-  "Humor",
-];
+// Array de categorias de citações - será preenchido dinamicamente.
+export let categories: Category[] = [];
+// Array de citações - será preenchido dinamicamente.
+export let quotes: Quote[] = [];
 
-// Array de citações, cada uma com um ID único, o texto da citação e sua categoria.
-export const quotes: Quote[] = [
-  { id: 1, text: "A única maneira de fazer um ótimo trabalho é amar o que você faz.", author: "Steve Jobs", category: "Inspiração" },
-  { id: 2, text: "Acredite que você pode e você já está no meio do caminho.", author: "Theodore Roosevelt", category: "Motivação" },
-  { id: 3, text: "A jornada de mil milhas começa com um único passo.", author: "Lao Tsé", category: "Sabedoria" },
-  { id: 4, text: "Tudo que você precisa é amor.", author: "John Lennon", category: "Amor" },
-  { id: 5, text: "A vida é o que acontece quando você está ocupado fazendo outros planos.", author: "John Lennon", category: "Vida" },
-  { id: 6, text: "Não sou preguiçoso, estou em modo de economia de energia.", author: "Desconhecido", category: "Humor" },
-  { id: 7, text: "Não se esforce para ser um sucesso, mas sim para ser de valor.", author: "Albert Einstein", category: "Inspiração" },
-  { id: 8, text: "O melhor momento para plantar uma árvore foi há 20 anos. O segundo melhor momento é agora.", author: "Provérbio Chinês", category: "Motivação" },
-  { id: 9, text: "Uma vida não examinada não vale a pena ser vivida.", author: "Sócrates", category: "Sabedoria" },
-  { id: 10, text: "Amar e ser amado é sentir o sol de ambos os lados.", author: "David Viscott", category: "Amor" },
-  { id: 11, text: "O propósito de nossas vidas é ser feliz.", author: "Dalai Lama", category: "Vida" },
-  { id: 12, text: "Eu disse ao meu computador que precisava de uma pausa e agora ele não para de me enviar anúncios de férias.", author: "Desconhecido", category: "Humor" },
-  { id: 13, text: "Sua limitação—é apenas sua imaginação.", author: "Desconhecido", category: "Inspiração" },
-  { id: 14, text: "Empurre-se, porque ninguém mais vai fazer isso por você.", author: "Desconhecido", category: "Motivação" },
-  { id: 15, text: "O homem sábio sabe que não sabe nada.", author: "Sócrates", category: "Sabedoria" },
-  { id: 16, text: "A melhor coisa para se segurar na vida é um ao outro.", author: "Audrey Hepburn", category: "Amor" },
-  { id: 17, text: "Ocupe-se vivendo ou ocupe-se morrendo.", author: "Stephen King", category: "Vida" },
-  { id: 18, text: "Por que os cientistas não confiam nos átomos? Porque eles compõem tudo!", author: "Desconhecido", category: "Humor" },
-];
+// Função para buscar os dados da planilha
+async function loadQuotesFromSheet() {
+  // Se os dados já foram carregados, não busca novamente.
+  if (quotes.length > 0) return { quotes, categories };
+
+  try {
+    const serviceAccountAuth = new JWT({
+      // O email e a chave privada não são necessários para acesso público somente leitura
+      email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+      key: process.env.GOOGLE_PRIVATE_KEY,
+      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+    });
+    
+    const doc = new GoogleSpreadsheet(process.env.SPREADSHEET_ID!, serviceAccountAuth);
+
+    // Para planilhas públicas, podemos usar a API Key.
+    doc.useApiKey(process.env.GOOGLE_SHEETS_API_KEY!);
+
+    await doc.loadInfo(); // carrega as propriedades do documento
+    const sheet = doc.sheetsByTitle['Frases']; // acessa a aba pelo nome
+    
+    // Carrega as linhas da aba, considerando as colunas que você mencionou.
+    // O range será de D (Categoria 1) até J (Assinatura).
+    const rows = await sheet.getRows();
+
+    const loadedQuotes: Quote[] = [];
+    const loadedCategories = new Set<string>();
+
+    rows.forEach((row, index) => {
+      const frase = row.get('Frases');
+      const autor = row.get('Assinatura');
+      const categoria = row.get('Categoria 1');
+
+      // Só adiciona a frase se os campos essenciais existirem
+      if (frase && autor && categoria) {
+        loadedQuotes.push({
+          id: index + 1, // Gera um ID sequencial
+          text: frase,
+          author: autor,
+          category: categoria,
+        });
+        loadedCategories.add(categoria);
+      }
+    });
+
+    // Atualiza as variáveis globais
+    quotes = loadedQuotes;
+    categories = Array.from(loadedCategories).sort();
+
+    return { quotes, categories };
+  } catch (error) {
+    console.error('Erro ao carregar dados da planilha:', error);
+    // Retorna os arrays vazios em caso de erro para não quebrar a aplicação
+    return { quotes: [], categories: [] };
+  }
+}
+
+// Exporta uma função que garante que os dados sejam carregados antes de serem usados.
+export const getQuoteData = async () => {
+    return await loadQuotesFromSheet();
+}
 
 // O array de modelos foi movido para o hook useTemplates.ts para permitir a personalização.
 export const templates = [];

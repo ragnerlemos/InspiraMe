@@ -18,7 +18,7 @@ import { useEditor } from "./contexts/editor-context";
 import { useToast } from "@/hooks/use-toast";
 import { useTemplates } from "@/hooks/use-templates";
 import html2canvas from 'html2canvas';
-import { getQuoteData } from "@/lib/dados";
+import { quotes } from "@/lib/dados";
 import { useSearchParams } from "next/navigation";
 
 
@@ -119,7 +119,7 @@ export default function AspectWeaver() {
 
   const redo = useCallback(() => {
     if (currentStateIndex < history.length - 1) {
-      setCurrentStateIndex(currentStateIndex - 1);
+      setCurrentStateIndex(currentStateIndex + 1);
     }
   }, [currentStateIndex, history.length]);
 
@@ -214,37 +214,28 @@ export default function AspectWeaver() {
   useEffect(() => {
     if (!isProfileLoaded || !areTemplatesLoaded) return;
 
-    const initialize = async () => {
-        const { quotes } = await getQuoteData(); // Garante que os dados da planilha estão carregados
-        const quoteParam = searchParams.get("quote");
-        const templateIdParam = searchParams.get("templateId");
-        
-        let initialState: EditorState;
-        const baseState = getInitialState();
+    const quoteParam = searchParams.get("quote");
+    const templateIdParam = searchParams.get("templateId");
+    
+    let initialState: EditorState;
+    const baseState = getInitialState();
 
-        const text = quoteParam 
-            ? decodeURIComponent(quoteParam) 
-            : quotes.length > 0 
-                ? quotes[Math.floor(Math.random() * quotes.length)].text 
-                : "A inspiração está a caminho...";
-        
-        if (templateIdParam) {
-          const template = allTemplates.find(t => t.id === templateIdParam);
-          if (template) {
-            initialState = { ...baseState, ...template.editorState, text, activeTemplateId: template.id };
-          } else {
-            initialState = { ...baseState, text, activeTemplateId: null };
-          }
-        } else {
-            initialState = { ...baseState, text, activeTemplateId: null };
-        }
-        
-        setHistory([initialState]);
-        setCurrentStateIndex(0);
-        setIsReady(true);
+    const text = quoteParam ? decodeURIComponent(quoteParam) : quotes[Math.floor(Math.random() * quotes.length)].text;
+    
+    if (templateIdParam) {
+      const template = allTemplates.find(t => t.id === templateIdParam);
+      if (template) {
+        initialState = { ...baseState, ...template.editorState, text, activeTemplateId: template.id };
+      } else {
+        initialState = { ...baseState, text, activeTemplateId: null };
+      }
+    } else {
+        initialState = { ...baseState, text, activeTemplateId: null };
     }
-
-    initialize();
+    
+    setHistory([initialState]);
+    setCurrentStateIndex(0);
+    setIsReady(true);
   }, [searchParams, isProfileLoaded, areTemplatesLoaded, allTemplates]);
 
 
@@ -377,7 +368,6 @@ export default function AspectWeaver() {
     logoOpacity: currentState.logoOpacity,
     activeTemplateId: currentState.activeTemplateId,
     profileVerticalPosition: currentState.profileVerticalPosition,
-    scale,
   };
 
   return (

@@ -8,32 +8,14 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Film, Copy, Trash2, Share2, HeartCrack } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useEffect, useState } from "react";
-import type { Quote } from "@/lib/dados";
 
 // Página para exibir as frases favoritas do usuário.
 export default function FavoritesPage() {
   const { favorites, removeFavorite } = useFavorites();
   const { toast } = useToast();
-  const [favoriteQuotes, setFavoriteQuotes] = useState<Quote[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
   // Filtra as frases da lista principal para obter apenas as favoritas.
-  // Como os dados agora são assíncronos, precisamos garantir que `quotes` esteja carregado.
-  // Esta abordagem é uma simplificação. Uma abordagem mais robusta usaria um contexto ou SWR.
-  useEffect(() => {
-    // Acessa os dados através da variável global que é preenchida na página inicial.
-    // Isso assume que o usuário visitou a página inicial primeiro.
-    const getQuotes = async () => {
-      // Se `quotes` ainda não foi preenchido, isso pode falhar.
-      // O ideal seria ter uma função `getQuoteData()` aqui também.
-      // Por simplicidade, vamos usar a variável `quotes` importada.
-      setFavoriteQuotes(quotes.filter((quote) => favorites.includes(quote.id)));
-      setIsLoading(false);
-    };
-    getQuotes();
-  }, [favorites]);
-
+  const favoriteQuotes = quotes.filter((quote) => favorites.includes(quote.id));
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -50,23 +32,6 @@ export default function FavoritesPage() {
       description: "A frase foi removida dos seus favoritos.",
     });
   };
-
-  if (isLoading) {
-    return (
-       <main className="overflow-y-auto">
-        <div className="container mx-auto py-8 px-4">
-          <div className="text-center mb-8">
-            <h1 className="font-headline text-4xl md:text-5xl font-bold text-primary">
-              Minhas Frases Favoritas
-            </h1>
-            <p className="text-muted-foreground mt-2 text-lg">
-              Carregando sua coleção pessoal de inspiração...
-            </p>
-          </div>
-        </div>
-      </main>
-    )
-  }
 
   return (
     <main className="overflow-y-auto">
