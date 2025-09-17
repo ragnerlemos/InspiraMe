@@ -6,8 +6,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import { useTemplates } from '@/hooks/use-templates';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { FilePlus, Trash2, Loader2 } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { FilePlus, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from '@/hooks/use-toast';
 import { IconeTwitter } from './icone-twitter';
+import { IconeModeloPadrao } from './icone-modelo-padrao';
 
 function TemplateSkeleton() {
     return (
@@ -131,7 +132,7 @@ export default function ModelosPage() {
                                         />
                                     </div>
                                     <CardContent className="p-2 bg-card">
-                                        <p className="font-normal text-xs truncate">{template.name}</p>
+                                        <p className="font-normal text-xs">{template.name}</p>
                                         {template.createdAt && <p className="text-[10px] text-muted-foreground">{new Date(template.createdAt).toLocaleDateString()}</p>}
                                     </CardContent>
                                 </Card>
@@ -162,6 +163,10 @@ export default function ModelosPage() {
                             {template.id === 'template-twitter' ? (
                                 <div className="flex items-center justify-center h-full bg-muted transition-colors group-hover:bg-muted/80 p-4">
                                     <IconeTwitter className="h-full w-full text-muted-foreground/80" />
+                                </div>
+                            ) : template.id === 'template-default' ? (
+                                <div className="flex items-center justify-center h-full bg-muted transition-colors group-hover:bg-muted/80 p-4">
+                                    <IconeModeloPadrao className="h-1/2 w-1/2 text-muted-foreground/80" />
                                 </div>
                             ) : template.thumbnail ? (
                                 <Image
