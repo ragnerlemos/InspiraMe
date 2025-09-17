@@ -57,7 +57,7 @@ export function FrasesClientPage({
   }, [searchTerm, selectedMainCategory, selectedSubCategory, initialQuotes]);
 
   const handleCopy = (text: string, author: string) => {
-    navigator.clipboard.writeText(`${text} - ${author}`);
+    navigator.clipboard.writeText(`"${text}" - ${author}`);
     toast({
       title: 'Copiado!',
       description: 'A frase foi copiada para a sua área de transferência.',
@@ -165,8 +165,8 @@ export function FrasesClientPage({
                   className="group flex flex-col justify-between hover:shadow-lg transition-shadow duration-300"
                 >
                   <CardContent className="p-4 pb-2">
-                    <p className="text-base font-body italic">{quote.text}</p>
-                    <p className="text-right text-xs font-medium text-muted-foreground mt-4">
+                    <p className="text-lg font-body italic">{quote.text}</p>
+                    <p className="text-right text-sm font-medium text-muted-foreground mt-4">
                       - {quote.author}
                     </p>
                   </CardContent>
