@@ -23,15 +23,29 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 
 interface HomePageClientProps {
   initialQuotes: Quote[];
   initialMainCategories: string[];
   initialSubCategories: Record<string, string[]>;
+  isCategorySheetOpen?: boolean;
+  setIsCategorySheetOpen?: (isOpen: boolean) => void;
 }
 
 // Componente Cliente para a página principal, responsável pela interatividade.
-export function HomePageClient({ initialQuotes, initialMainCategories, initialSubCategories }: HomePageClientProps) {
+export function HomePageClient({ 
+  initialQuotes, 
+  initialMainCategories, 
+  initialSubCategories,
+  isCategorySheetOpen,
+  setIsCategorySheetOpen
+}: HomePageClientProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMainCategory, setSelectedMainCategory] = useState<string>(initialMainCategories[0] || 'Todos');
   const [selectedSubCategory, setSelectedSubCategory] = useState<string>("Todos");
@@ -224,9 +238,20 @@ export function HomePageClient({ initialQuotes, initialMainCategories, initialSu
 
           {/* Conteúdo Principal */}
           <Panel>
-            {/* Filtros para Mobile */}
-            <div className="md:hidden p-4 border-b">
-              {renderFilters()}
+            {/* Filtros para Mobile em um Sheet */}
+             <div className="md:hidden">
+              <Sheet open={isCategorySheetOpen} onOpenChange={setIsCategorySheetOpen}>
+                <SheetContent side="left" className="p-0">
+                    <SheetHeader className="p-4 border-b">
+                        <SheetTitle>Categorias e Filtros</SheetTitle>
+                    </SheetHeader>
+                    <ScrollArea className="h-[calc(100%-4rem)]">
+                      <div className="py-4">
+                        {renderFilters()}
+                      </div>
+                    </ScrollArea>
+                </SheetContent>
+              </Sheet>
             </div>
             
             <ScrollArea className="h-full">
