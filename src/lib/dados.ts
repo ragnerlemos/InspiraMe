@@ -1,141 +1,231 @@
 
-// Define o tipo para uma citação, incluindo seu ID, texto e categoria.
-export type Quote = {
-  id: string; // ID único composto
-  text: string;
-  author: string;
-  mainCategory: string; // Nome da aba da planilha
-  subCategory: string;  // Valor da "Categoria 1"
+'use server';
+
+import { google } from 'googleapis';
+
+const SPREADSHEET_ID = process.env.SPREADSHEET_ID;
+const SHEET_NAMES = ['Frases', 'Dias da Semana', 'Datas Comemorativas'];
+
+// Configure the sheets client to use an API Key
+const sheets = google.sheets({
+  version: 'v4',
+  auth: process.env.GOOGLE_API_KEY,
+});
+
+export type CategoriesHierarchy = { [category: string]: string[] };
+export type QuoteWithAuthor = {
+  quote: string;
+  author?: string;
+  // Adicionando um id para uso nos hooks de favoritos
+  id: string; 
 };
 
-// Define o tipo para uma categoria, que é simplesmente uma string.
-export type Category = string;
 
-// Array de citações - será preenchido dinamicamente.
-export let quotes: Quote[] = [];
-
-
-// Adicione aqui os nomes exatos das abas que você quer usar.
-const SHEET_NAMES = ['Datas Comemorativas', 'Dias da Semana', 'Frases'];
-
-
-// Função para buscar os dados da planilha usando a API REST do Google Sheets
-async function loadQuotesFromSheets() {
-  // Se os dados já foram carregados, não busca novamente.
-  if (quotes.length > 0) return { quotes };
-
-  const SPREADSHEET_ID = process.env.SPREADSHEET_ID;
-  const API_KEY = process.env.GOOGLE_API_KEY;
-
-  if (!SPREADSHEET_ID || !API_KEY) {
-    console.error("SPREADSHEET_ID ou GOOGLE_API_KEY não estão definidos nas variáveis de ambiente.");
-    // No servidor, podemos lançar um erro ou retornar vazio.
-    // Retornar vazio evita que a build quebre se as chaves não estiverem lá temporariamente.
-    return { quotes: [] };
-  }
-
-  const loadedQuotes: Quote[] = [];
-
+/**
+ * Fetches all unique categories and their subcategories from the specified sheets.
+ * Assumes categories are in Column D and subcategories are in Column C.
+ */
+export async function getCategories(): Promise<CategoriesHierarchy> {
   try {
-    const fetchPromises = SHEET_NAMES.map(async (sheetName) => {
-        const RANGE = 'A:J'; 
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(sheetName)}!${RANGE}?key=${API_KEY}`;
-        
-        // Aumenta o tempo de cache para 1 hora para evitar chamadas excessivas à API
-        const response = await fetch(url, { next: { revalidate: 3600 } }); 
-        
-        if (!response.ok) {
-            console.error(`Erro ao buscar a aba "${sheetName}": ${response.statusText}`);
-            return; // Pula para a próxima aba em caso de erro
-        }
-        
-        const data = await response.json();
-        const allRows: string[][] = data.values || [];
+    if (!process.env.GOOGLE_API_KEY || !SPREADSHEET_ID) {
+      throw new Error('Google Sheets API key or Spreadsheet ID is not configured.');
+    }
 
-        if (allRows.length < 2) return;
-
-        const headerRow = allRows.shift()!;
-        
-        const normalizeHeader = (header: string) => {
-            if (!header) return '';
-            return header.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        }
-
-        const normalizedHeaders = headerRow.map(normalizeHeader);
-        const normalizedSheetName = normalizeHeader(sheetName);
-        
-        // Lógica flexível para encontrar a coluna de texto principal.
-        // Tenta encontrar uma coluna com o mesmo nome da aba, senão, procura por "frase".
-        let fraseIndex = normalizedHeaders.findIndex(h => h === normalizedSheetName);
-        if (fraseIndex === -1) {
-            fraseIndex = normalizedHeaders.findIndex(h => h.includes('frase'));
-        }
-
-        const autorIndex = normalizedHeaders.indexOf('assinatura');
-        const categoriaIndex = normalizedHeaders.indexOf('categoria 1');
-
-        if (fraseIndex === -1) {
-             console.error(`[ Server ] Coluna de texto principal não encontrada na aba "${sheetName}". Pulando esta aba.`);
-             return;
-        }
-
-        allRows.forEach((row, index) => {
-            const frase = row[fraseIndex];
-            // Se 'assinatura' não existir, usa o nome da aba como autor.
-            const autor = (autorIndex !== -1 && row[autorIndex]) ? row[autorIndex] : sheetName;
-            // Se 'categoria 1' não existir, usa 'Geral'.
-            const categoria = (categoriaIndex !== -1 && row[categoriaIndex]) ? row[categoriaIndex] : 'Geral';
-
-            if (frase && autor && categoria) {
-              loadedQuotes.push({
-                  id: `${sheetName.replace(/\s+/g, '-')}-${index + 1}`, // ID único sanitizado
-                  text: frase.trim(),
-                  author: autor.trim(),
-                  mainCategory: sheetName,
-                  subCategory: categoria.trim(),
-              });
-            }
-        });
+    const ranges = SHEET_NAMES.map(name => `${name}!C:D`); // Read full columns C and D
+    const response = await sheets.spreadsheets.values.batchGet({
+      spreadsheetId: SPREADSHEET_ID,
+      ranges,
     });
 
-    await Promise.all(fetchPromises);
+    const valueRanges = response.data.valueRanges;
+    const hierarchy: { [key: string]: Set<string> } = {};
+    
+    if (valueRanges && valueRanges.length > 0) {
+      valueRanges.forEach(range => {
+        const rows = range.values;
+        if (rows && rows.length > 0) {
+          // Start from row 2 (index 1) to skip header
+          for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            const subcategory = row[0] || null; // Column C
+            const category = row[1] || null;    // Column D
+    
+            if (category) {
+              if (!hierarchy[category]) {
+                hierarchy[category] = new Set();
+              }
+              if (subcategory) {
+                hierarchy[category].add(subcategory);
+              }
+            } else if (subcategory) {
+              // Handle cases where there might be a subcategory without a main category
+              // Treats the subcategory as a main category with no sub-items.
+              if (!hierarchy[subcategory]) {
+                hierarchy[subcategory] = new Set();
+              }
+            }
+          }
+        }
+      })
+    }
 
-    // Atualiza a variável global
-    quotes = loadedQuotes;
+    // Convert Sets to Arrays for easier consumption by client components
+    const result: CategoriesHierarchy = {};
+    for (const category in hierarchy) {
+      result[category] = Array.from(hierarchy[category]).sort();
+    }
+    
+    // Sort categories alphabetically
+    const sortedResult: CategoriesHierarchy = {};
+    Object.keys(result).sort().forEach(key => {
+        sortedResult[key] = result[key];
+    });
 
-    return { quotes };
 
+    return sortedResult;
   } catch (error) {
-    console.error('Erro ao carregar dados das planilhas:', error);
-    return { quotes: [] };
+    console.error('Error fetching categories from Google Sheets:', error);
+    throw new Error('Could not fetch categories.');
   }
 }
 
-// Exporta uma função que garante que os dados sejam carregados antes de serem usados.
-export const getQuoteData = async () => {
-    // Esta função agora SEMPRE será executada no servidor.
-    return await loadQuotesFromSheets();
-}
+/**
+ * Fetches quotes for a specific subcategory from all sheets.
+ * Assumes subcategories are in Column C, quotes in Column F, and authors in Column J.
+ * @param subcategory The subcategory to fetch quotes for.
+ */
+export async function getQuotesForCategory(subcategory: string): Promise<QuoteWithAuthor[]> {
+  try {
+    if (!process.env.GOOGLE_API_KEY || !SPREADSHEET_ID) {
+      throw new Error('Google Sheets API key or Spreadsheet ID is not configured.');
+    }
 
-// Helper para extrair categorias da lista de frases
-export const getCategoriesFromQuotes = (quotes: Quote[]) => {
-    const mainCategoriesSet = new Set(quotes.map(q => q.mainCategory));
-    const mainCategories = ['Todos', ...Array.from(mainCategoriesSet)];
-    
-    const subCategoriesByMain: Record<string, string[]> = {};
-
-    mainCategoriesSet.forEach(mainCat => {
-        const subs = quotes
-            .filter(q => q.mainCategory === mainCat && q.subCategory)
-            .map(q => q.subCategory);
-        
-        const uniqueSubs = ['Todos', ...Array.from(new Set(subs))];
-        subCategoriesByMain[mainCat] = uniqueSubs.sort((a, b) => {
-            if (a === 'Todos') return -1;
-            if (b === 'Todos') return 1;
-            return a.localeCompare(b);
-        });
+    const ranges = SHEET_NAMES.map(name => `${name}!A:J`);
+    const response = await sheets.spreadsheets.values.batchGet({
+      spreadsheetId: SPREADSHEET_ID,
+      ranges,
     });
 
-    return { mainCategories, subCategoriesByMain };
+    let quotes: QuoteWithAuthor[] = [];
+    const valueRanges = response.data.valueRanges;
+
+    if (valueRanges && valueRanges.length > 0) {
+      valueRanges.forEach((range, sheetIndex) => {
+        const sheetName = SHEET_NAMES[sheetIndex];
+        const rows = range.values;
+        if (rows && rows.length > 0) {
+          const sheetQuotes = rows
+            .map((row, rowIndex) => ({ row, rowIndex }))
+            .filter(({ row }) => row[2] === subcategory && row[5]) // Filter by subcategory (col C, index 2) and ensure quote (col F, index 5) exists
+            .map(({ row, rowIndex }) => ({
+              id: `${sheetName}-${subcategory}-${rowIndex}`, // Unique ID
+              quote: row[5], // Quote from col F (index 5)
+              author: row[9] || undefined, // Author from col J (index 9)
+            }));
+          quotes = quotes.concat(sheetQuotes);
+        }
+      });
+    }
+
+    return quotes;
+  } catch (error) {
+    console.error(
+      `Error fetching quotes for subcategory "${subcategory}" from Google Sheets:`,
+      error
+    );
+    throw new Error(`Could not fetch quotes for subcategory "${subcategory}".`);
+  }
+}
+
+/**
+ * Fetches all quotes for a specific main category from all sheets.
+ * Assumes main categories are in Column D, quotes in Column F, and authors in Column J.
+ * @param mainCategory The main category to fetch quotes for.
+ */
+export async function getQuotesForMainCategory(mainCategory: string): Promise<QuoteWithAuthor[]> {
+  try {
+    if (!process.env.GOOGLE_API_KEY || !SPREADSHEET_ID) {
+      throw new Error('Google Sheets API key or Spreadsheet ID is not configured.');
+    }
+
+    const ranges = SHEET_NAMES.map(name => `${name}!A:J`);
+    const response = await sheets.spreadsheets.values.batchGet({
+      spreadsheetId: SPREADSHEET_ID,
+      ranges,
+    });
+    
+    let quotes: QuoteWithAuthor[] = [];
+    const valueRanges = response.data.valueRanges;
+
+    if (valueRanges && valueRanges.length > 0) {
+      valueRanges.forEach((range, sheetIndex) => {
+        const sheetName = SHEET_NAMES[sheetIndex];
+        const rows = range.values;
+        if (rows && rows.length > 0) {
+          const sheetQuotes = rows
+            .map((row, rowIndex) => ({ row, rowIndex }))
+            .filter(({ row }) => (row[3] === mainCategory && row[5]) || (row[2] === mainCategory && !row[3] && row[5]))
+            .map(({ row, rowIndex }) => ({
+              id: `${sheetName}-${mainCategory}-${rowIndex}`, // Unique ID
+              quote: row[5], // Quote from col F (index 5)
+              author: row[9] || undefined, // Author from col J (index 9)
+            }));
+          quotes = quotes.concat(sheetQuotes);
+        }
+      });
+    }
+    
+    return quotes;
+  } catch (error) {
+    console.error(
+      `Error fetching quotes for main category "${mainCategory}" from Google Sheets:`,
+      error
+    );
+    throw new Error(`Could not fetch quotes for main category "${mainCategory}".`);
+  }
+}
+
+
+/**
+ * Fetches all quotes from all sheets.
+ */
+export async function getAllQuotes(): Promise<QuoteWithAuthor[]> {
+    try {
+        if (!process.env.GOOGLE_API_KEY || !SPREADSHEET_ID) {
+            throw new Error('Google Sheets API key or Spreadsheet ID is not configured.');
+        }
+
+        const ranges = SHEET_NAMES.map(name => `${name}!A:J`);
+        const response = await sheets.spreadsheets.values.batchGet({
+            spreadsheetId: SPREADSHEET_ID,
+            ranges,
+        });
+
+        let allQuotes: QuoteWithAuthor[] = [];
+        const valueRanges = response.data.valueRanges;
+
+        if (valueRanges && valueRanges.length > 0) {
+            valueRanges.forEach((range, sheetIndex) => {
+                const sheetName = SHEET_NAMES[sheetIndex];
+                const rows = range.values;
+                if (rows && rows.length > 1) { // Garante que há pelo menos uma linha de dados além do cabeçalho
+                    for (let i = 1; i < rows.length; i++) {
+                        const row = rows[i];
+                        const quoteText = row[5]; // Coluna F
+                        if (quoteText) {
+                            allQuotes.push({
+                                id: `${sheetName}-${i}`, // ID simples
+                                quote: quoteText,
+                                author: row[9] || undefined, // Coluna J
+                            });
+                        }
+                    }
+                }
+            });
+        }
+        return allQuotes;
+    } catch (error) {
+        console.error('Error fetching all quotes from Google Sheets:', error);
+        throw new Error('Could not fetch all quotes.');
+    }
 }

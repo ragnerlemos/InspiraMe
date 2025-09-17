@@ -2,40 +2,47 @@
 "use client";
 
 import { useFavorites } from "@/hooks/use-favorites";
-import { quotes } from "@/lib/dados";
+import { getAllQuotes, type QuoteWithAuthor } from "@/lib/dados";
 import Link from "next/link";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Film, Copy, Trash2, Share2, HeartCrack } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useEffect, useState } from "react";
-import type { Quote } from "@/lib/dados";
+import { useEffect, useState, useMemo } from "react";
+
 
 // Página para exibir as frases favoritas do usuário.
 export default function FavoritesPage() {
   const { favorites, removeFavorite } = useFavorites();
   const { toast } = useToast();
-  const [favoriteQuotes, setFavoriteQuotes] = useState<Quote[]>([]);
+  const [allQuotes, setAllQuotes] = useState<QuoteWithAuthor[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Filtra as frases da lista principal para obter apenas as favoritas.
+  // Busca todas as frases uma vez para poder encontrar as favoritas.
   useEffect(() => {
-    const getQuotes = () => {
-      // Como 'quotes' é carregado no servidor na página inicial, aqui apenas filtramos.
-      if (quotes.length > 0) {
-        setFavoriteQuotes(quotes.filter((quote) => favorites.includes(quote.id)));
+    const fetchAll = async () => {
+      try {
+        setIsLoading(true);
+        const quotes = await getAllQuotes();
+        setAllQuotes(quotes);
+      } catch (error) {
+        console.error("Failed to load all quotes for favorites", error);
+        toast({ variant: 'destructive', title: "Erro ao Carregar", description: "Não foi possível carregar as frases." });
+      } finally {
         setIsLoading(false);
-      } else {
-         // Se 'quotes' está vazio, o usuário provavelmente não visitou a home page.
-         setIsLoading(true);
       }
     };
-    getQuotes();
-  }, [favorites]);
+    fetchAll();
+  }, [toast]);
+  
+  const favoriteQuotes = useMemo(() => {
+    return allQuotes.filter(quote => favorites.includes(quote.id));
+  }, [allQuotes, favorites]);
 
 
-  const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(text);
+  const handleCopy = (text: string, author?: string) => {
+    const textToCopy = author ? `${text} - ${author}` : text;
+    navigator.clipboard.writeText(textToCopy);
     toast({
       title: "Copiado!",
       description: "A frase foi copiada para a área de transferência.",
@@ -50,7 +57,7 @@ export default function FavoritesPage() {
     });
   };
 
-  if (isLoading && favoriteQuotes.length === 0 && quotes.length === 0) {
+  if (isLoading) {
     return (
        <main className="overflow-y-auto">
         <div className="container mx-auto py-8 px-4">
@@ -62,11 +69,10 @@ export default function FavoritesPage() {
               Carregando sua coleção pessoal de inspiração...
             </p>
           </div>
-           <div className="text-center py-20 bg-card border rounded-lg flex flex-col items-center">
-                <p className="text-muted-foreground mb-6">
-                    Parece que os dados das frases ainda não foram carregados. 
-                    Por favor, visite a <Link href="/" className="text-primary underline">página inicial</Link> primeiro.
-                </p>
+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array.from({ length: 6 }).map((_, i) => (
+                    <Card key={i} className="h-40 animate-pulse bg-muted"></Card>
+                ))}
             </div>
         </div>
       </main>
@@ -93,17 +99,16 @@ export default function FavoritesPage() {
                 className="group flex flex-col justify-between hover:shadow-lg transition-shadow duration-300"
               >
                 <CardContent className="p-6 pb-2">
-                  <p className="text-xl font-body italic">{quote.text}</p>
-                  <p className="text-right text-sm font-medium text-muted-foreground mt-4">
-                    - {quote.author}
-                  </p>
+                  <p className="text-xl font-body italic">"{quote.quote}"</p>
+                  {quote.author && (
+                     <p className="text-right text-sm font-medium text-muted-foreground mt-4">
+                        - {quote.author}
+                    </p>
+                  )}
                 </CardContent>
-                <CardFooter className="px-6 pb-4 flex justify-between items-center">
-                  <span className="bg-primary/10 px-2 py-1 text-xs rounded-full text-primary">
-                    {quote.mainCategory}
-                  </span>
+                <CardFooter className="px-6 pb-4 flex justify-end items-center">
                   <div className="flex items-center">
-                    <Link href={`/modelos?quote=${encodeURIComponent(quote.text)}`} passHref>
+                    <Link href={`/modelos?quote=${encodeURIComponent(quote.quote)}`} passHref>
                       <Button variant="ghost" size="icon">
                           <Film className="h-4 w-4" />
                       </Button>
@@ -111,7 +116,7 @@ export default function FavoritesPage() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleCopy(`${quote.text} - ${quote.author}`)}
+                      onClick={() => handleCopy(quote.quote, quote.author)}
                     >
                       <Copy className="h-4 w-4" />
                     </Button>

@@ -1,244 +1,295 @@
 
-"use client";
+'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { Heart, Search, Film, Copy, Share2 } from 'lucide-react';
+import { Heart, Search, Copy, Film, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { useToast } from '@/hooks/use-toast';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import {
+  getQuotesForCategory,
+  getQuotesForMainCategory,
+  getAllQuotes,
+  type QuoteWithAuthor,
+  type CategoriesHierarchy,
+} from '@/lib/dados';
 import { useFavorites } from '@/hooks/use-favorites';
-import type { Quote } from '@/lib/dados';
+import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
-// Tipos para as props do componente.
-interface FrasesClientPageProps {
-  initialQuotes: Quote[];
+type FrasesClientPageProps = {
+  initialQuotes: QuoteWithAuthor[];
   initialMainCategories: string[];
-  initialSubCategories: Record<string, string[]>;
-  isCategorySheetOpen?: boolean;
-  setIsCategorySheetOpen?: (isOpen: boolean) => void;
-}
+  initialSubCategories: CategoriesHierarchy;
+};
 
-// Componente de Cliente: Gerencia o estado da UI, como filtros e favoritos.
+// Página principal que exibe uma lista de frases e permite ao usuário filtrá-las.
 export function FrasesClientPage({
   initialQuotes,
   initialMainCategories,
   initialSubCategories,
-  isCategorySheetOpen = false,
-  setIsCategorySheetOpen = () => {},
 }: FrasesClientPageProps) {
+  const [quotes, setQuotes] = useState<QuoteWithAuthor[]>(initialQuotes);
+  const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedMainCategory, setSelectedMainCategory] = useState('Todos');
-  const [selectedSubCategory, setSelectedSubCategory] = useState<string | null>(null);
+  const [selectedMainCategory, setSelectedMainCategory] = useState<string>('Todos');
+  const [selectedSubCategory, setSelectedSubCategory] = useState<string>('Todos');
+  const [isCategorySheetOpen, setIsCategorySheetOpen] = useState(false);
 
   const { favorites, toggleFavorite } = useFavorites();
   const { toast } = useToast();
 
-  // Filtra as frases com base no termo de busca e nas categorias selecionadas.
-  const filteredQuotes = useMemo(() => {
-    return initialQuotes.filter((quote) => {
-      // Filtro de busca
-      const searchMatch =
-        quote.text.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        quote.author.toLowerCase().includes(searchTerm.toLowerCase());
-  
-      // Filtro da aba principal
-      const mainCategoryMatch =
-        selectedMainCategory === 'Todos' ||
-        quote.mainCategory === selectedMainCategory;
-  
-      // Filtro das subcategorias
-      let subCategoryMatch = true;
-      if (selectedSubCategory && selectedSubCategory !== 'Todos') {
-        subCategoryMatch = quote.subCategory === selectedSubCategory;
+  // Busca as frases no servidor quando a categoria muda
+  useEffect(() => {
+    const fetchQuotes = async () => {
+      setIsLoading(true);
+      try {
+        let fetchedQuotes: QuoteWithAuthor[] = [];
+        if (selectedMainCategory === 'Todos') {
+          fetchedQuotes = await getAllQuotes();
+        } else if (selectedSubCategory !== 'Todos') {
+          fetchedQuotes = await getQuotesForCategory(selectedSubCategory);
+        } else {
+          fetchedQuotes = await getQuotesForMainCategory(selectedMainCategory);
+        }
+        setQuotes(fetchedQuotes);
+      } catch (error) {
+        console.error('Failed to fetch quotes:', error);
+        toast({
+          variant: 'destructive',
+          title: 'Erro ao buscar frases',
+          description: 'Não foi possível carregar as frases. Tente novamente.',
+        });
+      } finally {
+        setIsLoading(false);
       }
-  
-      return searchMatch && mainCategoryMatch && subCategoryMatch;
-    });
-  }, [searchTerm, selectedMainCategory, selectedSubCategory, initialQuotes]);
-  
-  // Função para copiar o texto da frase.
-  const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(text);
+    };
+
+    fetchQuotes();
+  }, [selectedMainCategory, selectedSubCategory, toast]);
+
+  // Filtra as frases já carregadas com base no termo de busca
+  const filteredQuotes = useMemo(() => {
+    if (!searchTerm) {
+      return quotes;
+    }
+    return quotes.filter(
+      (quote) =>
+        quote.quote.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        quote.author?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [quotes, searchTerm]);
+
+  const handleCopy = (text: string, author?: string) => {
+    const textToCopy = author ? `${text} - ${author}` : text;
+    navigator.clipboard.writeText(textToCopy);
     toast({
-      title: "Copiado!",
-      description: "A frase foi copiada para a área de transferência.",
+      title: 'Copiado!',
+      description: 'A frase foi copiada para a sua área de transferência.',
     });
   };
-  
-  // Seleciona a categoria principal e reseta a subcategoria.
+
   const handleMainCategorySelect = (mainCategory: string) => {
     setSelectedMainCategory(mainCategory);
-    setSelectedSubCategory(null);
+    setSelectedSubCategory('Todos');
+  };
+
+  const handleSubCategorySelect = (mainCategory: string, subCategory: string) => {
+    setSelectedMainCategory(mainCategory);
+    setSelectedSubCategory(subCategory);
+    if (window.innerWidth < 768) {
+      setIsCategorySheetOpen(false);
+    }
   };
   
-  // Seleciona a subcategoria e ajusta a categoria principal.
-  const handleSubCategorySelect = (mainCategory: string, subCategory: string) => {
-      setSelectedMainCategory(mainCategory);
-      setSelectedSubCategory(subCategory);
-      // Fecha o menu no mobile ao selecionar uma opção
-      if (window.innerWidth < 768) {
-        setIsCategorySheetOpen(false);
-      }
-  };
+  const handleOpenCategorySheet = useCallback(() => {
+    setIsCategorySheetOpen(true);
+  }, []);
 
 
-const renderFilters = () => {
-    return (
-        <div className="space-y-4">
-            {/* Busca */}
-            <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input
-                    type="search"
-                    placeholder="Buscar por frases ou autores..."
-                    className="pl-10 w-full"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
-            </div>
-
-            {/* Botão "Todos" */}
-            <Button
-                variant={selectedMainCategory === 'Todos' ? 'secondary' : 'ghost'}
-                onClick={() => handleMainCategorySelect('Todos')}
-                className="w-full justify-start"
-            >
-                Todos
-            </Button>
-            
-            {/* Subcategorias de "Frases" */}
-            {(initialSubCategories['Frases'] || []).filter(subCat => subCat !== 'Todos').map(subCat => (
-                <Button
-                    key={subCat}
-                    variant="ghost"
-                    onClick={() => handleSubCategorySelect('Frases', subCat)}
-                    className={cn(
-                        'w-full justify-start text-sm pl-4',
-                        selectedMainCategory === 'Frases' && selectedSubCategory === subCat && 'bg-primary/10 text-primary font-semibold'
-                    )}
-                >
-                    {subCat}
-                </Button>
-            ))}
-
-            {/* Acordeão para outras categorias principais */}
-            <Accordion type="multiple" className="w-full">
-                {initialMainCategories
-                    .filter((cat) => cat !== 'Todos' && cat !== 'Frases')
-                    .map((mainCat, index) => {
-                        const subCats = initialSubCategories[mainCat] || [];
-                        const hasRealSubcategories = subCats.filter(sc => sc !== 'Todos').length > 0;
-
-                        if (!hasRealSubcategories) {
-                            return (
-                                <Button
-                                    key={mainCat}
-                                    variant={selectedMainCategory === mainCat ? 'secondary' : 'ghost'}
-                                    onClick={() => handleMainCategorySelect(mainCat)}
-                                    className="w-full justify-start font-semibold"
-                                >
-                                    {mainCat}
-                                </Button>
-                            );
-                        }
-
-                        return (
-                            <AccordionItem value={`item-${index}`} key={mainCat}>
-                                <AccordionTrigger
-                                    className={cn('font-semibold hover:no-underline', selectedMainCategory === mainCat && 'text-primary')}
-                                    onClick={() => handleMainCategorySelect(mainCat)}
-                                >
-                                    {mainCat}
-                                </AccordionTrigger>
-                                <AccordionContent>
-                                    <div className="flex flex-col items-start gap-1 pl-4">
-                                        {subCats.filter(subCat => subCat !== 'Todos').map((subCat) => (
-                                            <Button
-                                                key={subCat}
-                                                variant="ghost"
-                                                onClick={() => handleSubCategorySelect(mainCat, subCat)}
-                                                className={cn(
-                                                    'w-full justify-start text-sm',
-                                                    selectedMainCategory === mainCat && selectedSubCategory === subCat && 'bg-primary/10 text-primary font-semibold'
-                                                )}
-                                            >
-                                                {subCat}
-                                            </Button>
-                                        ))}
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-                        );
-                    })}
-            </Accordion>
-        </div>
+  const renderFilters = () => {
+    const mainCategoriesInAccordion = initialMainCategories.filter(
+      (cat) => cat !== 'Todos' && cat !== 'Frases'
     );
-};
+    const frasesSubcategories = initialSubCategories['Frases'] || [];
 
+    return (
+      <div className="space-y-2">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          <Input
+            type="search"
+            placeholder="Buscar por frases ou autores..."
+            className="pl-10 w-full"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+
+        <Button
+          variant={selectedMainCategory === 'Todos' ? 'secondary' : 'ghost'}
+          onClick={() => handleMainCategorySelect('Todos')}
+          className="w-full justify-start"
+        >
+          Todos
+        </Button>
+        
+        {/* Subcategorias de 'Frases' */}
+        {frasesSubcategories.filter(sc => sc !== 'Todos').map((subCat) => (
+            <Button
+              key={subCat}
+              variant="ghost"
+              onClick={() => handleSubCategorySelect('Frases', subCat)}
+              className={cn(
+                'w-full justify-start text-sm pl-4',
+                selectedMainCategory === 'Frases' &&
+                  selectedSubCategory === subCat &&
+                  'bg-primary/10 text-primary font-semibold'
+              )}
+            >
+              {subCat}
+            </Button>
+          ))}
+          
+        {/* Outras Categorias */}
+        <Accordion type="multiple" className="w-full">
+            {mainCategoriesInAccordion.map((mainCat, index) => {
+              const subCats = initialSubCategories[mainCat] || [];
+
+              if (subCats.length === 0 || (subCats.length === 1 && subCats[0] === 'Todos')) {
+                return (
+                  <Button
+                    key={mainCat}
+                    variant={selectedMainCategory === mainCat ? 'secondary' : 'ghost'}
+                    onClick={() => handleMainCategorySelect(mainCat)}
+                    className="w-full justify-start font-semibold"
+                  >
+                    {mainCat}
+                  </Button>
+                );
+              }
+              
+              return (
+                <AccordionItem value={`item-${index}`} key={mainCat}>
+                  <AccordionTrigger
+                    className={cn(
+                      'font-semibold hover:no-underline py-2',
+                      selectedMainCategory === mainCat && 'text-primary'
+                    )}
+                    onClick={() => handleMainCategorySelect(mainCat)}
+                  >
+                    {mainCat}
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="flex flex-col items-start gap-1 pl-4">
+                      {subCats.map((subCat) => (
+                        <Button
+                          key={subCat}
+                          variant="ghost"
+                          onClick={() => handleSubCategorySelect(mainCat, subCat)}
+                          className={cn(
+                            'w-full justify-start text-sm',
+                            selectedMainCategory === mainCat &&
+                              selectedSubCategory === subCat &&
+                              'bg-primary/10 text-primary font-semibold'
+                          )}
+                        >
+                          {subCat}
+                        </Button>
+                      ))}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              );
+            })}
+          </Accordion>
+      </div>
+    );
+  };
 
   return (
     <div className="h-full flex flex-col">
-       {/* Conteúdo principal */}
-      <main className="flex-1 overflow-y-auto">
+       <main className="flex-1 overflow-y-auto">
         <div className="container mx-auto py-8 px-4">
-          <div className="text-center mb-8">
-            <h1 className="font-headline text-4xl md:text-5xl font-bold text-primary">
-              Inspire-se com Frases Marcantes
-            </h1>
-            <p className="text-muted-foreground mt-2 text-lg">
-              Explore, favorite e crie vídeos com nossa coleção de frases.
-            </p>
+          <div className="flex justify-between items-center mb-8">
+            <div className="text-center md:text-left">
+              <h1 className="font-headline text-4xl md:text-5xl font-bold text-primary">
+                Inspire-se com Frases
+              </h1>
+              <p className="text-muted-foreground mt-2 text-lg">
+                Explore, favorite e crie vídeos com nossa coleção de frases.
+              </p>
+            </div>
+            <div className="md:hidden">
+              <Button variant="outline" size="icon" onClick={handleOpenCategorySheet}>
+                <LayoutGrid className="h-5 w-5" />
+                <span className="sr-only">Abrir categorias</span>
+              </Button>
+            </div>
           </div>
           
           <div className="md:grid md:grid-cols-[280px_1fr] md:gap-8 md:items-start">
-            {/* Menu Lateral para Desktop */}
-            <aside className="hidden md:block sticky top-8">
-              {renderFilters()}
-            </aside>
+             <aside className="hidden md:block sticky top-8">
+                {renderFilters()}
+              </aside>
             
-            {/* Grid de Frases */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredQuotes.map((quote) => {
-                const isFavorited = favorites.includes(quote.id);
-                return (
-                  <Card key={quote.id} className="group flex flex-col justify-between hover:shadow-lg transition-shadow duration-300">
-                    <CardContent className="p-4 pb-0">
-                      <p className="text-base font-body italic">"{quote.text}"</p>
-                    </CardContent>
-                    <CardFooter className="p-2 pt-2 flex flex-col items-start w-full">
-                       <p className="text-right text-sm font-medium text-muted-foreground w-full mb-2">
-                        - {quote.author}
-                      </p>
-                      <div className="flex justify-between items-center w-full">
-                         <span className="bg-primary/10 px-2 py-0.5 text-xs rounded-full text-primary">{quote.subCategory}</span>
-                        <div className="flex items-center">
-                          <Link href={`/editor-de-video?quote=${encodeURIComponent(quote.text)}`} passHref>
-                            <Button variant="ghost" size="icon"><Film className="h-4 w-4" /></Button>
-                          </Link>
-                          <Button variant="ghost" size="icon" onClick={() => handleCopy(`"${quote.text}" - ${quote.author}`)}>
-                            <Copy className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="icon" onClick={() => toggleFavorite(quote.id)}>
-                            <Heart className={cn("h-4 w-4", isFavorited ? "text-red-500 fill-current" : "text-gray-400")} />
-                          </Button>
-                          <Button variant="ghost" size="icon"><Share2 className="h-4 w-4" /></Button>
-                        </div>
-                      </div>
-                    </CardFooter>
-                  </Card>
-                );
-              })}
+            <div>
+              {isLoading ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {Array.from({ length: 9 }).map((_, i) => (
+                        <Card key={i} className="h-40 animate-pulse bg-muted"></Card>
+                    ))}
+                  </div>
+              ) : filteredQuotes.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredQuotes.map((quote) => {
+                    const isFavorited = favorites.includes(quote.id);
+                    return (
+                      <Card key={quote.id} className="group flex flex-col justify-between hover:shadow-lg transition-shadow duration-300">
+                        <CardContent className="p-4 pb-0">
+                          <p className="text-base font-body italic">"{quote.quote}"</p>
+                        </CardContent>
+                        <CardFooter className="p-2 pt-2 flex flex-col items-start w-full">
+                           {quote.author && (
+                             <p className="text-right text-sm font-medium text-muted-foreground w-full mb-2">
+                               - {quote.author}
+                             </p>
+                           )}
+                          <div className="flex justify-between items-center w-full">
+                             <div/>
+                            <div className="flex items-center">
+                              <Link href={`/editor-de-video?quote=${encodeURIComponent(quote.quote)}`} passHref>
+                                <Button variant="ghost" size="icon"><Film className="h-4 w-4" /></Button>
+                              </Link>
+                              <Button variant="ghost" size="icon" onClick={() => handleCopy(quote.quote, quote.author)}>
+                                <Copy className="h-4 w-4" />
+                              </Button>
+                              <Button variant="ghost" size="icon" onClick={() => toggleFavorite(quote.id)}>
+                                <Heart className={cn("h-4 w-4", isFavorited ? "text-red-500 fill-current" : "text-gray-400")} />
+                              </Button>
+                              <Button variant="ghost" size="icon"><Share2 className="h-4 w-4" /></Button>
+                            </div>
+                          </div>
+                        </CardFooter>
+                      </Card>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-20 bg-card border rounded-lg flex flex-col items-center">
+                  <Search className="h-16 w-16 text-muted-foreground/50 mb-4" />
+                  <h2 className="text-2xl font-semibold mb-2">Nenhuma frase encontrada</h2>
+                  <p className="text-muted-foreground">Tente ajustar sua busca ou selecionar outra categoria.</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </main>
 
-      {/* Menu Lateral para Mobile */}
        <Sheet open={isCategorySheetOpen} onOpenChange={setIsCategorySheetOpen}>
         <SheetContent side="left">
           <SheetHeader>
