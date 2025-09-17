@@ -36,10 +36,18 @@ export function HomePageClient({ initialQuotes, initialCategories }: HomePageCli
 
   // Função para copiar o texto de uma frase para a área de transferência.
   const handleCopy = (text: string, author: string) => {
-    navigator.clipboard.writeText(`"${text}" - ${author}`);
-    toast({
-      title: "Copiado!",
-      description: "A frase foi copiada para a sua área de transferência.",
+    navigator.clipboard.writeText(`"${text}" - ${author}`).then(() => {
+      toast({
+        title: "Copiado!",
+        description: "A frase foi copiada para a sua área de transferência.",
+      });
+    }).catch(err => {
+      console.error('Erro ao copiar texto: ', err);
+      toast({
+        variant: "destructive",
+        title: "Erro ao copiar",
+        description: "Não foi possível acessar a área de transferência.",
+      });
     });
   };
 

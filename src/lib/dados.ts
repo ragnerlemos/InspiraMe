@@ -24,23 +24,23 @@ async function loadQuotesFromSheet() {
   if (quotes.length > 0) return { quotes, categories };
 
   try {
+    // A autenticação JWT é necessária mesmo para planilhas públicas quando acessada via SDK no servidor.
+    // Para acesso somente leitura, a conta de serviço só precisa da permissão "Viewer".
     const serviceAccountAuth = new JWT({
-      // O email e a chave privada não são necessários para acesso público somente leitura
       email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-      key: process.env.GOOGLE_PRIVATE_KEY,
-      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+      key: process.env.GOOGLE_PRIVATE_KEY!.replace(/\\n/g, '\n'), // Corrige a formatação da chave
+      scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
     });
     
     const doc = new GoogleSpreadsheet(process.env.SPREADSHEET_ID!, serviceAccountAuth);
 
-    // Para planilhas públicas, podemos usar a API Key.
-    doc.useApiKey(process.env.GOOGLE_SHEETS_API_KEY!);
-
     await doc.loadInfo(); // carrega as propriedades do documento
     const sheet = doc.sheetsByTitle['Frases']; // acessa a aba pelo nome
     
-    // Carrega as linhas da aba, considerando as colunas que você mencionou.
-    // O range será de D (Categoria 1) até J (Assinatura).
+    if (!sheet) {
+      throw new Error("Aba 'Frases' não encontrada na planilha.");
+    }
+    
     const rows = await sheet.getRows();
 
     const loadedQuotes: Quote[] = [];
@@ -70,7 +70,8 @@ async function loadQuotesFromSheet() {
     return { quotes, categories };
   } catch (error) {
     console.error('Erro ao carregar dados da planilha:', error);
-    // Retorna os arrays vazios em caso de erro para não quebrar a aplicação
+    // Em caso de erro, retorna arrays vazios para não quebrar a aplicação.
+    // Isso é importante para o build não falhar.
     return { quotes: [], categories: [] };
   }
 }
