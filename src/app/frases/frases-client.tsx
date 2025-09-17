@@ -105,8 +105,8 @@ export function FrasesClientPage({
               Todos
           </Button>
 
-          {/* Subcategorias de 'Frases' */}
-          <div className="flex flex-col items-start gap-1 pl-4 border-l">
+          {/* Subcategorias de 'Frases' listadas diretamente */}
+          <div className="flex flex-col items-start space-y-1">
               {frasesSubcategories.map((subCat) => {
                 if (subCat === 'Todos') return null;
                 return (
@@ -115,7 +115,7 @@ export function FrasesClientPage({
                       variant="ghost"
                       onClick={() => handleSubCategorySelect('Frases', subCat)}
                       className={cn(
-                        'w-full justify-start text-sm',
+                        'w-full justify-start text-sm pl-4', // Adicionado padding para recuo
                         selectedMainCategory === 'Frases' && selectedSubCategory === subCat && 'bg-primary/10 text-primary font-semibold'
                       )}
                     >
