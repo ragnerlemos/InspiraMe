@@ -58,9 +58,15 @@ async function loadQuotesFromSheets() {
         }
 
         const normalizedHeaders = headerRow.map(normalizeHeader);
+        const normalizedSheetName = normalizeHeader(sheetName);
         
-        // Tenta encontrar a coluna principal de texto (frase, datas comemorativas, etc.)
-        const fraseIndex = normalizedHeaders.findIndex(h => h.includes('frase') || h.includes(normalizeHeader(sheetName)));
+        // Lógica flexível para encontrar a coluna de texto principal.
+        // Tenta encontrar uma coluna com o mesmo nome da aba, senão, procura por "frase".
+        let fraseIndex = normalizedHeaders.findIndex(h => h === normalizedSheetName);
+        if (fraseIndex === -1) {
+            fraseIndex = normalizedHeaders.findIndex(h => h.includes('frase'));
+        }
+
         const autorIndex = normalizedHeaders.indexOf('assinatura');
         const categoriaIndex = normalizedHeaders.indexOf('categoria 1');
 
@@ -72,9 +78,9 @@ async function loadQuotesFromSheets() {
         allRows.forEach((row, index) => {
             const frase = row[fraseIndex];
             // Se 'assinatura' não existir, usa o nome da aba como autor.
-            const autor = autorIndex !== -1 ? row[autorIndex] : sheetName;
+            const autor = (autorIndex !== -1 && row[autorIndex]) ? row[autorIndex] : sheetName;
             // Se 'categoria 1' não existir, usa 'Geral'.
-            const categoria = categoriaIndex !== -1 ? row[categoriaIndex] : 'Geral';
+            const categoria = (categoriaIndex !== -1 && row[categoriaIndex]) ? row[categoriaIndex] : 'Geral';
 
             if (frase && autor && categoria) {
               loadedQuotes.push({
