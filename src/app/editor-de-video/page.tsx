@@ -1,8 +1,7 @@
 
-
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useWindowSize } from "react-use";
 import { useProfile } from "@/hooks/use-profile";
 import { Sidebar } from "@/app/editor-de-video/components/sidebar";
@@ -14,7 +13,14 @@ import {
   PanelGroup,
   PanelResizeHandle,
 } from "@/components/ui/resizable";
-import type { EstiloFundo } from "@/app/editor-de-video/tipos";
+import type { EditorState, EstiloFundo } from "@/app/editor-de-video/tipos";
+import { useEditor } from "./contexts/editor-context";
+import { useToast } from "@/hooks/use-toast";
+import { useTemplates } from "@/hooks/use-templates";
+import html2canvas from 'html2canvas';
+import { quotes } from "@/lib/dados";
+import { useSearchParams } from "next/navigation";
+
 
 function ProporcaoSkeleton() {
     return (
@@ -41,73 +47,209 @@ function ProporcaoSkeleton() {
     )
 }
 
+const getInitialState = (): Omit<EditorState, 'activeTemplateId' | 'text'> => ({
+    fontFamily: "Poppins",
+    fontSize: 5,
+    fontWeight: "bold",
+    fontStyle: "normal",
+    textColor: "#FFFFFF",
+    textAlign: "center",
+    textShadowBlur: 1,
+    textVerticalPosition: 50,
+    textStrokeColor: "#000000",
+    textStrokeWidth: 0.2,
+    letterSpacing: 0,
+    lineHeight: 1.3,
+    wordSpacing: 0,
+    backgroundStyle: { type: 'solid', value: '#000000' },
+    filmColor: "#000000",
+    filmOpacity: 0,
+    aspectRatio: "9 / 16",
+    showProfileSignature: false,
+    signaturePositionX: 50,
+    signaturePositionY: 90,
+    signatureScale: 63,
+    showSignaturePhoto: false,
+    showSignatureUsername: true,
+    showSignatureSocial: true,
+    showSignatureBackground: false,
+    signatureBgColor: "#000000",
+    signatureBgOpacity: 30,
+    profileVerticalPosition: 25,
+    showLogo: false,
+    logoPositionX: 50,
+    logoPositionY: 72,
+    logoScale: 40,
+    logoOpacity: 100,
+});
+
+
 export default function AspectWeaver() {
-  const [aspectRatio, setAspectRatio] = useState("9 / 16");
-  const [scale, setScale] = useState(1);
-  const [activeControl, setActiveControl] = useState<string | null>('texto');
   const { width } = useWindowSize();
   const isDesktop = width >= 768;
   const { profile, isLoaded: isProfileLoaded } = useProfile();
+  const searchParams = useSearchParams();
+  const { toast } = useToast();
+  const { setUndoState, setSaveActions } = useEditor();
+  const { templates: allTemplates, isLoaded: areTemplatesLoaded, addTemplate } = useTemplates();
 
-  // Text state
-  const [text, setText] = useState("A única maneira de fazer um ótimo trabalho é amar o que você faz.");
-  const [fontFamily, setFontFamily] = useState("Poppins");
-  const [fontSize, setFontSize] = useState(5);
-  const [fontWeight, setFontWeight] = useState<"normal" | "bold">("bold");
-  const [fontStyle, setFontStyle] = useState<"normal" | "italic">("normal");
-  const [textAlign, setTextAlign] = useState<"left" | "center" | "right">("center");
-  const [textVerticalPosition, setTextVerticalPosition] = useState(50);
+  // Histórico de estados
+  const [history, setHistory] = useState<EditorState[]>([]);
+  const [currentStateIndex, setCurrentStateIndex] = useState(0);
+  const [isReady, setIsReady] = useState(false);
+
+  const [activeControl, setActiveControl] = useState<string | null>('texto');
+  const [scale, setScale] = useState(1);
   
-  // Color State
-  const [fgColor, setFgColor] = useState("#ffffff");
+  const currentState = history[currentStateIndex] || {};
 
-  // Background state
-  const [backgroundStyle, setBackgroundStyle] = useState<EstiloFundo>({ type: 'solid', value: '#333333' });
+  const updateState = (newState: Partial<EditorState>) => {
+    const nextState = { ...currentState, ...newState };
+    const newHistory = history.slice(0, currentStateIndex + 1);
+    setHistory([...newHistory, nextState]);
+    setCurrentStateIndex(newHistory.length);
+  };
+  
+  // Funções de Desfazer e Refazer
+  const undo = useCallback(() => {
+    if (currentStateIndex > 0) {
+      setCurrentStateIndex(currentStateIndex - 1);
+    }
+  }, [currentStateIndex]);
 
+  const redo = useCallback(() => {
+    if (currentStateIndex < history.length - 1) {
+      setCurrentStateIndex(currentStateIndex + 1);
+    }
+  }, [currentStateIndex, history.length]);
 
-  // Filter State
-  const [filmColor, setFilmColor] = useState("#000000");
-  const [filmOpacity, setFilmOpacity] = useState(0);
+  const canUndo = currentStateIndex > 0;
+  const canRedo = currentStateIndex < history.length - 1;
+  
+  useEffect(() => {
+    setUndoState({ canUndo, undo, canRedo, redo });
+  }, [canUndo, undo, canRedo, redo, setUndoState]);
 
-  // Advanced Style State
-  const [textShadowBlur, setTextShadowBlur] = useState(1);
-  const [textStrokeColor, setTextStrokeColor] = useState("#000000");
-  const [textStrokeWidth, setTextStrokeWidth] = useState(0.2);
-  const [letterSpacing, setLetterSpacing] = useState(0);
-  const [lineHeight, setLineHeight] = useState(1.3);
-  const [wordSpacing, setWordSpacing] = useState(0);
+  // Lógica de Salvamento e Exportação
+  const handleSaveAsTemplate = useCallback(async () => {
+        const templateName = prompt("Digite um nome para o novo modelo:");
+        if (!templateName) return;
+        const previewElement = document.getElementById('editor-preview-content');
+        if (previewElement) {
+            try {
+                const canvas = await html2canvas(previewElement, {
+                    scale: 0.5,
+                    useCORS: true,
+                    backgroundColor: null, 
+                });
+                const thumbnail = canvas.toDataURL('image/jpeg', 0.8);
+                
+                addTemplate(templateName, currentState, thumbnail);
 
+                toast({
+                    title: "Modelo Salvo!",
+                    description: `O modelo "${templateName}" foi adicionado à sua coleção.`,
+                });
+            } catch (error) {
+                console.error("Erro ao criar thumbnail:", error);
+                toast({
+                    variant: "destructive",
+                    title: "Erro ao Salvar",
+                    description: "Não foi possível gerar a pré-visualização do modelo.",
+                });
+            }
+        }
+    }, [addTemplate, currentState, toast]);
 
-  // Signature State
-  const [showProfileSignature, setShowProfileSignature] = useState(false);
-  const [signaturePositionX, setSignaturePositionX] = useState(50);
-  const [signaturePositionY, setSignaturePositionY] = useState(90);
-  const [signatureScale, setSignatureScale] = useState(63);
-  const [showSignaturePhoto, setShowSignaturePhoto] = useState(false);
-  const [showSignatureUsername, setShowSignatureUsername] = useState(true);
-  const [showSignatureSocial, setShowSignatureSocial] = useState(true);
-  const [showSignatureBackground, setShowSignatureBackground] = useState(false);
-  const [signatureBgColor, setSignatureBgColor] = useState("#000000");
-  const [signatureBgOpacity, setSignatureBgOpacity] = useState(30);
+    const captureCanvas = useCallback(async (format: 'jpeg' | 'png') => {
+        const previewElement = document.getElementById('editor-preview-content');
+        if (!previewElement) {
+            toast({ variant: 'destructive', title: 'Erro', description: 'Não foi possível encontrar a área de visualização.' });
+            return;
+        }
 
-  // Logo State
-  const [showLogo, setShowLogo] = useState(false);
-  const [logoPositionX, setLogoPositionX] = useState(50);
-  const [logoPositionY, setLogoPositionY] = useState(72);
-  const [logoScale, setLogoScale] = useState(40);
-  const [logoOpacity, setLogoOpacity] = useState(100);
+        toast({ title: 'Exportando...', description: `Gerando imagem ${format.toUpperCase()}.` });
+        
+        try {
+            const canvas = await html2canvas(previewElement, {
+                useCORS: true,
+                backgroundColor: null, 
+                scale: 4, // Aumenta a resolução para melhor qualidade
+            });
+
+            const image = canvas.toDataURL(`image/${format}`, format === 'png' ? 1.0 : 0.9);
+            
+            const link = document.createElement('a');
+            link.href = image;
+            link.download = `quotevid-export.${format}`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            toast({ title: 'Sucesso!', description: `A imagem foi baixada como ${link.download}.` });
+
+        } catch (error) {
+            console.error('Erro ao exportar imagem:', error);
+            toast({ variant: 'destructive', title: 'Erro de Exportação', description: 'Não foi possível gerar a imagem.' });
+        }
+    }, [toast]);
+    
+    const onExportJPG = useCallback(() => captureCanvas('jpeg'), [captureCanvas]);
+    const onExportPNG = useCallback(() => captureCanvas('png'), [captureCanvas]);
+
+    const onExportMP4 = useCallback(() => {
+        toast({ title: 'Em breve!', description: 'A exportação de vídeo MP4 estará disponível em futuras atualizações.' });
+    }, [toast]);
+    
+    useEffect(() => {
+        setSaveActions({
+            onSaveAsTemplate: handleSaveAsTemplate,
+            onExportJPG,
+            onExportPNG,
+            onExportMP4,
+        });
+    }, [handleSaveAsTemplate, onExportJPG, onExportPNG, onExportMP4, setSaveActions]);
+
+  // Efeito de inicialização
+  useEffect(() => {
+    if (!isProfileLoaded || !areTemplatesLoaded) return;
+
+    const quoteParam = searchParams.get("quote");
+    const templateIdParam = searchParams.get("templateId");
+    
+    let initialState: EditorState;
+    const baseState = getInitialState();
+
+    const text = quoteParam ? decodeURIComponent(quoteParam) : quotes[Math.floor(Math.random() * quotes.length)].text;
+    
+    if (templateIdParam) {
+      const template = allTemplates.find(t => t.id === templateIdParam);
+      if (template) {
+        initialState = { ...baseState, ...template.editorState, text, activeTemplateId: template.id };
+      } else {
+        initialState = { ...baseState, text, activeTemplateId: null };
+      }
+    } else {
+        initialState = { ...baseState, text, activeTemplateId: null };
+    }
+    
+    setHistory([initialState]);
+    setCurrentStateIndex(0);
+    setIsReady(true);
+  }, [searchParams, isProfileLoaded, areTemplatesLoaded, allTemplates]);
+
 
   useEffect(() => {
     if (isDesktop) {
         setScale(1);
     } else {
-        if (aspectRatio === "9 / 16") {
+        if (currentState.aspectRatio === "9 / 16") {
             setScale(0.8);
         } else {
             setScale(1);
         }
     }
-  }, [aspectRatio, isDesktop]);
+  }, [currentState.aspectRatio, isDesktop]);
   
   const textStyle = useMemo(() => {
     const createTextStrokeShadow = (width: number, color: string): string => {
@@ -126,66 +268,106 @@ export default function AspectWeaver() {
         if (blur === 0) return "none";
         return `0 0 ${blur * 0.1}cqw rgba(0,0,0,0.5)`;
     };
-    const textStrokeShadow = createTextStrokeShadow(textStrokeWidth, textStrokeColor);
-    const mainTextShadow = createMainShadow(textShadowBlur);
+    const textStrokeShadow = createTextStrokeShadow(currentState.textStrokeWidth || 0, currentState.textStrokeColor || '#000');
+    const mainTextShadow = createMainShadow(currentState.textShadowBlur || 0);
 
     return {
-        fontFamily,
-        fontSize: `${fontSize}cqw`,
-        fontWeight,
-        fontStyle,
-        color: fgColor,
-        textAlign,
-        lineHeight,
-        letterSpacing: `${letterSpacing / 100}em`,
-        wordSpacing: `${wordSpacing / 100}em`,
+        fontFamily: currentState.fontFamily,
+        fontSize: `${currentState.fontSize}cqw`,
+        fontWeight: currentState.fontWeight,
+        fontStyle: currentState.fontStyle,
+        color: currentState.textColor,
+        textAlign: currentState.textAlign,
+        lineHeight: currentState.lineHeight,
+        letterSpacing: `${(currentState.letterSpacing || 0) / 100}em`,
+        wordSpacing: `${(currentState.wordSpacing || 0) / 100}em`,
         textShadow: textStrokeShadow !== "none" && mainTextShadow !== "none" ? `${textStrokeShadow}, ${mainTextShadow}` : textStrokeShadow !== "none" ? textStrokeShadow : mainTextShadow,
     }
-  }, [fontFamily, fontSize, fontWeight, fontStyle, fgColor, textAlign, textShadowBlur, textStrokeColor, textStrokeWidth, letterSpacing, lineHeight, wordSpacing]);
+  }, [
+    currentState.fontFamily, currentState.fontSize, currentState.fontWeight, 
+    currentState.fontStyle, currentState.textColor, currentState.textAlign, 
+    currentState.textShadowBlur, currentState.textStrokeColor, currentState.textStrokeWidth, 
+    currentState.letterSpacing, currentState.lineHeight, currentState.wordSpacing
+  ]);
 
 
-  if (!isProfileLoaded) {
+  if (!isReady || !isProfileLoaded) {
     return <ProporcaoSkeleton />;
   }
 
   const commonProps = {
-    aspectRatio, setAspectRatio,
+    // Canvas
+    aspectRatio: currentState.aspectRatio, setAspectRatio: (val: string) => updateState({ aspectRatio: val as any }),
     scale, setScale,
-    backgroundStyle, setBackgroundStyle,
-    filmColor, setFilmColor,
-    filmOpacity, setFilmOpacity,
-    fgColor, setFgColor,
-    activeControl, setActiveControl,
-    text, setText,
+    // Fundo
+    backgroundStyle: currentState.backgroundStyle, setBackgroundStyle: (val: EstiloFundo) => updateState({ backgroundStyle: val }),
+    // Película
+    filmColor: currentState.filmColor, setFilmColor: (val: string) => updateState({ filmColor: val }),
+    filmOpacity: currentState.filmOpacity, setFilmOpacity: (val: number) => updateState({ filmOpacity: val }),
+    // Texto
+    text: currentState.text, setText: (val: string) => updateState({ text: val }),
+    fgColor: currentState.textColor, setFgColor: (val: string) => updateState({ textColor: val }),
+    // Estilo Texto
+    fontFamily: currentState.fontFamily, onFontFamilyChange: (val: string) => updateState({ fontFamily: val }),
+    fontSize: currentState.fontSize, onFontSizeChange: (val: number) => updateState({ fontSize: val }),
+    fontWeight: currentState.fontWeight, onFontWeightChange: (val: "normal" | "bold") => updateState({ fontWeight: val }),
+    fontStyle: currentState.fontStyle, onFontStyleChange: (val: "normal" | "italic") => updateState({ fontStyle: val }),
+    textAlign: currentState.textAlign, onTextAlignChange: (val: "left" | "center" | "right") => updateState({ textAlign: val }),
+    textVerticalPosition: currentState.textVerticalPosition, onTextVerticalPositionChange: (val: number) => updateState({ textVerticalPosition: val }),
+    textShadowBlur: currentState.textShadowBlur, onTextShadowBlurChange: (val: number) => updateState({ textShadowBlur: val }),
+    textStrokeColor: currentState.textStrokeColor, onTextStrokeColorChange: (val: string) => updateState({ textStrokeColor: val }),
+    textStrokeWidth: currentState.textStrokeWidth, onTextStrokeWidthChange: (val: number) => updateState({ textStrokeWidth: val }),
+    letterSpacing: currentState.letterSpacing, onLetterSpacingChange: (val: number) => updateState({ letterSpacing: val }),
+    lineHeight: currentState.lineHeight, onLineHeightChange: (val: number) => updateState({ lineHeight: val }),
+    wordSpacing: currentState.wordSpacing, onWordSpacingChange: (val: number) => updateState({ wordSpacing: val }),
+    // Assinatura
     profile,
-    showProfileSignature, onShowProfileSignatureChange: setShowProfileSignature,
-    signaturePositionX, onSignaturePositionXChange: setSignaturePositionX,
-    signaturePositionY, onSignaturePositionYChange: setSignaturePositionY,
-    signatureScale, onSignatureScaleChange: setSignatureScale,
-    showSignaturePhoto, onShowSignaturePhotoChange: setShowSignaturePhoto,
-    showSignatureUsername, onShowSignatureUsernameChange: setShowSignatureUsername,
-    showSignatureSocial, onShowSignatureSocialChange: setShowSignatureSocial,
-    showSignatureBackground, onShowSignatureBackgroundChange: setShowSignatureBackground,
-    signatureBgColor, onSignatureBgColorChange: setSignatureBgColor,
-    signatureBgOpacity, onSignatureBgOpacityChange: setSignatureBgOpacity,
-    showLogo, onShowLogoChange: setShowLogo,
-    logoPositionX, onLogoPositionXChange: setLogoPositionX,
-    logoPositionY, onLogoPositionYChange: setLogoPositionY,
-    logoScale, onLogoScaleChange: setLogoScale,
-    logoOpacity, onLogoOpacityChange: setLogoOpacity,
-    // Estilo do texto
-    fontFamily, onFontFamilyChange: setFontFamily,
-    fontSize, onFontSizeChange: setFontSize,
-    fontWeight, onFontWeightChange: setFontWeight,
-    fontStyle, onFontStyleChange: setFontStyle,
-    textAlign, onTextAlignChange: setTextAlign,
-    textVerticalPosition, onTextVerticalPositionChange: setTextVerticalPosition,
-    textShadowBlur, onTextShadowBlurChange: setTextShadowBlur,
-    textStrokeColor, onTextStrokeColorChange: setTextStrokeColor,
-    textStrokeWidth, onTextStrokeWidthChange: setTextStrokeWidth,
-    letterSpacing, onLetterSpacingChange: setLetterSpacing,
-    lineHeight, onLineHeightChange: setLineHeight,
-    wordSpacing, onWordSpacingChange: setWordSpacing,
+    showProfileSignature: currentState.showProfileSignature, onShowProfileSignatureChange: (val: boolean) => updateState({ showProfileSignature: val }),
+    signaturePositionX: currentState.signaturePositionX, onSignaturePositionXChange: (val: number) => updateState({ signaturePositionX: val }),
+    signaturePositionY: currentState.signaturePositionY, onSignaturePositionYChange: (val: number) => updateState({ signaturePositionY: val }),
+    signatureScale: currentState.signatureScale, onSignatureScaleChange: (val: number) => updateState({ signatureScale: val }),
+    showSignaturePhoto: currentState.showSignaturePhoto, onShowSignaturePhotoChange: (val: boolean) => updateState({ showSignaturePhoto: val }),
+    showSignatureUsername: currentState.showSignatureUsername, onShowSignatureUsernameChange: (val: boolean) => updateState({ showSignatureUsername: val }),
+    showSignatureSocial: currentState.showSignatureSocial, onShowSignatureSocialChange: (val: boolean) => updateState({ showSignatureSocial: val }),
+    showSignatureBackground: currentState.showSignatureBackground, onShowSignatureBackgroundChange: (val: boolean) => updateState({ showSignatureBackground: val }),
+    signatureBgColor: currentState.signatureBgColor, onSignatureBgColorChange: (val: string) => updateState({ signatureBgColor: val }),
+    signatureBgOpacity: currentState.signatureBgOpacity, onSignatureBgOpacityChange: (val: number) => updateState({ signatureBgOpacity: val }),
+    // Logo
+    showLogo: currentState.showLogo, onShowLogoChange: (val: boolean) => updateState({ showLogo: val }),
+    logoPositionX: currentState.logoPositionX, onLogoPositionXChange: (val: number) => updateState({ logoPositionX: val }),
+    logoPositionY: currentState.logoPositionY, onLogoPositionYChange: (val: number) => updateState({ logoPositionY: val }),
+    logoScale: currentState.logoScale, onLogoScaleChange: (val: number) => updateState({ logoScale: val }),
+    logoOpacity: currentState.logoOpacity, onLogoOpacityChange: (val: number) => updateState({ logoOpacity: val }),
+    // Controle
+    activeControl, setActiveControl,
+  };
+
+  const previewProps = {
+    aspectRatio: currentState.aspectRatio,
+    backgroundStyle: currentState.backgroundStyle,
+    filmColor: currentState.filmColor,
+    filmOpacity: currentState.filmOpacity,
+    text: currentState.text,
+    textStyle: textStyle,
+    textVerticalPosition: currentState.textVerticalPosition,
+    profile,
+    showProfileSignature: currentState.showProfileSignature,
+    signaturePositionX: currentState.signaturePositionX,
+    signaturePositionY: currentState.signaturePositionY,
+    signatureScale: currentState.signatureScale,
+    showSignaturePhoto: currentState.showSignaturePhoto,
+    showSignatureUsername: currentState.showSignatureUsername,
+    showSignatureSocial: currentState.showSignatureSocial,
+    showSignatureBackground: currentState.showSignatureBackground,
+    signatureBgColor: currentState.signatureBgColor,
+    signatureBgOpacity: currentState.signatureBgOpacity,
+    showLogo: currentState.showLogo,
+    logoPositionX: currentState.logoPositionX,
+    logoPositionY: currentState.logoPositionY,
+    logoScale: currentState.logoScale,
+    logoOpacity: currentState.logoOpacity,
+    activeTemplateId: currentState.activeTemplateId,
+    profileVerticalPosition: currentState.profileVerticalPosition,
   };
 
   return (
@@ -197,32 +379,7 @@ export default function AspectWeaver() {
         {isDesktop && <PanelResizeHandle />}
         <Panel>
             <main className="flex-1 w-full h-full overflow-auto">
-                <PreviewCanva
-                    aspectRatio={aspectRatio}
-                    backgroundStyle={backgroundStyle}
-                    filmColor={filmColor}
-                    filmOpacity={filmOpacity}
-                    scale={scale}
-                    text={text}
-                    textStyle={textStyle}
-                    textVerticalPosition={textVerticalPosition}
-                    profile={profile}
-                    showProfileSignature={showProfileSignature}
-                    signaturePositionX={signaturePositionX}
-                    signaturePositionY={signaturePositionY}
-                    signatureScale={signatureScale}
-                    showSignaturePhoto={showSignaturePhoto}
-                    showSignatureUsername={showSignatureUsername}
-                    showSignatureSocial={showSignatureSocial}
-                    showSignatureBackground={showSignatureBackground}
-                    signatureBgColor={signatureBgColor}
-                    signatureBgOpacity={signatureBgOpacity}
-                    showLogo={showLogo}
-                    logoPositionX={logoPositionX}
-                    logoPositionY={logoPositionY}
-                    logoScale={logoScale}
-                    logoOpacity={logoOpacity}
-                />
+                <PreviewCanva {...previewProps} />
             </main>
         </Panel>
       </PanelGroup>
