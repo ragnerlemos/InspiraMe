@@ -29,6 +29,8 @@ async function loadQuotesFromSheets() {
 
   if (!SPREADSHEET_ID || !API_KEY) {
     console.error("SPREADSHEET_ID ou GOOGLE_API_KEY não estão definidos nas variáveis de ambiente.");
+    // No servidor, podemos lançar um erro ou retornar vazio.
+    // Retornar vazio evita que a build quebre se as chaves não estiverem lá temporariamente.
     return { quotes: [] };
   }
 
@@ -38,7 +40,9 @@ async function loadQuotesFromSheets() {
     const fetchPromises = SHEET_NAMES.map(async (sheetName) => {
         const RANGE = 'A:J'; 
         const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(sheetName)}!${RANGE}?key=${API_KEY}`;
-        const response = await fetch(url, { next: { revalidate: 3600 } }); // Cache por 1 hora
+        
+        // Aumenta o tempo de cache para 1 hora para evitar chamadas excessivas à API
+        const response = await fetch(url, { next: { revalidate: 3600 } }); 
         
         if (!response.ok) {
             console.error(`Erro ao buscar a aba "${sheetName}": ${response.statusText}`);
@@ -109,6 +113,7 @@ async function loadQuotesFromSheets() {
 
 // Exporta uma função que garante que os dados sejam carregados antes de serem usados.
 export const getQuoteData = async () => {
+    // Esta função agora SEMPRE será executada no servidor.
     return await loadQuotesFromSheets();
 }
 
