@@ -115,7 +115,7 @@ export function FrasesClientPage({
                       variant="ghost"
                       onClick={() => handleSubCategorySelect('Frases', subCat)}
                       className={cn(
-                        'w-full justify-start text-sm pl-4', // Adicionado padding para recuo
+                        'w-full justify-start text-sm pl-4',
                         selectedMainCategory === 'Frases' && selectedSubCategory === subCat && 'bg-primary/10 text-primary font-semibold'
                       )}
                     >
