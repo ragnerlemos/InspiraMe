@@ -71,7 +71,12 @@ export function FrasesClientPage({
       }
     };
 
-    fetchQuotes();
+    // Só busca se não for a renderização inicial com as quotes do servidor
+    if (selectedMainCategory !== 'Todos' || selectedSubCategory !== 'Todos' || searchTerm) {
+        fetchQuotes();
+    } else {
+        setQuotes(serverQuotes)
+    }
   }, [selectedMainCategory, selectedSubCategory, toast]);
 
   // Filtra as frases já carregadas com base no termo de busca
@@ -125,7 +130,7 @@ export function FrasesClientPage({
           />
         </div>
         <Button
-          variant='ghost'
+          variant={selectedMainCategory === 'Todos' ? 'secondary' : 'ghost'}
           onClick={() => handleMainCategorySelect('Todos')}
           className={cn('w-full justify-start text-base font-semibold px-3 transition-colors rounded-md hover:bg-muted/50',
              selectedMainCategory === 'Todos' && 'bg-primary/10 text-primary'
@@ -133,7 +138,7 @@ export function FrasesClientPage({
         >
           Todos
         </Button>
-        <Accordion type="multiple" className="w-full">
+        <Accordion type="multiple" className="w-full" defaultValue={['item-0']}>
           {initialMainCategories
             .filter((cat) => cat !== 'Todos')
             .map((mainCat, index) => {
@@ -165,8 +170,7 @@ export function FrasesClientPage({
                   </AccordionTrigger>
                   <AccordionContent className='pt-1'>
                     <div className="flex flex-col items-start gap-1 pl-4 border-l-2 border-muted ml-3">
-                      {subCats
-                        .map((subCat) => (
+                      {subCats.map((subCat) => (
                           <Button
                             key={subCat}
                             variant="ghost"
@@ -193,6 +197,15 @@ export function FrasesClientPage({
 
   return (
     <>
+      <Sheet open={isCategorySheetOpen} onOpenChange={setIsCategorySheetOpen}>
+        <SheetContent side="left">
+          <SheetHeader>
+            <SheetTitle>Categorias</SheetTitle>
+          </SheetHeader>
+          <div className="py-4">{renderFilters()}</div>
+        </SheetContent>
+      </Sheet>
+
       <main className="flex-1">
         <div className="container mx-auto py-8 px-4">
           <div className="grid md:grid-cols-[280px_1fr] gap-8 md:items-start">
@@ -200,15 +213,13 @@ export function FrasesClientPage({
               <div className="sticky top-24">{renderFilters()}</div>
             </aside>
             <div>
-              <div className="flex justify-between items-center mb-8">
-                <div className="text-center w-full">
-                  <h1 className="font-headline text-4xl md:text-5xl font-bold text-primary">
-                    Inspire-se com Frases
-                  </h1>
-                  <p className="text-muted-foreground mt-2 text-lg">
-                    Explore, favorite e crie vídeos com nossa coleção de frases.
-                  </p>
-                </div>
+              <div className="text-center w-full mb-8">
+                <h1 className="font-headline text-4xl md:text-5xl font-bold text-primary">
+                  Inspire-se com Frases
+                </h1>
+                <p className="text-muted-foreground mt-2 text-lg">
+                  Explore, favorite e crie vídeos com nossa coleção de frases.
+                </p>
               </div>
               
               {isLoading ? (
@@ -263,15 +274,6 @@ export function FrasesClientPage({
           </div>
         </div>
       </main>
-
-      <Sheet open={isCategorySheetOpen} onOpenChange={setIsCategorySheetOpen}>
-        <SheetContent side="left">
-          <SheetHeader>
-            <SheetTitle>Categorias</SheetTitle>
-          </SheetHeader>
-          <div className="py-4">{renderFilters()}</div>
-        </SheetContent>
-      </Sheet>
     </>
   );
 }
