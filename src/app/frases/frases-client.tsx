@@ -24,7 +24,8 @@ type FrasesClientPageProps = {
   initialQuotes: QuoteWithAuthor[];
   initialMainCategories: string[];
   initialSubCategories: CategoriesHierarchy;
-  setOpenCategorySheet?: (fn: () => void) => void;
+  isCategorySheetOpen?: boolean;
+  setIsCategorySheetOpen?: (isOpen: boolean) => void;
 };
 
 // Página principal que exibe uma lista de frases e permite ao usuário filtrá-las.
@@ -32,24 +33,17 @@ export function FrasesClientPage({
   initialQuotes: serverQuotes,
   initialMainCategories,
   initialSubCategories,
-  setOpenCategorySheet,
+  isCategorySheetOpen = false,
+  setIsCategorySheetOpen = () => {},
 }: FrasesClientPageProps) {
   const [quotes, setQuotes] = useState<QuoteWithAuthor[]>(serverQuotes);
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMainCategory, setSelectedMainCategory] = useState<string>('Todos');
   const [selectedSubCategory, setSelectedSubCategory] = useState<string>('Todos');
-  const [isCategorySheetOpen, setIsCategorySheetOpen] = useState(false);
 
   const { favorites, toggleFavorite } = useFavorites();
   const { toast } = useToast();
-
-  // Registra a função de abrir o menu no componente pai (AppLayout)
-  useEffect(() => {
-    if (setOpenCategorySheet) {
-      setOpenCategorySheet(() => () => setIsCategorySheetOpen(true));
-    }
-  }, [setOpenCategorySheet]);
 
   // Busca as frases no servidor quando a categoria muda
   useEffect(() => {
@@ -78,12 +72,12 @@ export function FrasesClientPage({
     };
 
     // Só busca se não for a renderização inicial com as quotes do servidor
-    if (selectedMainCategory !== 'Todos' || selectedSubCategory !== 'Todos' || searchTerm) {
+    if (selectedMainCategory !== 'Todos' || selectedSubCategory !== 'Todos') {
         fetchQuotes();
     } else {
         setQuotes(serverQuotes)
     }
-  }, [selectedMainCategory, selectedSubCategory, toast, serverQuotes, searchTerm]);
+  }, [selectedMainCategory, selectedSubCategory, toast, serverQuotes]);
 
   // Filtra as frases já carregadas com base no termo de busca
   const filteredQuotes = useMemo(() => {

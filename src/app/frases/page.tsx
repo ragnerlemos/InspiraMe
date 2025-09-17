@@ -3,12 +3,14 @@ import { getCategories, getAllQuotes } from '@/lib/dados';
 import { FrasesClientPage } from './frases-client';
 import type { CategoriesHierarchy } from '@/lib/dados';
 
+// Props que este componente de servidor pode receber do layout
 interface FrasesPageProps {
-  setOpenCategorySheet?: (fn: () => void) => void;
+  isCategorySheetOpen?: boolean;
+  setIsCategorySheetOpen?: (isOpen: boolean) => void;
 }
 
 // Componente de Servidor: Busca os dados iniciais antes de renderizar a página.
-export default async function FrasesPage({ setOpenCategorySheet }: FrasesPageProps) {
+export default async function FrasesPage({ isCategorySheetOpen, setIsCategorySheetOpen }: FrasesPageProps) {
   // Busca a hierarquia de categorias e as frases iniciais (todas)
   const [categories, initialQuotes] = await Promise.all([
     getCategories(),
@@ -27,7 +29,9 @@ export default async function FrasesPage({ setOpenCategorySheet }: FrasesPagePro
       initialQuotes={initialQuotes}
       initialMainCategories={mainCategories}
       initialSubCategories={subCategories}
-      setOpenCategorySheet={setOpenCategorySheet}
+      // Repassa as props recebidas do AppLayout para o componente cliente
+      isCategorySheetOpen={isCategorySheetOpen}
+      setIsCategorySheetOpen={setIsCategorySheetOpen}
     />
   );
 }
