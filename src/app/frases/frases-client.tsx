@@ -211,7 +211,7 @@ export function FrasesClientPage({
             </aside>
             <div>
               <div className="w-full mb-8">
-                 <div className="flex justify-between items-center text-center md:text-left">
+                 <div className="flex justify-between items-center text-center">
                      <div className="flex-1">
                         <h1 className="font-headline text-4xl md:text-5xl font-bold text-primary">
                           Inspire-se com Frases
@@ -240,17 +240,22 @@ export function FrasesClientPage({
                     const isFavorited = favorites.includes(quote.id);
                     return (
                       <Card key={quote.id} className="group flex flex-col justify-between hover:shadow-lg transition-shadow duration-300">
-                        <CardContent className="p-4 pb-0">
+                        <CardContent className="p-4 pb-0 flex-1">
                           <p className="text-base font-body italic">{quote.quote}</p>
                         </CardContent>
-                        <CardFooter className="p-2 pt-2 flex flex-col items-start w-full">
+                        <CardFooter className="p-4 pt-2 flex flex-col items-end w-full gap-2">
                            {quote.author && (
-                             <p className="text-right text-sm font-medium text-muted-foreground w-full mb-2">
+                             <p className="text-right text-sm font-medium text-muted-foreground w-full">
                                - {quote.author}
                              </p>
                            )}
                           <div className="flex justify-between items-center w-full">
-                             <div/>
+                            {quote.subCategory && quote.subCategory !== 'Todos' ? (
+                                <span className="bg-primary/10 px-2 py-0.5 text-xs rounded-full text-primary truncate">
+                                    {quote.subCategory}
+                                </span>
+                            ) : <div/>}
+
                             <div className="flex items-center">
                               <Link href={`/editor-de-video?quote=${encodeURIComponent(quote.quote)}`} passHref>
                                 <Button variant="ghost" size="icon"><Film className="h-4 w-4" /></Button>
