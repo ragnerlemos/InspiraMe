@@ -35,7 +35,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 {React.Children.map(children, child => {
                     if (React.isValidElement(child)) {
                         // Injeta as props apenas se for a página que as espera
-                        if (showCategoryButton) {
+                        if (showCategoryButton && child.type.displayName !== 'FrasesPage') {
                              return React.cloneElement(child as React.ReactElement<any>, { isCategorySheetOpen, setIsCategorySheetOpen });
                         }
                     }

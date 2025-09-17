@@ -28,8 +28,8 @@ export function FrasesClientPage({
   initialQuotes,
   initialMainCategories,
   initialSubCategories,
-  isCategorySheetOpen = false, // Valor padrão
-  setIsCategorySheetOpen = () => {}, // Função padrão
+  isCategorySheetOpen: isSheetOpenProp = false, 
+  setIsCategorySheetOpen: setIsSheetOpenProp = () => {},
 }: FrasesClientPageProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMainCategory, setSelectedMainCategory] = useState('Todos');
@@ -197,23 +197,25 @@ const renderFilters = () => {
                   <Card key={quote.id} className="group flex flex-col justify-between hover:shadow-lg transition-shadow duration-300">
                     <CardContent className="p-4 pb-0">
                       <p className="text-base font-body italic">"{quote.text}"</p>
-                      <p className="text-right text-sm font-medium text-muted-foreground mt-2">
+                    </CardContent>
+                    <CardFooter className="p-2 pt-2 flex flex-col items-start w-full">
+                       <p className="text-right text-sm font-medium text-muted-foreground w-full mb-2">
                         - {quote.author}
                       </p>
-                    </CardContent>
-                    <CardFooter className="p-2 pt-0 flex justify-between items-center">
-                       <span className="bg-primary/10 px-2 py-0.5 text-xs rounded-full text-primary">{quote.subCategory}</span>
-                      <div className="flex items-center">
-                        <Link href={`/editor-de-video?quote=${encodeURIComponent(quote.text)}`} passHref>
-                          <Button variant="ghost" size="icon"><Film className="h-4 w-4" /></Button>
-                        </Link>
-                        <Button variant="ghost" size="icon" onClick={() => handleCopy(`"${quote.text}" - ${quote.author}`)}>
-                          <Copy className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" onClick={() => toggleFavorite(quote.id)}>
-                          <Heart className={cn("h-4 w-4", isFavorited ? "text-red-500 fill-current" : "text-gray-400")} />
-                        </Button>
-                        <Button variant="ghost" size="icon"><Share2 className="h-4 w-4" /></Button>
+                      <div className="flex justify-between items-center w-full">
+                         <span className="bg-primary/10 px-2 py-0.5 text-xs rounded-full text-primary">{quote.subCategory}</span>
+                        <div className="flex items-center">
+                          <Link href={`/editor-de-video?quote=${encodeURIComponent(quote.text)}`} passHref>
+                            <Button variant="ghost" size="icon"><Film className="h-4 w-4" /></Button>
+                          </Link>
+                          <Button variant="ghost" size="icon" onClick={() => handleCopy(`"${quote.text}" - ${quote.author}`)}>
+                            <Copy className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" onClick={() => toggleFavorite(quote.id)}>
+                            <Heart className={cn("h-4 w-4", isFavorited ? "text-red-500 fill-current" : "text-gray-400")} />
+                          </Button>
+                          <Button variant="ghost" size="icon"><Share2 className="h-4 w-4" /></Button>
+                        </div>
                       </div>
                     </CardFooter>
                   </Card>
@@ -225,7 +227,7 @@ const renderFilters = () => {
       </main>
 
       {/* Menu Lateral para Mobile */}
-       <Sheet open={isCategorySheetOpen} onOpenChange={setIsCategorySheetOpen}>
+       <Sheet open={isSheetOpenProp} onOpenChange={setIsSheetOpenProp}>
         <SheetContent side="left">
           <SheetHeader>
             <SheetTitle>Filtros</SheetTitle>

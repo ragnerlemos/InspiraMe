@@ -157,7 +157,7 @@ export function AppHeader({ onCategoryMenuClick, showCategoryMenuButton }: { onC
             </SheetTrigger>
             <SheetContent side="left">
                 <SheetHeader>
-                    <SheetTitle className="sr-only">Menu de Navegação</SheetTitle>
+                    <SheetTitle>Navegação</SheetTitle>
                 </SheetHeader>
                 <nav className="grid gap-2 text-lg font-medium pt-8">
                     {navLinks("text-base")}
