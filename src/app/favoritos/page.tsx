@@ -26,7 +26,7 @@ export default function FavoritesPage() {
         setIsLoading(true);
         const quotes = await getAllQuotes();
         setAllQuotes(quotes);
-      } catch (error) => {
+      } catch (error) {
         console.error("Failed to load all quotes for favorites", error);
         toast({ variant: 'destructive', title: "Erro ao Carregar", description: "Não foi possível carregar as frases." });
       } finally {
