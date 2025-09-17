@@ -12,6 +12,12 @@ import { useFavorites } from "@/hooks/use-favorites";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
+import {
+  Panel,
+  PanelGroup,
+  PanelResizeHandle,
+} from "@/components/ui/resizable";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface HomePageClientProps {
   initialQuotes: Quote[];
@@ -68,77 +74,71 @@ export function HomePageClient({ initialQuotes, initialMainCategories, initialSu
     });
   };
 
-  return (
-    <div className="flex flex-col h-full">
-      <main className="flex-1 overflow-y-auto">
-        <div className="container mx-auto py-8 px-4">
-          {/* Cabeçalho da página com título e descrição. */}
-          <div className="text-center mb-8">
-            <h1 className="font-headline text-4xl md:text-5xl font-bold text-primary">
-              Inspire-se. Crie. Compartilhe.
-            </h1>
-            <p className="text-muted-foreground mt-2 text-lg">
-              Encontre a frase perfeita para o seu próximo vídeo.
-            </p>
-          </div>
-
-          {/* Controles de filtro */}
-          <div className="space-y-4 mb-8">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Buscar por frases ou autores..."
-                className="pl-10 w-full"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            
-            {/* Filtro de Categorias Principais */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-2">
+  const renderFilters = () => (
+     <div className="space-y-6">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          <Input
+            type="search"
+            placeholder="Buscar por frases ou autores..."
+            className="pl-10 w-full"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        
+        {/* Filtro de Categorias Principais */}
+        <div>
+            <h3 className="text-sm font-semibold mb-2 text-muted-foreground px-1">Categorias</h3>
+            <div className="flex flex-col gap-1">
               {initialMainCategories.map((category) => (
                 <Button
                   key={category}
-                  variant={selectedMainCategory === category ? "default" : "outline"}
+                  variant={selectedMainCategory === category ? "secondary" : "ghost"}
                   onClick={() => handleMainCategoryChange(category)}
-                  className="whitespace-nowrap"
+                  className="whitespace-nowrap justify-start"
                 >
                   {category}
                 </Button>
               ))}
             </div>
+        </div>
 
-            {/* Filtro de Subcategorias */}
-            {selectedMainCategory !== 'Todos' && currentSubCategories.length > 1 && (
-              <>
-                <Separator />
-                <div className="flex items-center gap-2 overflow-x-auto pb-2">
+        {/* Filtro de Subcategorias */}
+        {selectedMainCategory !== 'Todos' && currentSubCategories.length > 1 && (
+          <>
+            <Separator />
+             <div>
+                <h3 className="text-sm font-semibold mb-2 text-muted-foreground px-1">Subcategorias</h3>
+                <div className="flex flex-col gap-1">
                   {currentSubCategories.map((category) => (
                     <Button
                       key={category}
-                      variant={selectedSubCategory === category ? "secondary" : "outline"}
-                      size="sm"
+                      variant={selectedSubCategory === category ? "secondary" : "ghost"}
                       onClick={() => setSelectedSubCategory(category)}
-                      className="whitespace-nowrap"
+                      className="whitespace-nowrap justify-start"
                     >
                       {category}
                     </Button>
                   ))}
                 </div>
-              </>
-            )}
-          </div>
+            </div>
+          </>
+        )}
+      </div>
+  );
 
-          {/* Grid de frases filtradas. */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  const renderQuoteGrid = () => (
+     <div className="container mx-auto py-8 px-4 h-full">
+        {/* Grid de frases filtradas. */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredQuotes.map((quote) => (
               <Card
                 key={quote.id}
                 className="group flex flex-col justify-between hover:shadow-lg transition-shadow duration-300"
               >
                 <CardContent className="p-6 pb-2">
-                  <p className="text-xl font-body italic">{quote.text}</p>
+                  <p className="text-lg font-body">{quote.text}</p>
                   <p className="text-right text-sm font-medium text-muted-foreground mt-4">
                     - {quote.author}
                   </p>
@@ -179,7 +179,43 @@ export function HomePageClient({ initialQuotes, initialMainCategories, initialSu
             </div>
           )}
         </div>
-      </main>
+  );
+
+  return (
+    <div className="flex flex-col h-full">
+        {/* Cabeçalho da página com título e descrição. */}
+        <div className="text-center py-8 border-b">
+          <h1 className="font-headline text-4xl md:text-5xl font-bold text-primary">
+            Inspire-se. Crie. Compartilhe.
+          </h1>
+          <p className="text-muted-foreground mt-2 text-lg">
+            Encontre a frase perfeita para o seu próximo vídeo.
+          </p>
+        </div>
+
+       <PanelGroup direction="horizontal" className="flex-1 min-h-0">
+          {/* Menu Lateral (Desktop) */}
+          <Panel defaultSize={20} minSize={15} maxSize={30} className="hidden md:block">
+             <ScrollArea className="h-full w-full">
+                <div className="p-4">
+                  {renderFilters()}
+                </div>
+             </ScrollArea>
+          </Panel>
+          <PanelResizeHandle className="hidden md:flex" />
+
+          {/* Conteúdo Principal */}
+          <Panel>
+            {/* Filtros para Mobile */}
+            <div className="md:hidden p-4 border-b">
+              {renderFilters()}
+            </div>
+            
+            <ScrollArea className="h-full">
+               {renderQuoteGrid()}
+            </ScrollArea>
+          </Panel>
+       </PanelGroup>
     </div>
   );
 }
