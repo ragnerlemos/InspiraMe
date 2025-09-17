@@ -36,7 +36,7 @@ export function HomePageClient({ initialQuotes, initialCategories }: HomePageCli
 
   // Função para copiar o texto de uma frase para a área de transferência.
   const handleCopy = (text: string, author: string) => {
-    navigator.clipboard.writeText(`"${text}" - ${author}`).then(() => {
+    navigator.clipboard.writeText(`${text} - ${author}`).then(() => {
       toast({
         title: "Copiado!",
         description: "A frase foi copiada para a sua área de transferência.",
@@ -106,7 +106,7 @@ export function HomePageClient({ initialQuotes, initialCategories }: HomePageCli
                 className="group flex flex-col justify-between hover:shadow-lg transition-shadow duration-300"
               >
                 <CardContent className="p-6 pb-2">
-                  <p className="text-xl font-body italic">"{quote.text}"</p>
+                  <p className="text-xl font-body italic">{quote.text}</p>
                   <p className="text-right text-sm font-medium text-muted-foreground mt-4">
                     - {quote.author}
                   </p>

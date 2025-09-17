@@ -101,7 +101,7 @@ export default function FavoritesPage() {
                 className="group flex flex-col justify-between hover:shadow-lg transition-shadow duration-300"
               >
                 <CardContent className="p-6 pb-2">
-                  <p className="text-xl font-body italic">"{quote.text}"</p>
+                  <p className="text-xl font-body italic">{quote.text}</p>
                   <p className="text-right text-sm font-medium text-muted-foreground mt-4">
                     - {quote.author}
                   </p>
@@ -119,7 +119,7 @@ export default function FavoritesPage() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleCopy(`"${quote.text}" - ${quote.author}`)}
+                      onClick={() => handleCopy(`${quote.text} - ${quote.author}`)}
                     >
                       <Copy className="h-4 w-4" />
                     </Button>
