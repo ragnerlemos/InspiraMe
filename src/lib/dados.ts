@@ -18,7 +18,7 @@ export let quotes: Quote[] = [];
 
 
 // Adicione aqui os nomes exatos das abas que você quer usar.
-const SHEET_NAMES = ['Frases', 'Citações']; // Exemplo, aguardando os nomes corretos.
+const SHEET_NAMES = ['Datas Comemorativas', 'Dias da Semana', 'Frases'];
 
 
 // Função para buscar os dados da planilha usando a API REST do Google Sheets
@@ -40,7 +40,7 @@ async function loadQuotesFromSheets() {
     const fetchPromises = SHEET_NAMES.map(async (sheetName) => {
         const RANGE = 'A:J'; 
         const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(sheetName)}!${RANGE}?key=${API_KEY}`;
-        const response = await fetch(url, { cache: 'no-store' });
+        const response = await fetch(url, { next: { revalidate: 3600 } }); // Cache por 1 hora
         
         if (!response.ok) {
             console.error(`Erro ao buscar a aba "${sheetName}": ${response.statusText}`);
@@ -53,12 +53,12 @@ async function loadQuotesFromSheets() {
         if (allRows.length < 2) return;
 
         const headerRow = allRows.shift()!;
-        const fraseIndex = headerRow.findIndex(h => h.toLowerCase().trim() === 'frases');
+        const fraseIndex = headerRow.findIndex(h => h.toLowerCase().trim() === 'frase');
         const autorIndex = headerRow.findIndex(h => h.toLowerCase().trim() === 'assinatura');
         const categoriaIndex = headerRow.findIndex(h => h.toLowerCase().trim() === 'categoria 1');
 
         if (fraseIndex === -1 || autorIndex === -1 || categoriaIndex === -1) {
-             console.error(`Colunas necessárias não encontradas na aba "${sheetName}"`);
+             console.error(`Colunas necessárias (Frase, Assinatura, Categoria 1) não encontradas na aba "${sheetName}"`);
              return;
         }
 
@@ -68,13 +68,13 @@ async function loadQuotesFromSheets() {
             const categoria = row[categoriaIndex];
 
             if (frase && autor && categoria) {
-            loadedQuotes.push({
-                id: `${sheetName}-${index + 1}`, // ID único
-                text: frase.trim(),
-                author: autor.trim(),
-                mainCategory: sheetName,
-                subCategory: categoria.trim(),
-            });
+              loadedQuotes.push({
+                  id: `${sheetName.replace(/\s+/g, '-')}-${index + 1}`, // ID único sanitizado
+                  text: frase.trim(),
+                  author: autor.trim(),
+                  mainCategory: sheetName,
+                  subCategory: categoria.trim(),
+              });
             }
         });
     });
@@ -99,12 +99,13 @@ export const getQuoteData = async () => {
 
 // Helper para extrair categorias da lista de frases
 export const getCategoriesFromQuotes = (quotes: Quote[]) => {
-    const mainCategories = [...new Set(quotes.map(q => q.mainCategory))];
+    const mainCategories = ['Todos', ...new Set(quotes.map(q => q.mainCategory))];
     
     const subCategoriesByMain: Record<string, string[]> = {};
     mainCategories.forEach(mainCat => {
+        if (mainCat === 'Todos') return;
         const subs = quotes
-            .filter(q => q.mainCategory === mainCat)
+            .filter(q => q.mainCategory === mainCat && q.subCategory)
             .map(q => q.subCategory);
         subCategoriesByMain[mainCat] = ['Todos', ...new Set(subs)].sort();
     });
