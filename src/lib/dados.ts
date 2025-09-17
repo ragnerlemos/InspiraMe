@@ -16,8 +16,7 @@ export let quotes: Quote[] = [];
 
 
 // Adicione aqui os nomes exatos das abas que você quer usar.
-// Temporariamente, vamos usar apenas 'Frases' para evitar erros.
-const SHEET_NAMES = ['Frases'];
+const SHEET_NAMES = ['Datas Comemorativas', 'Dias da Semana', 'Frases'];
 
 
 // Função para buscar os dados da planilha usando a API REST do Google Sheets
@@ -52,22 +51,30 @@ async function loadQuotesFromSheets() {
         if (allRows.length < 2) return;
 
         const headerRow = allRows.shift()!;
-        // Normaliza os cabeçalhos para busca
-        const normalizedHeaders = headerRow.map(h => h.toLowerCase().trim());
         
-        const fraseIndex = normalizedHeaders.indexOf('frase');
+        const normalizeHeader = (header: string) => {
+            if (!header) return '';
+            return header.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        }
+
+        const normalizedHeaders = headerRow.map(normalizeHeader);
+        
+        // Tenta encontrar a coluna principal de texto (frase, datas comemorativas, etc.)
+        const fraseIndex = normalizedHeaders.findIndex(h => h.includes('frase') || h.includes(normalizeHeader(sheetName)));
         const autorIndex = normalizedHeaders.indexOf('assinatura');
         const categoriaIndex = normalizedHeaders.indexOf('categoria 1');
 
-        if (fraseIndex === -1 || autorIndex === -1 || categoriaIndex === -1) {
-             console.error(`[ Server ] Colunas necessárias (Frase, Assinatura, Categoria 1) não encontradas na aba "${sheetName}". Pulando esta aba.`);
+        if (fraseIndex === -1) {
+             console.error(`[ Server ] Coluna de texto principal não encontrada na aba "${sheetName}". Pulando esta aba.`);
              return;
         }
 
         allRows.forEach((row, index) => {
             const frase = row[fraseIndex];
-            const autor = row[autorIndex];
-            const categoria = row[categoriaIndex];
+            // Se 'assinatura' não existir, usa o nome da aba como autor.
+            const autor = autorIndex !== -1 ? row[autorIndex] : sheetName;
+            // Se 'categoria 1' não existir, usa 'Geral'.
+            const categoria = categoriaIndex !== -1 ? row[categoriaIndex] : 'Geral';
 
             if (frase && autor && categoria) {
               loadedQuotes.push({
