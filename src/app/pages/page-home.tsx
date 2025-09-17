@@ -216,7 +216,7 @@ export function HomePageClient({
   return (
     <div className="flex flex-col h-full">
         {/* Cabeçalho da página com título e descrição. */}
-        <div className="text-center py-8 border-b">
+        <div className="text-center py-8">
           <h1 className="font-headline text-4xl md:text-5xl font-bold text-primary">
             Inspire-se. Crie. Compartilhe.
           </h1>
@@ -254,9 +254,7 @@ export function HomePageClient({
               </Sheet>
             </div>
             
-            <ScrollArea className="h-full">
-               {renderQuoteGrid()}
-            </ScrollArea>
+            {renderQuoteGrid()}
           </Panel>
        </PanelGroup>
     </div>
