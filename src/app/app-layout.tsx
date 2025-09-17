@@ -17,7 +17,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   // Clona o elemento filho para injetar as props de controle do menu
   const childrenWithProps = React.Children.map(children, child => {
     if (React.isValidElement(child) && isFrasesPage) {
-      return React.cloneElement(child as React.ReactElement<any>, { 
+      // Força o tipo para ReactElement para acessar 'props'
+      const childAsElement = child as React.ReactElement<any>;
+      return React.cloneElement(childAsElement, { 
+        ...childAsElement.props, // Mantém as props originais
         isCategorySheetOpen,
         setIsCategorySheetOpen
       });
