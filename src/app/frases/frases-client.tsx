@@ -164,13 +164,13 @@ export function FrasesClientPage({
                   key={quote.id}
                   className="group flex flex-col justify-between hover:shadow-lg transition-shadow duration-300"
                 >
-                  <CardContent className="p-6 pb-2">
-                    <p className="text-xl font-body italic">"{quote.text}"</p>
+                  <CardContent className="p-4 pb-2">
+                    <p className="text-lg font-body italic">"{quote.text}"</p>
                     <p className="text-right text-sm font-medium text-muted-foreground mt-4">
                       - {quote.author}
                     </p>
                   </CardContent>
-                  <CardFooter className="px-6 pb-4 flex justify-between items-center">
+                  <CardFooter className="px-4 pb-4 flex justify-between items-center">
                     <span className="bg-muted px-2 py-1 text-xs rounded-full text-muted-foreground">
                       {quote.subCategory}
                     </span>
