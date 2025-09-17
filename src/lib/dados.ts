@@ -1,6 +1,4 @@
 
-import { GoogleSpreadsheet } from 'google-spreadsheet';
-
 // Define o tipo para uma citação, incluindo seu ID, texto e categoria.
 export type Quote = {
   id: number;
@@ -17,38 +15,81 @@ export let categories: Category[] = [];
 // Array de citações - será preenchido dinamicamente.
 export let quotes: Quote[] = [];
 
-// Função para buscar os dados da planilha
+// Função para converter uma linha CSV em um array de colunas.
+// Lida com colunas que contêm vírgulas dentro de aspas.
+function parseCsvRow(row: string): string[] {
+    const result: string[] = [];
+    let current = '';
+    let inQuotes = false;
+    for (let i = 0; i < row.length; i++) {
+        const char = row[i];
+        if (char === '"' && (i === 0 || row[i-1] !== '\\')) {
+            inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+            result.push(current.trim().replace(/^"|"$/g, ''));
+            current = '';
+        } else {
+            current += char;
+        }
+    }
+    result.push(current.trim().replace(/^"|"$/g, ''));
+    return result;
+}
+
+
+// Função para buscar os dados da planilha via CSV
 async function loadQuotesFromSheet() {
   // Se os dados já foram carregados, não busca novamente.
   if (quotes.length > 0) return { quotes, categories };
 
-  try {
-    // Para acesso a planilhas públicas, a API key é passada no construtor.
-    const doc = new GoogleSpreadsheet(process.env.SPREADSHEET_ID!, { apiKey: process.env.GOOGLE_API_KEY! });
+  const SPREADSHEET_ID = process.env.SPREADSHEET_ID;
+  const SHEET_NAME = 'Frases';
 
-    await doc.loadInfo(); // carrega as propriedades do documento
-    const sheet = doc.sheetsByTitle['Frases']; // acessa a aba pelo nome
-    
-    if (!sheet) {
-      throw new Error("Aba 'Frases' não encontrada na planilha.");
+  if (!SPREADSHEET_ID) {
+    console.error("SPREADSHEET_ID não está definido nas variáveis de ambiente.");
+    return { quotes: [], categories: [] };
+  }
+
+  // URL para exportar a aba específica como CSV
+  const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
+  
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+        throw new Error(`Erro ao buscar a planilha: ${response.statusText}`);
     }
+
+    const csvText = await response.text();
+    const allRows = csvText.split('\n');
     
-    // Obtém as linhas da planilha
-    const rows = await sheet.getRows();
+    // Remove o cabeçalho
+    const headerRow = parseCsvRow(allRows.shift() || '');
+
+    // Encontra os índices das colunas que nos interessam
+    const fraseIndex = headerRow.findIndex(h => h.includes('Frases'));
+    const autorIndex = headerRow.findIndex(h => h.includes('Assinatura'));
+    const categoriaIndex = headerRow.findIndex(h => h.includes('Categoria 1'));
+    
+    if (fraseIndex === -1 || autorIndex === -1 || categoriaIndex === -1) {
+        console.error("Colunas necessárias (Frases, Assinatura, Categoria 1) não encontradas no cabeçalho:", headerRow);
+        return { quotes: [], categories: [] };
+    }
 
     const loadedQuotes: Quote[] = [];
     const loadedCategories = new Set<string>();
 
-    rows.forEach((row, index) => {
-      // Mapeia as colunas corretas conforme especificado
-      const frase = row.get('Frases');
-      const autor = row.get('Assinatura');
-      const categoria = row.get('Categoria 1');
+    allRows.forEach((rowString, index) => {
+      if (rowString.trim() === '') return;
 
-      // Só adiciona a frase se os campos essenciais existirem
+      const row = parseCsvRow(rowString);
+      
+      const frase = row[fraseIndex];
+      const autor = row[autorIndex];
+      const categoria = row[categoriaIndex];
+
       if (frase && autor && categoria) {
         loadedQuotes.push({
-          id: index + 1, // Gera um ID sequencial
+          id: index + 1,
           text: frase,
           author: autor,
           category: categoria,
@@ -62,9 +103,9 @@ async function loadQuotesFromSheet() {
     categories = Array.from(loadedCategories).sort();
 
     return { quotes, categories };
+
   } catch (error) {
-    console.error('Erro ao carregar dados da planilha:', error);
-    // Em caso de erro, retorna arrays vazios para não quebrar a aplicação.
+    console.error('Erro ao carregar dados da planilha como CSV:', error);
     return { quotes: [], categories: [] };
   }
 }
