@@ -136,7 +136,7 @@ export function FrasesClientPage({
                       selectedMainCategory === mainCat && 'text-primary'
                     )}
                     onClick={(e) => {
-                      e.preventDefault(); // Impede que o acordeão feche ao clicar no título
+                      e.preventDefault();
                       handleMainCategorySelect(mainCat)
                     }}
                   >
