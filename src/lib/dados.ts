@@ -15,74 +15,57 @@ export let categories: Category[] = [];
 // Array de citações - será preenchido dinamicamente.
 export let quotes: Quote[] = [];
 
-// Função para converter uma linha CSV em um array de colunas.
-// Lida com colunas que contêm vírgulas dentro de aspas.
-function parseCsvRow(row: string): string[] {
-    const result: string[] = [];
-    let current = '';
-    let inQuotes = false;
-    for (let i = 0; i < row.length; i++) {
-        const char = row[i];
-        if (char === '"' && (i === 0 || row[i-1] !== '\\')) {
-            inQuotes = !inQuotes;
-        } else if (char === ',' && !inQuotes) {
-            result.push(current.trim().replace(/^"|"$/g, ''));
-            current = '';
-        } else {
-            current += char;
-        }
-    }
-    result.push(current.trim().replace(/^"|"$/g, ''));
-    return result;
-}
-
-
-// Função para buscar os dados da planilha via CSV
+// Função para buscar os dados da planilha usando a API REST do Google Sheets
 async function loadQuotesFromSheet() {
   // Se os dados já foram carregados, não busca novamente.
   if (quotes.length > 0) return { quotes, categories };
 
   const SPREADSHEET_ID = process.env.SPREADSHEET_ID;
+  const API_KEY = process.env.GOOGLE_API_KEY;
   const SHEET_NAME = 'Frases';
+  // Buscando um range maior para garantir que pegamos todas as colunas necessárias (D, F, J)
+  const RANGE = 'A:J'; 
 
-  if (!SPREADSHEET_ID) {
-    console.error("SPREADSHEET_ID não está definido nas variáveis de ambiente.");
+  if (!SPREADSHEET_ID || !API_KEY) {
+    console.error("SPREADSHEET_ID ou GOOGLE_API_KEY não estão definidos nas variáveis de ambiente.");
     return { quotes: [], categories: [] };
   }
 
-  // URL para exportar a aba específica como CSV
-  const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}!${RANGE}?key=${API_KEY}`;
   
   try {
     const response = await fetch(url, { cache: 'no-store' });
     if (!response.ok) {
-        throw new Error(`Erro ao buscar a planilha: ${response.statusText}`);
+        const errorData = await response.json();
+        throw new Error(`Erro ao buscar a planilha: ${response.statusText} - ${errorData.error?.message}`);
     }
 
-    const csvText = await response.text();
-    const allRows = csvText.split('\n');
+    const data = await response.json();
+    const allRows: string[][] = data.values || [];
     
-    // Remove o cabeçalho
-    const headerRow = parseCsvRow(allRows.shift() || '');
+    if (allRows.length < 2) {
+        console.error("A planilha não contém dados suficientes (cabeçalho + pelo menos uma linha de dados).");
+        return { quotes: [], categories: [] };
+    }
 
-    // Encontra os índices das colunas que nos interessam
-    const fraseIndex = headerRow.findIndex(h => h.toLowerCase().includes('frases'));
-    const autorIndex = headerRow.findIndex(h => h.toLowerCase().includes('assinatura'));
-    const categoriaIndex = headerRow.findIndex(h => h.toLowerCase().includes('categoria 1'));
+    // Remove o cabeçalho para pegar os nomes das colunas
+    const headerRow = allRows.shift()!;
+
+    // Encontra os índices das colunas que nos interessam (baseado em 0)
+    const fraseIndex = headerRow.findIndex(h => h.toLowerCase().trim() === 'frases');
+    const autorIndex = headerRow.findIndex(h => h.toLowerCase().trim() === 'assinatura');
+    const categoriaIndex = headerRow.findIndex(h => h.toLowerCase().trim() === 'categoria 1');
     
     if (fraseIndex === -1 || autorIndex === -1 || categoriaIndex === -1) {
         console.error("Colunas necessárias (Frases, Assinatura, Categoria 1) não encontradas no cabeçalho:", headerRow);
+        // Retornando para evitar crash
         return { quotes: [], categories: [] };
     }
 
     const loadedQuotes: Quote[] = [];
     const loadedCategories = new Set<string>();
 
-    allRows.forEach((rowString, index) => {
-      if (rowString.trim() === '') return;
-
-      const row = parseCsvRow(rowString);
-      
+    allRows.forEach((row, index) => {
       const frase = row[fraseIndex];
       const autor = row[autorIndex];
       const categoria = row[categoriaIndex];
@@ -90,11 +73,11 @@ async function loadQuotesFromSheet() {
       if (frase && autor && categoria) {
         loadedQuotes.push({
           id: index + 1,
-          text: frase,
-          author: autor,
-          category: categoria,
+          text: frase.trim(),
+          author: autor.trim(),
+          category: categoria.trim(),
         });
-        loadedCategories.add(categoria);
+        loadedCategories.add(categoria.trim());
       }
     });
 
@@ -105,7 +88,7 @@ async function loadQuotesFromSheet() {
     return { quotes, categories };
 
   } catch (error) {
-    console.error('Erro ao carregar dados da planilha como CSV:', error);
+    console.error('Erro ao carregar dados da planilha:', error);
     return { quotes: [], categories: [] };
   }
 }
