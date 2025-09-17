@@ -62,7 +62,7 @@ export function AssinaturaPerfil({
       )}
       <div className="flex flex-col">
         {showUsername && (
-          <p className="font-bold text-white text-sm leading-tight">
+          <p className="font-bold text-white text-sm leading-tight whitespace-nowrap">
             {profile.username}
           </p>
         )}
