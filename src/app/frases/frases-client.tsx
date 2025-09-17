@@ -77,7 +77,7 @@ export function FrasesClientPage({
     } else {
         setQuotes(serverQuotes)
     }
-  }, [selectedMainCategory, selectedSubCategory, toast]);
+  }, [selectedMainCategory, selectedSubCategory, toast, serverQuotes, searchTerm]);
 
   // Filtra as frases já carregadas com base no termo de busca
   const filteredQuotes = useMemo(() => {

@@ -18,10 +18,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   // Injeta as props no children se for a página de frases
   const childrenWithProps = React.Children.map(children, child => {
     if (React.isValidElement(child) && showCategoryButton) {
-      // Verifica se o componente é FrasesPage para injetar props
-      // O Next.js pode envolver o componente, então verificamos o tipo.
-      // Assumindo que FrasesPage não terá um displayName customizado,
-      // mas podemos nos basear na estrutura esperada.
+      // Clona o elemento filho (a página) e injeta as props necessárias.
+      // Isso permite que o layout controle o estado do sheet da página de frases.
       return React.cloneElement(child as React.ReactElement<any>, { 
         isCategorySheetOpen, 
         setIsCategorySheetOpen 
