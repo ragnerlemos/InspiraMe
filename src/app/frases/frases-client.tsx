@@ -128,11 +128,23 @@ export function FrasesClientPage({
           <Accordion type="multiple" className="w-full">
             {mainCategoriesInAccordion.map((mainCat, index) => {
               const subCats = initialSubCategories[mainCat] || [];
+              if (subCats.length <= 1 && subCats[0] === 'Todos') { // Sem subcategorias de fato
+                return (
+                  <Button
+                    key={mainCat}
+                    variant={selectedMainCategory === mainCat ? 'secondary' : 'ghost'}
+                    onClick={() => handleMainCategorySelect(mainCat)}
+                    className="w-full justify-start font-semibold"
+                  >
+                    {mainCat}
+                  </Button>
+                )
+              }
               return (
                 <AccordionItem value={`item-${index}`} key={mainCat}>
                   <AccordionTrigger
                     className={cn(
-                      'font-semibold',
+                      'font-semibold hover:no-underline',
                       selectedMainCategory === mainCat && 'text-primary'
                     )}
                     onClick={() => handleMainCategorySelect(mainCat)}
