@@ -11,13 +11,18 @@ import type { Quote } from "@/lib/dados";
 import { useFavorites } from "@/hooks/use-favorites";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { Separator } from "@/components/ui/separator";
 import {
   Panel,
   PanelGroup,
   PanelResizeHandle,
 } from "@/components/ui/resizable";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 interface HomePageClientProps {
   initialQuotes: Quote[];
@@ -30,6 +35,7 @@ export function HomePageClient({ initialQuotes, initialMainCategories, initialSu
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMainCategory, setSelectedMainCategory] = useState<string>(initialMainCategories[0] || 'Todos');
   const [selectedSubCategory, setSelectedSubCategory] = useState<string>("Todos");
+  const [openAccordion, setOpenAccordion] = useState<string | undefined>(selectedMainCategory === 'Todos' ? undefined : selectedMainCategory);
   
   const { favorites, toggleFavorite } = useFavorites();
   const { toast } = useToast();
@@ -38,7 +44,19 @@ export function HomePageClient({ initialQuotes, initialMainCategories, initialSu
   const handleMainCategoryChange = (category: string) => {
     setSelectedMainCategory(category);
     setSelectedSubCategory("Todos");
+    // Controla o estado do acordeão
+    if (category === 'Todos') {
+        setOpenAccordion(undefined);
+    } else {
+        setOpenAccordion(category);
+    }
   };
+
+  const handleSubCategoryChange = (mainCategory: string, subCategory: string) => {
+    setSelectedMainCategory(mainCategory);
+    setSelectedSubCategory(subCategory);
+    setOpenAccordion(mainCategory);
+  }
 
   // Filtra as frases com base em tudo
   const filteredQuotes = useMemo(() => {
@@ -51,10 +69,6 @@ export function HomePageClient({ initialQuotes, initialMainCategories, initialSu
         return searchMatch && mainCategoryMatch && subCategoryMatch;
     });
   }, [searchTerm, selectedMainCategory, selectedSubCategory, initialQuotes]);
-  
-  const currentSubCategories = useMemo(() => {
-    return initialSubCategories[selectedMainCategory] || [];
-  }, [selectedMainCategory, initialSubCategories]);
 
 
   // Função para copiar o texto de uma frase para a área de transferência.
@@ -75,9 +89,9 @@ export function HomePageClient({ initialQuotes, initialMainCategories, initialSu
   };
 
   const renderFilters = () => (
-     <div className="space-y-6">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+     <div className="space-y-4">
+        <div className="relative flex-1 px-2">
+          <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input
             type="search"
             placeholder="Buscar por frases ou autores..."
@@ -87,44 +101,48 @@ export function HomePageClient({ initialQuotes, initialMainCategories, initialSu
           />
         </div>
         
-        {/* Filtro de Categorias Principais */}
-        <div>
-            <h3 className="text-sm font-semibold mb-2 text-muted-foreground px-1">Categorias</h3>
-            <div className="flex flex-col gap-1">
-              {initialMainCategories.map((category) => (
-                <Button
-                  key={category}
-                  variant={selectedMainCategory === category ? "secondary" : "ghost"}
-                  onClick={() => handleMainCategoryChange(category)}
-                  className="whitespace-nowrap justify-start"
-                >
-                  {category}
-                </Button>
-              ))}
-            </div>
-        </div>
-
-        {/* Filtro de Subcategorias */}
-        {selectedMainCategory !== 'Todos' && currentSubCategories.length > 1 && (
-          <>
-            <Separator />
-             <div>
-                <h3 className="text-sm font-semibold mb-2 text-muted-foreground px-1">Subcategorias</h3>
-                <div className="flex flex-col gap-1">
-                  {currentSubCategories.map((category) => (
-                    <Button
-                      key={category}
-                      variant={selectedSubCategory === category ? "secondary" : "ghost"}
-                      onClick={() => setSelectedSubCategory(category)}
-                      className="whitespace-nowrap justify-start"
+        <Accordion 
+            type="single" 
+            collapsible 
+            className="w-full" 
+            value={openAccordion}
+            onValueChange={setOpenAccordion}
+        >
+             <Button
+                variant={selectedMainCategory === 'Todos' ? "secondary" : "ghost"}
+                onClick={() => handleMainCategoryChange('Todos')}
+                className="w-full justify-start text-left h-auto px-4 py-3 text-base font-normal"
+            >
+                Todas as Categorias
+            </Button>
+            {initialMainCategories.filter(c => c !== 'Todos').map(mainCat => (
+                <AccordionItem value={mainCat} key={mainCat}>
+                    <AccordionTrigger 
+                        className={cn(
+                            "px-4 py-3 text-base font-normal hover:no-underline",
+                            selectedMainCategory === mainCat && selectedSubCategory === 'Todos' && 'bg-secondary'
+                        )}
+                        onClick={() => handleMainCategoryChange(mainCat)}
                     >
-                      {category}
-                    </Button>
-                  ))}
-                </div>
-            </div>
-          </>
-        )}
+                        {mainCat}
+                    </AccordionTrigger>
+                    <AccordionContent className="pt-1 pb-2">
+                       <div className="flex flex-col gap-1 px-4">
+                            {(initialSubCategories[mainCat] || []).map(subCat => (
+                                <Button
+                                    key={subCat}
+                                    variant={selectedSubCategory === subCat && selectedMainCategory === mainCat ? 'secondary' : 'ghost'}
+                                    onClick={() => handleSubCategoryChange(mainCat, subCat)}
+                                    className="w-full justify-start"
+                                >
+                                    {subCat}
+                                </Button>
+                            ))}
+                       </div>
+                    </AccordionContent>
+                </AccordionItem>
+            ))}
+        </Accordion>
       </div>
   );
 
@@ -197,7 +215,7 @@ export function HomePageClient({ initialQuotes, initialMainCategories, initialSu
           {/* Menu Lateral (Desktop) */}
           <Panel defaultSize={20} minSize={15} maxSize={30} className="hidden md:block">
              <ScrollArea className="h-full w-full">
-                <div className="p-4">
+                <div className="py-4">
                   {renderFilters()}
                 </div>
              </ScrollArea>
