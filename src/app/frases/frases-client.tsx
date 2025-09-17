@@ -171,7 +171,7 @@ export function FrasesClientPage({
                     </p>
                   </CardContent>
                   <CardFooter className="p-2 pt-0 flex justify-between items-center">
-                    <span className="bg-muted px-2 py-0.5 text-xs rounded-full text-muted-foreground">
+                    <span className="bg-primary/10 px-2 py-0.5 text-xs rounded-full text-primary">
                       {quote.subCategory}
                     </span>
                     <div className="flex items-center">
