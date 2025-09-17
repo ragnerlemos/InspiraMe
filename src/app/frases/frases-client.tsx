@@ -30,7 +30,7 @@ type FrasesClientPageProps = {
 
 // Página principal que exibe uma lista de frases e permite ao usuário filtrá-las.
 export function FrasesClientPage({
-  initialQuotes: serverQuotes, // Renomeado para evitar conflito
+  initialQuotes: serverQuotes,
   initialMainCategories,
   initialSubCategories,
 }: FrasesClientPageProps) {
@@ -112,9 +112,9 @@ export function FrasesClientPage({
 
   const renderFilters = () => {
     return (
-      <div className="space-y-4">
+      <div className="space-y-1">
         {/* Busca */}
-        <div className="relative">
+        <div className="relative mb-4">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input
             type="search"
@@ -127,9 +127,11 @@ export function FrasesClientPage({
   
         {/* Botão "Todos" */}
         <Button
-          variant={selectedMainCategory === 'Todos' ? 'secondary' : 'ghost'}
+          variant='ghost'
           onClick={() => handleMainCategorySelect('Todos')}
-          className="w-full justify-start"
+          className={cn('w-full justify-start text-base font-semibold px-3 transition-colors rounded-md',
+             selectedMainCategory === 'Todos' && 'bg-primary/10 text-primary'
+          )}
         >
           Todos
         </Button>
@@ -141,64 +143,42 @@ export function FrasesClientPage({
             .map((mainCat, index) => {
               const subCats = initialSubCategories[mainCat] || [];
   
-              // Se não tiver subcategorias reais (ou só tiver a si mesma), vira um botão simples
-              if (subCats.length === 0 || (subCats.length === 1 && subCats[0] === mainCat)) {
+              if (subCats.length === 0 || (subCats.length === 1 && subCats[0] === 'Todos')) {
                 return (
                   <Button
                     key={mainCat}
-                    variant={selectedMainCategory === mainCat ? 'secondary' : 'ghost'}
+                    variant='ghost'
                     onClick={() => handleMainCategorySelect(mainCat)}
-                    className="w-full justify-start font-semibold"
+                    className={cn('w-full justify-start text-base font-semibold px-3 transition-colors rounded-md',
+                      selectedMainCategory === mainCat && 'bg-primary/10 text-primary'
+                    )}
                   >
                     {mainCat}
                   </Button>
                 );
               }
               
-              // Categoria 'Frases' com tratamento especial
-              if (mainCat === 'Frases') {
-                 return (
-                    <div key={mainCat} className="flex flex-col items-start space-y-1">
-                        {subCats.map((subCat) => (
-                          <Button
-                            key={subCat}
-                            variant="ghost"
-                            onClick={() => handleSubCategorySelect('Frases', subCat)}
-                            className={cn(
-                              'w-full justify-start text-sm pl-4',
-                              selectedMainCategory === 'Frases' && selectedSubCategory === subCat && 'bg-primary/10 text-primary font-semibold'
-                            )}
-                          >
-                            {subCat}
-                          </Button>
-                        ))}
-                    </div>
-                )
-              }
-  
-              // Demais categorias com Accordion
               return (
-                <AccordionItem value={`item-${index}`} key={mainCat}>
+                <AccordionItem value={`item-${index}`} key={mainCat} className='border-none'>
                   <AccordionTrigger
-                    className={cn(
-                      'font-semibold hover:no-underline',
-                      selectedMainCategory === mainCat && 'text-primary'
+                     onClick={() => handleMainCategorySelect(mainCat)}
+                     className={cn(
+                      'font-semibold text-base hover:no-underline px-3 py-2 transition-colors rounded-md hover:bg-muted/50',
+                      selectedMainCategory === mainCat && 'bg-primary/10 text-primary'
                     )}
-                    onClick={() => handleMainCategorySelect(mainCat)}
                   >
                     {mainCat}
                   </AccordionTrigger>
-                  <AccordionContent>
-                    <div className="flex flex-col items-start gap-1 pl-4">
+                  <AccordionContent className='pt-1'>
+                    <div className="flex flex-col items-start gap-1 pl-4 border-l-2 border-muted ml-3">
                       {subCats
-                        .filter((subCat) => subCat !== 'Todos') // Remove 'Todos' daqui
                         .map((subCat) => (
                           <Button
                             key={subCat}
                             variant="ghost"
                             onClick={() => handleSubCategorySelect(mainCat, subCat)}
                             className={cn(
-                              'w-full justify-start text-sm',
+                              'w-full justify-start text-sm h-8 px-3 transition-colors rounded-md hover:bg-muted/50',
                               selectedMainCategory === mainCat &&
                                 selectedSubCategory === subCat &&
                                 'bg-primary/10 text-primary font-semibold'
