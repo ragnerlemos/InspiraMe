@@ -54,7 +54,7 @@ async function loadQuotesFromSheet() {
   const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
   
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, { cache: 'no-store' });
     if (!response.ok) {
         throw new Error(`Erro ao buscar a planilha: ${response.statusText}`);
     }
@@ -66,9 +66,9 @@ async function loadQuotesFromSheet() {
     const headerRow = parseCsvRow(allRows.shift() || '');
 
     // Encontra os índices das colunas que nos interessam
-    const fraseIndex = headerRow.findIndex(h => h.includes('Frases'));
-    const autorIndex = headerRow.findIndex(h => h.includes('Assinatura'));
-    const categoriaIndex = headerRow.findIndex(h => h.includes('Categoria 1'));
+    const fraseIndex = headerRow.findIndex(h => h.toLowerCase().includes('frases'));
+    const autorIndex = headerRow.findIndex(h => h.toLowerCase().includes('assinatura'));
+    const categoriaIndex = headerRow.findIndex(h => h.toLowerCase().includes('categoria 1'));
     
     if (fraseIndex === -1 || autorIndex === -1 || categoriaIndex === -1) {
         console.error("Colunas necessárias (Frases, Assinatura, Categoria 1) não encontradas no cabeçalho:", headerRow);
@@ -114,6 +114,3 @@ async function loadQuotesFromSheet() {
 export const getQuoteData = async () => {
     return await loadQuotesFromSheet();
 }
-
-// O array de modelos foi movido para o hook useTemplates.ts para permitir a personalização.
-export const templates = [];
