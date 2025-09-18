@@ -16,7 +16,7 @@ import {
 import type { EditorState, EstiloFundo } from "@/app/editor-de-video/tipos";
 import { useEditor } from "./contexts/editor-context";
 import { useToast } from "@/hooks/use-toast";
-import { useTemplates } from "@/hooks/use-templates";
+import { useTemplates, type Template } from "@/hooks/use-templates";
 import html2canvas from 'html2canvas';
 import { getAllQuotes } from "@/lib/dados";
 import { useSearchParams } from "next/navigation";
@@ -214,7 +214,7 @@ export default function AspectWeaver() {
   useEffect(() => {
     if (!isProfileLoaded || !areTemplatesLoaded) return;
 
-    const initialize = async () => {
+    const initialize = async (currentTemplates: Template[]) => {
         const quoteParam = searchParams.get("quote");
         const templateIdParam = searchParams.get("templateId");
         
@@ -229,7 +229,7 @@ export default function AspectWeaver() {
                 : "A inspiração está a caminho...";
         
         if (templateIdParam) {
-          const template = allTemplates.find(t => t.id === templateIdParam);
+          const template = currentTemplates.find(t => t.id === templateIdParam);
           if (template) {
             initialState = { ...baseState, ...template.editorState, text, activeTemplateId: template.id };
           } else {
@@ -244,8 +244,8 @@ export default function AspectWeaver() {
         setIsReady(true);
     }
 
-    initialize();
-  }, [searchParams, isProfileLoaded, areTemplatesLoaded, allTemplates]);
+    initialize(allTemplates);
+  }, [searchParams, isProfileLoaded, areTemplatesLoaded]);
 
 
   useEffect(() => {
