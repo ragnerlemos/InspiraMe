@@ -30,7 +30,8 @@ const navItems = [
 ];
 
 export function EditorHeader() {
-    const { canUndo, undo, canRedo, redo, onSaveAsTemplate, onExportJPG, onExportPNG, onExportMP4 } = useEditor();
+    const { controls } = useEditor();
+    const { canUndo, undo, canRedo, redo, onSaveAsTemplate, onExportJPG, onExportPNG, onExportMP4 } = controls;
 
     return (
         <div className="flex items-center justify-between w-full h-16 px-4 border-b bg-background shrink-0">

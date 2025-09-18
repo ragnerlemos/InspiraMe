@@ -90,7 +90,7 @@ export default function AspectWeaver() {
   const { profile, isLoaded: isProfileLoaded } = useProfile();
   const searchParams = useSearchParams();
   const { toast } = useToast();
-  const { setUndoState, setSaveActions } = useEditor();
+  const { setControls } = useEditor();
   const { templates: allTemplates, isLoaded: areTemplatesLoaded, addTemplate } = useTemplates();
 
   // Histórico de estados
@@ -126,9 +126,6 @@ export default function AspectWeaver() {
   const canUndo = currentStateIndex > 0;
   const canRedo = currentStateIndex < history.length - 1;
   
-  useEffect(() => {
-    setUndoState({ canUndo, undo, canRedo, redo });
-  }, [canUndo, undo, canRedo, redo, setUndoState]);
 
   // Lógica de Salvamento e Exportação
   const handleSaveAsTemplate = useCallback(async () => {
@@ -201,14 +198,19 @@ export default function AspectWeaver() {
         toast({ title: 'Em breve!', description: 'A exportação de vídeo MP4 estará disponível em futuras atualizações.' });
     }, [toast]);
     
+    // Efeito para atualizar o contexto do editor
     useEffect(() => {
-        setSaveActions({
+        setControls({
+            canUndo,
+            undo,
+            canRedo,
+            redo,
             onSaveAsTemplate: handleSaveAsTemplate,
             onExportJPG,
             onExportPNG,
             onExportMP4,
         });
-    }, [handleSaveAsTemplate, onExportJPG, onExportPNG, onExportMP4, setSaveActions]);
+    }, [canUndo, undo, canRedo, redo, handleSaveAsTemplate, onExportJPG, onExportPNG, onExportMP4, setControls]);
 
   // Efeito de inicialização
   useEffect(() => {
@@ -398,8 +400,3 @@ export default function AspectWeaver() {
     </div>
   );
 }
-
-    
-    
-
-    

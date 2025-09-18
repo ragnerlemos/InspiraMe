@@ -3,15 +3,12 @@
 
 import { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 
-// Define a interface para o estado que será compartilhado.
-interface UndoState {
+// Define a interface para o estado completo do editor que será compartilhado.
+interface EditorControlState {
   canUndo: boolean;
   undo: () => void;
   canRedo: boolean;
   redo: () => void;
-}
-
-interface SaveActions {
   onSaveAsTemplate: () => void;
   onExportJPG: () => void;
   onExportPNG: () => void;
@@ -19,9 +16,9 @@ interface SaveActions {
 }
 
 // Define a interface para o valor do contexto.
-interface EditorContextType extends UndoState, SaveActions {
-  setUndoState: (state: UndoState) => void;
-  setSaveActions: (actions: SaveActions) => void;
+interface EditorContextType {
+  controls: EditorControlState;
+  setControls: (controls: Partial<EditorControlState>) => void;
 }
 
 // Cria o contexto com valores padrão.
@@ -29,32 +26,24 @@ const EditorContext = createContext<EditorContextType | undefined>(undefined);
 
 // Cria o provedor do contexto.
 export function EditorProvider({ children }: { children: ReactNode }) {
-  const [undoState, setUndoState] = useState<UndoState>({
+  const [controls, setControls] = useState<EditorControlState>({
     canUndo: false,
     undo: () => {},
     canRedo: false,
     redo: () => {},
-  });
-  const [saveActions, setSaveActions] = useState<SaveActions>({
     onSaveAsTemplate: () => {},
     onExportJPG: () => {},
     onExportPNG: () => {},
     onExportMP4: () => {},
-  })
-  
-  const handleSetUndoState = useCallback((state: UndoState) => {
-    setUndoState(state);
-  }, []);
+  });
 
-  const handleSetSaveActions = useCallback((actions: SaveActions) => {
-    setSaveActions(actions);
+  const handleSetControls = useCallback((newControls: Partial<EditorControlState>) => {
+    setControls(prev => ({ ...prev, ...newControls }));
   }, []);
   
   const value: EditorContextType = {
-    ...undoState,
-    setUndoState: handleSetUndoState,
-    ...saveActions,
-    setSaveActions: handleSetSaveActions,
+    controls,
+    setControls: handleSetControls,
   };
 
   return (
