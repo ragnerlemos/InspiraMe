@@ -1,10 +1,11 @@
 
+
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Film, GalleryVertical, Menu, Star, Settings, User, Clapperboard, GalleryHorizontal, Quote, Undo, Save, FileImage, Video, Redo, TestTube2, LayoutGrid } from "lucide-react";
+import { Film, GalleryVertical, Menu, Star, Settings, User, Clapperboard, GalleryHorizontal, Quote, Undo, Save, FileImage, Video, Redo, TestTube2, LayoutGrid, Feather } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -36,7 +37,7 @@ export function EditorHeader() {
     return (
         <div className="flex items-center justify-between w-full h-16 px-4 border-b bg-background shrink-0">
             <Link href="/" className="flex items-center gap-2">
-                <Quote className="h-6 w-6 text-primary" />
+                <Feather className="h-6 w-6 text-primary" />
                 <span className="font-headline text-xl font-bold">InspireMe</span>
             </Link>
 
@@ -127,13 +128,17 @@ export function AppHeader() {
   if (pathname.startsWith('/editor-de-video')) {
     return null;
   }
+  
+  if (pathname.startsWith('/boas-vindas')) {
+    return null;
+  }
 
   return (
     <header className="w-full border-b bg-background/95 backdrop-blur-sm">
       <div className="container flex h-16 items-center justify-between">
         {/* Logo e link para a página inicial. */}
         <Link href="/" className="flex items-center gap-2">
-          <Quote className="h-6 w-6 text-primary" />
+          <Feather className="h-6 w-6 text-primary" />
           <span className="font-headline text-xl font-bold">InspireMe</span>
         </Link>
         {/* Navegação para telas maiores (desktop). */}

@@ -1,16 +1,17 @@
 
+
 'use client';
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
 
-// Página raiz que redireciona para /frases.
+// Página raiz que redireciona para /boas-vindas.
 export default function RootPage() {
   const router = useRouter();
 
   useEffect(() => {
-    router.replace('/frases');
+    router.replace('/boas-vindas');
   }, [router]);
 
   // Exibe um loader enquanto o redirecionamento acontece.
