@@ -177,7 +177,7 @@ export default function AspectWeaver({ setControls }: { setControls: (controls: 
             
             const link = document.createElement('a');
             link.href = image;
-            link.download = `quotevid-export.${format}`;
+            link.download = `inspire-me-export.${format}`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
