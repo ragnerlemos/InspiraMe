@@ -11,16 +11,24 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isEditorPage = pathname.startsWith('/editor-de-video');
 
+  const childWithProps = React.Children.map(children, child => {
+    if (React.isValidElement(child) && isEditorPage) {
+        // Assume que o filho (página) aceita essas props
+        // Isso é um pouco "mágico", mas necessário para passar os controles
+        // @ts-ignore
+        return <EditorProvider>{React.cloneElement(child)}</EditorProvider>;
+    }
+    return child;
+  });
+
   if (isEditorPage) {
      return (
-        <EditorProvider>
-            <div className="flex flex-col h-full">
-                <EditorHeader />
-                <div className="flex-1 flex flex-col min-h-0">
-                    {children}
-                </div>
+        <div className="flex flex-col h-full">
+            <EditorHeader />
+            <div className="flex-1 flex flex-col min-h-0">
+                {childWithProps}
             </div>
-        </EditorProvider>
+        </div>
      )
   }
 

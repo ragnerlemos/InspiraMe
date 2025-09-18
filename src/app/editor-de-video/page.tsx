@@ -216,7 +216,7 @@ export default function AspectWeaver() {
   useEffect(() => {
     if (!isProfileLoaded || !areTemplatesLoaded) return;
 
-    const initialize = async (currentTemplates: Template[]) => {
+    const initialize = async () => {
         const quoteParam = searchParams.get("quote");
         const templateIdParam = searchParams.get("templateId");
         
@@ -231,7 +231,7 @@ export default function AspectWeaver() {
                 : "A inspiração está a caminho...";
         
         if (templateIdParam) {
-          const template = currentTemplates.find(t => t.id === templateIdParam);
+          const template = allTemplates.find(t => t.id === templateIdParam);
           if (template) {
             initialState = { ...baseState, ...template.editorState, text, activeTemplateId: template.id };
           } else {
@@ -246,8 +246,8 @@ export default function AspectWeaver() {
         setIsReady(true);
     }
 
-    initialize(allTemplates);
-  }, [searchParams, isProfileLoaded, areTemplatesLoaded]);
+    initialize();
+  }, [searchParams, isProfileLoaded, areTemplatesLoaded, allTemplates]);
 
 
   useEffect(() => {

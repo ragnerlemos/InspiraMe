@@ -15,18 +15,7 @@ interface EditorControlState {
   onExportMP4: () => void;
 }
 
-// Define a interface para o valor do contexto.
-interface EditorContextType {
-  controls: EditorControlState;
-  setControls: (controls: Partial<EditorControlState>) => void;
-}
-
-// Cria o contexto com valores padrão.
-const EditorContext = createContext<EditorContextType | undefined>(undefined);
-
-// Cria o provedor do contexto.
-export function EditorProvider({ children }: { children: ReactNode }) {
-  const [controls, setControls] = useState<EditorControlState>({
+const defaultControls: EditorControlState = {
     canUndo: false,
     undo: () => {},
     canRedo: false,
@@ -35,7 +24,24 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     onExportJPG: () => {},
     onExportPNG: () => {},
     onExportMP4: () => {},
-  });
+};
+
+// Define a interface para o valor do contexto.
+interface EditorContextType {
+  controls: EditorControlState;
+  setControls: (controls: Partial<EditorControlState>) => void;
+}
+
+// Cria o contexto com valores padrão.
+const EditorContext = createContext<EditorContextType>({
+    controls: defaultControls,
+    setControls: () => {},
+});
+
+
+// Cria o provedor do contexto.
+export function EditorProvider({ children }: { children: ReactNode }) {
+  const [controls, setControls] = useState<EditorControlState>(defaultControls);
 
   const handleSetControls = useCallback((newControls: Partial<EditorControlState>) => {
     setControls(prev => ({ ...prev, ...newControls }));
