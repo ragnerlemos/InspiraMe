@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useWindowSize } from "react-use";
 import { useProfile } from "@/hooks/use-profile";
 import { Sidebar } from "@/app/editor-de-video/components/sidebar";
