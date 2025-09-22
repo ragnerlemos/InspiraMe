@@ -132,18 +132,16 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     };
     toast({ title: 'Exportando...', description: `Gerando imagem ${format.toUpperCase()}.` });
 
+    const originalTransform = previewElement.style.transform;
+    previewElement.style.transform = 'scale(1)';
+
     try {
-        // Espera fontes carregarem
         await document.fonts.ready;
 
-        const rect = previewElement.getBoundingClientRect();
-
-        // Faz o print do elemento
         const canvas = await html2canvas(previewElement, {
-            useCORS: true, // importante se tiver imagens externas
-            scale: 3,      // qualidade maior
-            width: rect.width,
-            height: rect.height,
+            useCORS: true,
+            scale: 3,
+            backgroundColor: null,
         });
 
         const dataUrl =
@@ -163,8 +161,10 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     } catch (err) {
         console.error("Erro ao capturar:", err);
         toast({ variant: "destructive", title: "Erro de Exportação", description: "Não foi possível gerar a imagem." });
+    } finally {
+        previewElement.style.transform = originalTransform;
     }
-    }, [toast, currentState]);
+  }, [toast, currentState]);
 
 
   const onExportJPG = useCallback(() => captureCanvas('jpeg'), [captureCanvas]);
