@@ -94,19 +94,18 @@ export function PreviewCanva(props: PreviewCanvaProps) {
           transformOrigin: "top center",
         }}
         className={cn(
-          "transition-all duration-300 ease-in-out shadow-2xl rounded-xl w-full md:h-auto md:w-auto"
-        )}
-      >
-        <div 
-          id="editor-preview-content"
-          className={cn(
-          "relative overflow-hidden w-full h-full rounded-xl",
+          "transition-all duration-300 ease-in-out shadow-2xl rounded-xl w-full md:h-auto md:w-auto",
            {
             "aspect-square": aspectRatio?.replace(/\s/g, "") === "1/1",
             "aspect-[9/16]": aspectRatio?.replace(/\s/g, "") === "9/16",
             "aspect-[16/9]": aspectRatio?.replace(/\s/g, "") === "16/9",
           }
-        )}>
+        )}
+      >
+        <div 
+          id="editor-preview-content"
+          className="relative overflow-hidden w-full h-full rounded-xl"
+        >
           {renderBackground()}
 
           {filmOpacity > 0 && 
