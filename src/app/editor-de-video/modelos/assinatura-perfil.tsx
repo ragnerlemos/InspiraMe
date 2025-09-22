@@ -60,7 +60,7 @@ export function AssinaturaPerfil({
           </AvatarFallback>
         </Avatar>
       )}
-      <div className="flex flex-col">
+      <div>
         {showUsername && (
           <p className="font-bold text-white text-sm leading-tight whitespace-nowrap">
             {profile.username}
