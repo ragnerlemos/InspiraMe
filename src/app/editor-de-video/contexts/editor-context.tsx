@@ -98,7 +98,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
 
   const redo = useCallback(() => {
     if (canRedo) {
-      setCurrentStateIndex(currentStateIndex + 1);
+      setCurrentStateIndex(currentStateIndex - 1);
     }
   }, [canRedo, currentStateIndex]);
 
@@ -136,10 +136,14 @@ export function EditorProvider({ children }: { children: ReactNode }) {
         // Espera fontes carregarem
         await document.fonts.ready;
 
+        const rect = previewElement.getBoundingClientRect();
+
         // Faz o print do elemento
         const canvas = await html2canvas(previewElement, {
             useCORS: true, // importante se tiver imagens externas
             scale: 3,      // qualidade maior
+            width: rect.width,
+            height: rect.height,
         });
 
         const dataUrl =
