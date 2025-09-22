@@ -1,3 +1,4 @@
+
 // Componente que exibe a assinatura do perfil do usuário na tela de visualização.
 // Inclui avatar, nome de usuário e rede social, com opções de customização.
 
@@ -43,47 +44,47 @@ export function AssinaturaPerfil({
   const bgRgb = hexToRgb(bgColor);
   const backgroundColor = bgRgb ? `rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, ${bgOpacity / 100})` : `rgba(0, 0, 0, ${bgOpacity / 100})`;
 
-  const avatarSize = 'h-10 w-10';
-  const textLeftMargin = showPhoto ? 'ml-12' : ''; // h-10 (40px) + gap (approx 8px)
-
   return (
     <div 
-        className={cn("relative p-2 rounded-lg max-w-max")}
+        className="relative p-2 rounded-lg max-w-max"
         style={{
             backgroundColor: showBackground ? backgroundColor : 'transparent',
+            display: 'flex',
+            gap: '0.75rem', // 12px, a mesma coisa que gap-3
         }}
     >
-      <div className="flex items-center gap-3">
-        {showPhoto && (
-            <Avatar className={cn("flex-shrink-0", avatarSize)}>
-                <AvatarImage src={profile.photo || ""} alt={profile.username} />
-                <AvatarFallback>
-                    <User className="text-white" />
-                </AvatarFallback>
-            </Avatar>
+      {showPhoto && (
+        <Avatar className="h-10 w-10 flex-shrink-0">
+          <AvatarImage src={profile.photo || ""} alt={profile.username} />
+          <AvatarFallback>
+            <User className="text-white" />
+          </AvatarFallback>
+        </Avatar>
+      )}
+      
+      {/* Bloco de texto com posicionamento explícito para centralização vertical */}
+      <div className="flex flex-col justify-center">
+        {showUsername && (
+          <p className="font-bold text-white text-sm leading-none m-0 p-0 whitespace-nowrap">
+            {profile.username}
+          </p>
         )}
-        <div className="flex flex-col justify-center">
-            {showUsername && (
-            <p className="font-bold text-white text-sm leading-none m-0 p-0 whitespace-nowrap">
-                {profile.username}
-            </p>
-            )}
-            {showSocial && (
-            <p className="text-gray-300 text-xs leading-tight m-0 p-0">
-                {profile.social}
-            </p>
-            )}
-        </div>
-        {shouldShowIcon && (
-            <div className="flex items-center justify-center">
-                {profile.iconUrl ? (
-                    <img src={profile.iconUrl} alt="Ícone social" className="h-5 w-5" />
-                ) : (
-                    <Twitter className="h-5 w-5 text-blue-400" />
-                )}
-            </div>
+        {showSocial && (
+          <p className="text-gray-300 text-xs leading-tight m-0 p-0">
+            {profile.social}
+          </p>
         )}
       </div>
+
+       {shouldShowIcon && (
+         <div className="pl-2 flex items-center justify-center">
+            {profile.iconUrl ? (
+                <img src={profile.iconUrl} alt="Ícone social" className="h-5 w-5" />
+            ) : (
+                <Twitter className="h-5 w-5 text-blue-400" />
+            )}
+         </div>
+      )}
     </div>
   );
 }

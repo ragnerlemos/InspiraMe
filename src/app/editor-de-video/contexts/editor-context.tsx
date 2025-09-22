@@ -4,8 +4,8 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode, useMemo } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { useTemplates } from "@/hooks/use-templates";
-import html2canvas from 'html2canvas';
 import type { EditorState } from '../tipos';
+import { captureAndDownload, captureThumbnail } from '../lib/exportar';
 
 // Interface for the shared editor state and controls
 export interface EditorContextType {
@@ -83,12 +83,12 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const updateState = useCallback((newState: Partial<EditorState>) => {
-    if (!currentState) return;
+    if (!isReady || !currentState) return;
     const nextState = { ...currentState, ...newState };
     const newHistory = history.slice(0, currentStateIndex + 1);
     setHistory([...newHistory, nextState]);
     setCurrentStateIndex(newHistory.length);
-  }, [currentState, currentStateIndex, history]);
+  }, [isReady, currentState, currentStateIndex, history]);
 
   const undo = useCallback(() => {
     if (canUndo) {
@@ -102,96 +102,21 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     }
   }, [canRedo, currentStateIndex]);
 
-  const captureCanvas = useCallback(async (format: 'png' | 'jpeg', download: boolean = false): Promise<string | null> => {
-    const previewElement = document.getElementById('editor-preview-content') as HTMLElement | null;
-    if (!previewElement || !currentState) {
-      toast({
-        variant: 'destructive',
-        title: 'Erro',
-        description: 'Não foi possível encontrar a área de visualização.'
-      });
-      return null;
-    }
-    
-    if (download) {
-      toast({ title: 'Exportando...', description: `Gerando imagem ${format.toUpperCase()}.` });
-    }
-    
-    try {
-      // Garantir que todas as fontes externas estejam carregadas
-      await document.fonts.ready;
-
-      // Criar um clone temporário para capturar
-      const clone = previewElement.cloneNode(true) as HTMLElement;
-      clone.style.position = 'absolute';
-      clone.style.top = '-9999px';
-      clone.style.left = '-9999px';
-      clone.style.width = `${previewElement.offsetWidth}px`;
-      clone.style.height = `${previewElement.offsetHeight}px`;
-      clone.style.transform = 'none'; // Remove qualquer escala aplicada
-      document.body.appendChild(clone);
-
-      // Captura o canvas
-      const canvas = await html2canvas(clone, {
-        useCORS: true,
-        scale: 2, // aumenta a resolução
-        backgroundColor: null, // mantém fundo transparente
-        windowWidth: clone.offsetWidth,
-        windowHeight: clone.offsetHeight,
-      });
-
-      // Remove o clone após a captura
-      document.body.removeChild(clone);
-
-      const dataUrl = format === 'png' 
-        ? canvas.toDataURL('image/png')
-        : canvas.toDataURL('image/jpeg', 0.95);
-      
-      return dataUrl;
-
-    } catch (error) {
-      console.error('Erro ao exportar imagem:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Erro de Exportação',
-        description: 'Não foi possível gerar a imagem.'
-      });
-      return null;
-    }
-  }, [toast, currentState]);
-
-  const handleExport = useCallback(async (format: 'jpeg' | 'png') => {
-    const dataUrl = await captureCanvas(format, true);
-    if (!dataUrl) return;
-
-    const link = document.createElement('a');
-    link.href = dataUrl;
-    link.download = `inspire-me-export.${format}`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    toast({
-      title: 'Sucesso!',
-      description: `A imagem foi baixada como ${link.download}.`
-    });
-  }, [captureCanvas, toast]);
-
   const onSaveAsTemplate = useCallback(async () => {
     if (!currentState) return;
     const templateName = prompt("Digite um nome para o novo modelo:");
     if (!templateName) return;
 
-    const thumbnail = await captureCanvas('jpeg'); // Use jpeg for smaller thumbnail size
+    const thumbnail = await captureThumbnail(toast);
     if (!thumbnail) return;
     
     addTemplate(templateName, currentState, thumbnail);
     toast({ title: "Modelo Salvo!", description: `O modelo "${templateName}" foi adicionado.` });
 
-  }, [addTemplate, currentState, toast, captureCanvas]);
+  }, [addTemplate, currentState, toast]);
 
-  const onExportJPG = useCallback(() => handleExport('jpeg'), [handleExport]);
-  const onExportPNG = useCallback(() => handleExport('png'), [handleExport]);
+  const onExportJPG = useCallback(() => captureAndDownload('jpeg', toast), [toast]);
+  const onExportPNG = useCallback(() => captureAndDownload('png', toast), [toast]);
 
   const onExportMP4 = useCallback(() => {
     toast({ title: 'Em breve!', description: 'A exportação de vídeo MP4 estará disponível em futuras atualizações.' });
