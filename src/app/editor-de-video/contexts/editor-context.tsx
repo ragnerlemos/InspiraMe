@@ -135,9 +135,9 @@ export function EditorProvider({ children }: { children: ReactNode }) {
         const options = {
             width,
             height,
-            pixelRatio: 2, // Aumenta a resolução para melhor qualidade
+            pixelRatio: 2, 
+            skipFonts: true, // Ignora a verificação de fontes externas
             style: {
-                // We need to re-apply the transform or it won't be scaled correctly
                 transform: `scale(1)`,
                 transformOrigin: 'top left',
             }
