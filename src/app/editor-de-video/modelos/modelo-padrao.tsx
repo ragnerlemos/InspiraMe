@@ -41,7 +41,6 @@ export function ModeloPadrao({
           top: `${textVerticalPosition}%`,
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          textAlign: textStyle.textAlign,
         }}
       >
         <div
