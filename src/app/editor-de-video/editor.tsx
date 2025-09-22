@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { useWindowSize } from "react-use";
 import { useProfile } from "@/hooks/use-profile";
 import { Sidebar } from "@/app/editor-de-video/components/sidebar";
@@ -58,6 +58,7 @@ export default function Editor() {
   const { profile, isLoaded: isProfileLoaded } = useProfile();
   const searchParams = useSearchParams();
   const { templates: allTemplates, isLoaded: areTemplatesLoaded } = useTemplates();
+  const previewContainerRef = useRef<HTMLDivElement>(null);
 
   const {
     isReady,
@@ -119,29 +120,40 @@ export default function Editor() {
   }, [currentState?.aspectRatio, isDesktop, currentState]);
   
   const textStyle = useMemo(() => {
-    if (!currentState) return {};
+    if (!currentState || !previewContainerRef.current) return {};
+
+    const containerWidth = previewContainerRef.current.offsetWidth;
+    const calculatedFontSize = (currentState.fontSize / 100) * containerWidth;
+    
     const createTextStrokeShadow = (width: number, color: string): string => {
         if (width === 0) return "none";
+        // Convertendo a largura do traço, que está em 'pt', para pixels relativos ao tamanho da fonte
+        const strokeWidthPx = (width / 100) * calculatedFontSize * 0.2; 
+        if (strokeWidthPx === 0) return "none";
+
         const shadows = [];
         const numPoints = 12;
         for (let i = 0; i < numPoints; i++) {
             const angle = (i / numPoints) * 2 * Math.PI;
-            const x = Math.cos(angle) * (width * 0.1);
-            const y = Math.sin(angle) * (width * 0.1);
-            shadows.push(`${x.toFixed(2)}cqw ${y.toFixed(2)}cqw 0 ${color}`);
+            const x = Math.cos(angle) * strokeWidthPx;
+            const y = Math.sin(angle) * strokeWidthPx;
+            shadows.push(`${x.toFixed(2)}px ${y.toFixed(2)}px 0 ${color}`);
         }
         return shadows.join(', ');
     };
+    
     const createMainShadow = (blur: number): string => {
         if (blur === 0) return "none";
-        return `0 0 ${blur * 0.1}cqw rgba(0,0,0,0.5)`;
+        // Convertendo o desfoque para pixels relativos ao tamanho da fonte
+        const shadowBlurPx = (blur / 100) * calculatedFontSize;
+        return `0 0 ${shadowBlurPx}px rgba(0,0,0,0.5)`;
     };
     const textStrokeShadow = createTextStrokeShadow(currentState.textStrokeWidth || 0, currentState.textStrokeColor || '#000');
     const mainTextShadow = createMainShadow(currentState.textShadowBlur || 0);
 
     return {
         fontFamily: currentState.fontFamily,
-        fontSize: `${currentState.fontSize}cqw`,
+        fontSize: `${calculatedFontSize}px`,
         fontWeight: currentState.fontWeight,
         fontStyle: currentState.fontStyle,
         color: currentState.textColor,
@@ -152,10 +164,9 @@ export default function Editor() {
         textShadow: textStrokeShadow !== "none" && mainTextShadow !== "none" ? `${textStrokeShadow}, ${mainTextShadow}` : textStrokeShadow !== "none" ? textStrokeShadow : mainTextShadow,
     }
   }, [
-    currentState?.fontFamily, currentState?.fontSize, currentState?.fontWeight, 
-    currentState?.fontStyle, currentState?.textColor, currentState?.textAlign, 
-    currentState?.textShadowBlur, currentState?.textStrokeColor, currentState?.textStrokeWidth, 
-    currentState?.letterSpacing, currentState?.lineHeight, currentState?.wordSpacing
+    currentState,
+    previewContainerRef.current, // Adiciona a ref como dependência
+    width // Recalcula com a largura da janela para responsividade
   ]);
 
 
@@ -215,6 +226,7 @@ export default function Editor() {
     profile,
     textStyle,
     scale,
+    containerRef: previewContainerRef,
   };
 
   return (

@@ -132,7 +132,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
         const canvas = await html2canvas(previewElement, { 
             useCORS: true, 
             backgroundColor: null, 
-            scale: 2,
+            scale: 2, // Aumenta a resolução da captura
             width: width,
             height: height,
             windowWidth: width,

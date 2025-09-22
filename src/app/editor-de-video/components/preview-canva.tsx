@@ -8,11 +8,13 @@ import { AssinaturaPerfil } from "../modelos/assinatura-perfil";
 import { ModeloTwitter } from '../modelos/modelo-twitter';
 import { ModeloPadrao } from '../modelos/modelo-padrao';
 import type { EditorState, EstiloTexto } from '../tipos';
+import React from 'react';
 
 interface PreviewCanvaProps extends EditorState {
     profile: ProfileData;
     textStyle: EstiloTexto;
     scale: number;
+    containerRef: React.RefObject<HTMLDivElement>;
 }
 
 
@@ -49,7 +51,8 @@ export function PreviewCanva(props: PreviewCanvaProps) {
         backgroundStyle, 
         filmColor, 
         filmOpacity, 
-        scale 
+        scale,
+        containerRef
     } = props;
   
   const filmRgb = hexToRgb(filmColor);
@@ -86,12 +89,13 @@ export function PreviewCanva(props: PreviewCanvaProps) {
     <main className="w-full h-full p-4 flex items-start justify-center overflow-hidden">
       <div
         id="editor-preview-content"
+        ref={containerRef}
         style={{
           transform: `scale(${scale})`,
           transformOrigin: "top center",
         }}
         className={cn(
-          "transition-all duration-300 ease-in-out shadow-2xl rounded-xl w-full md:h-[83.5vh] md:w-auto relative overflow-hidden @container",
+          "transition-all duration-300 ease-in-out shadow-2xl rounded-xl w-full md:h-[83.5vh] md:w-auto relative overflow-hidden",
           {
             "aspect-square": aspectRatio?.replace(/\s/g, "") === "1/1",
             "aspect-[9/16]": aspectRatio?.replace(/\s/g, "") === "9/16",
