@@ -17,7 +17,7 @@ import type { EditorState, EstiloFundo } from "@/app/editor-de-video/tipos";
 import { useEditor } from "./contexts/editor-context";
 import { useToast } from "@/hooks/use-toast";
 import { useTemplates } from "@/hooks/use-templates";
-import { captureAndDownload_final } from './exportar';
+import { captureAndDownload_final, captureThumbnail } from './exportar';
 import { getAllQuotes } from "@/lib/dados";
 import { useSearchParams } from "next/navigation";
 
