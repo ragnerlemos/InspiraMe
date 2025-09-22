@@ -71,13 +71,15 @@ function EditorCore() {
         const initialize = async () => {
             const quoteParam = searchParams.get("quote");
             const templateIdParam = searchParams.get("templateId");
-            const allQuotes = await getAllQuotes();
-
+            
             let text = "A inspiração está a caminho...";
             if (quoteParam) {
                 text = decodeURIComponent(quoteParam);
-            } else if (allQuotes.length > 0) {
-                text = allQuotes[Math.floor(Math.random() * allQuotes.length)].quote;
+            } else {
+                const allQuotes = await getAllQuotes();
+                if (allQuotes.length > 0) {
+                    text = allQuotes[Math.floor(Math.random() * allQuotes.length)].quote;
+                }
             }
             
             let initialState: EditorState;
@@ -258,3 +260,5 @@ export default function AspectWeaver() {
         </Suspense>
     )
 }
+
+    
