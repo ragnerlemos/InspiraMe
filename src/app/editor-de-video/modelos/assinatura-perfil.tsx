@@ -46,11 +46,9 @@ export function AssinaturaPerfil({
 
   return (
     <div 
-        className="relative p-2 rounded-lg max-w-max"
+        className="flex gap-3 p-2 rounded-lg max-w-max"
         style={{
             backgroundColor: showBackground ? backgroundColor : 'transparent',
-            display: 'flex',
-            gap: '0.75rem', // 12px, a mesma coisa que gap-3
         }}
     >
       {showPhoto && (
@@ -62,7 +60,7 @@ export function AssinaturaPerfil({
         </Avatar>
       )}
       
-      {/* Bloco de texto com posicionamento explícito para centralização vertical */}
+      {/* Bloco de texto com alinhamento vertical explícito */}
       <div className="flex flex-col justify-center">
         {showUsername && (
           <p className="font-bold text-white text-sm leading-none m-0 p-0 whitespace-nowrap">
