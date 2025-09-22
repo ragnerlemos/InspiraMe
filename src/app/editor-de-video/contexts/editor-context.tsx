@@ -128,7 +128,16 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     }
     toast({ title: 'Exportando...', description: `Gerando imagem ${format.toUpperCase()}.` });
     try {
-        const canvas = await html2canvas(previewElement, { useCORS: true, backgroundColor: null, scale: 4 });
+        const { width, height } = previewElement.getBoundingClientRect();
+        const canvas = await html2canvas(previewElement, { 
+            useCORS: true, 
+            backgroundColor: null, 
+            scale: 2,
+            width: width,
+            height: height,
+            windowWidth: width,
+            windowHeight: height,
+        });
         const image = canvas.toDataURL(`image/${format}`, format === 'png' ? 1.0 : 0.9);
         const link = document.createElement('a');
         link.href = image;
