@@ -87,33 +87,33 @@ export function PreviewCanva(props: PreviewCanvaProps) {
 
   return (
     <main className="w-full h-full p-4 flex items-start justify-center overflow-hidden">
-      <div
-        ref={containerRef}
+      <div 
         style={{
           transform: `scale(${scale})`,
           transformOrigin: "top center",
         }}
-        className={cn(
-          "transition-all duration-300 ease-in-out shadow-2xl rounded-xl md:w-auto",
-           {
-            "aspect-square": aspectRatio?.replace(/\s/g, "") === "1/1",
-            "aspect-[9/16]": aspectRatio?.replace(/\s/g, "") === "9/16",
-            "aspect-[16/9]": aspectRatio?.replace(/\s/g, "") === "16/9",
-          }
-        )}
+        className="transition-transform duration-300 ease-in-out"
       >
-        <div 
+        <div
+          ref={containerRef}
           id="editor-preview-content"
-          className="relative overflow-hidden w-full h-full rounded-xl"
+          className={cn(
+            "relative shadow-2xl rounded-xl overflow-hidden w-[400px]",
+            {
+              "aspect-square": aspectRatio?.replace(/\s/g, "") === "1/1",
+              "aspect-[9/16]": aspectRatio?.replace(/\s/g, "") === "9/16",
+              "aspect-[16/9]": aspectRatio?.replace(/\s/g, "") === "16/9",
+            }
+          )}
         >
-          {renderBackground()}
+            {renderBackground()}
 
-          {filmOpacity > 0 && 
-              <div className="absolute inset-0 z-10" style={{ backgroundColor: filmBackgroundColor }} />
-          }
-          <div className="relative z-20 h-full w-full">
-              {renderContent()}
-          </div>
+            {filmOpacity > 0 && 
+                <div className="absolute inset-0 z-10" style={{ backgroundColor: filmBackgroundColor }} />
+            }
+            <div className="relative z-20 h-full w-full">
+                {renderContent()}
+            </div>
         </div>
       </div>
     </main>
