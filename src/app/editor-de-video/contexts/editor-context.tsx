@@ -4,7 +4,7 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode, useMemo } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { useTemplates } from "@/hooks/use-templates";
-import html2canvas from 'html2canvas';
+import { toPng, toJpeg } from 'html-to-image';
 import type { EditorState } from '../tipos';
 
 // Interface for the shared editor state and controls
@@ -102,69 +102,78 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     }
   }, [canRedo, currentStateIndex]);
 
-  const onSaveAsTemplate = useCallback(async () => {
-    if (!currentState) return;
-    const templateName = prompt("Digite um nome para o novo modelo:");
-    if (!templateName) return;
-    const previewElement = document.getElementById('editor-preview-content') as HTMLElement;
-    if (previewElement) {
-        try {
-            await document.fonts.ready;
-            const canvas = await html2canvas(previewElement, {
-                useCORS: true,
-                scale: 1, // Lower quality for thumbnail
-            });
-            const thumbnail = canvas.toDataURL("image/jpeg", 0.8);
-            addTemplate(templateName, currentState, thumbnail);
-            toast({ title: "Modelo Salvo!", description: `O modelo "${templateName}" foi adicionado.` });
-        } catch (error) {
-            console.error("Erro ao criar thumbnail:", error);
-            toast({ variant: "destructive", title: "Erro ao Salvar", description: "Não foi possível gerar a pré-visualização." });
-        }
-    }
-  }, [addTemplate, currentState, toast]);
-
   const captureCanvas = useCallback(async (format: 'jpeg' | 'png') => {
-    const previewElement = document.getElementById("editor-preview-content") as HTMLElement;
-    if (!previewElement) {
-        toast({ variant: "destructive", title: "Erro", description: "Área de preview não encontrada." });
-        return;
-    };
+    const previewElement = document.getElementById('editor-preview-content') as HTMLElement | null;
+    if (!previewElement || !currentState) {
+      toast({ variant: 'destructive', title: 'Erro', description: 'Não foi possível encontrar a área de visualização.' });
+      return;
+    }
     toast({ title: 'Exportando...', description: `Gerando imagem ${format.toUpperCase()}.` });
-
+  
     const originalTransform = previewElement.style.transform;
     previewElement.style.transform = 'scale(1)';
 
     try {
-        await document.fonts.ready;
+      await document.fonts.ready;
+  
+      const rect = previewElement.getBoundingClientRect();
+      const width = Math.round(rect.width);
+      const height = Math.round(rect.height);
 
-        const canvas = await html2canvas(previewElement, {
-            useCORS: true,
-            scale: 3,
-            backgroundColor: null,
-        });
-
-        const dataUrl =
-        format === "png"
-            ? canvas.toDataURL("image/png")
-            : canvas.toDataURL("image/jpeg", 0.95);
-
-        const link = document.createElement("a");
-        link.href = dataUrl;
-        link.download = `inspire-me-export.${format}`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        toast({ title: 'Sucesso!', description: `A imagem foi baixada como ${link.download}.` });
-
-    } catch (err) {
-        console.error("Erro ao capturar:", err);
-        toast({ variant: "destructive", title: "Erro de Exportação", description: "Não foi possível gerar a imagem." });
+      const options = {
+        width,
+        height,
+        pixelRatio: 3,
+        style: {
+            transform: 'scale(1)',
+            transformOrigin: 'center center',
+        }
+      };
+  
+      const dataUrl = format === 'png'
+        ? await toPng(previewElement, options)
+        : await toJpeg(previewElement, { ...options, quality: 0.95 });
+  
+      const link = document.createElement('a');
+      link.href = dataUrl;
+      link.download = `inspire-me-export.${format}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+  
+      toast({ title: 'Sucesso!', description: `A imagem foi baixada como ${link.download}.` });
+    } catch (error) {
+      console.error('Erro ao exportar imagem:', error);
+      toast({ variant: 'destructive', title: 'Erro de Exportação', description: 'Não foi possível gerar a imagem.' });
     } finally {
         previewElement.style.transform = originalTransform;
     }
   }, [toast, currentState]);
+
+  const onSaveAsTemplate = useCallback(async () => {
+    if (!currentState) return;
+    const templateName = prompt("Digite um nome para o novo modelo:");
+    if (!templateName) return;
+
+    try {
+        const previewElement = document.getElementById('editor-preview-content') as HTMLElement;
+        if (!previewElement) throw new Error("Elemento de preview não encontrado");
+
+        await document.fonts.ready;
+
+        const thumbnail = await toPng(previewElement, {
+            width: 400,
+            height: 400,
+            pixelRatio: 1,
+        });
+
+        addTemplate(templateName, currentState, thumbnail);
+        toast({ title: "Modelo Salvo!", description: `O modelo "${templateName}" foi adicionado.` });
+    } catch (error) {
+        console.error("Erro ao criar thumbnail:", error);
+        toast({ variant: "destructive", title: "Erro ao Salvar", description: "Não foi possível gerar a pré-visualização." });
+    }
+  }, [addTemplate, currentState, toast]);
 
 
   const onExportJPG = useCallback(() => captureCanvas('jpeg'), [captureCanvas]);
