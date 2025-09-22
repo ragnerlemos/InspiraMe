@@ -118,25 +118,29 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     }
     
     try {
+      // Garantir que todas as fontes externas estejam carregadas
       await document.fonts.ready;
 
+      // Criar um clone temporário para capturar
       const clone = previewElement.cloneNode(true) as HTMLElement;
       clone.style.position = 'absolute';
       clone.style.top = '-9999px';
       clone.style.left = '-9999px';
       clone.style.width = `${previewElement.offsetWidth}px`;
       clone.style.height = `${previewElement.offsetHeight}px`;
-      clone.style.transform = 'none';
+      clone.style.transform = 'none'; // Remove qualquer escala aplicada
       document.body.appendChild(clone);
 
+      // Captura o canvas
       const canvas = await html2canvas(clone, {
-        useCORS: true, 
-        scale: 2, // For high resolution
-        backgroundColor: null,
-        windowWidth: clone.scrollWidth,
-        windowHeight: clone.scrollHeight,
+        useCORS: true,
+        scale: 2, // aumenta a resolução
+        backgroundColor: null, // mantém fundo transparente
+        windowWidth: clone.offsetWidth,
+        windowHeight: clone.offsetHeight,
       });
-      
+
+      // Remove o clone após a captura
       document.body.removeChild(clone);
 
       const dataUrl = format === 'png' 
