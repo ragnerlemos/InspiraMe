@@ -98,7 +98,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
 
   const redo = useCallback(() => {
     if (canRedo) {
-      setCurrentStateIndex(currentStateIndex + 1);
+      setCurrentStateIndex(currentStateIndex - 1);
     }
   }, [canRedo, currentStateIndex]);
 
@@ -115,10 +115,12 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     toast({ title: 'Exportando...', description: `Gerando imagem ${format.toUpperCase()}.` });
 
     const originalTransform = previewElement.style.transform;
+    const originalTransformOrigin = previewElement.style.transformOrigin;
 
     try {
-      // Reset scale for full-resolution capture
+      // Reset scale and origin for full-resolution capture
       previewElement.style.transform = 'scale(1)';
+      previewElement.style.transformOrigin = 'center';
       
       // Ensure fonts are ready
       await document.fonts.ready;
@@ -155,6 +157,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     } finally {
         // Restore original transform
         previewElement.style.transform = originalTransform;
+        previewElement.style.transformOrigin = originalTransformOrigin;
     }
   }, [toast, currentState]);
 
