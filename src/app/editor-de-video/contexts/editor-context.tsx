@@ -4,7 +4,7 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode, useMemo } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { useTemplates } from "@/hooks/use-templates";
-import domtoimage from 'dom-to-image-more';
+import html2canvas from 'html2canvas';
 import type { EditorState } from '../tipos';
 
 // Interface for the shared editor state and controls
@@ -98,7 +98,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
 
   const redo = useCallback(() => {
     if (canRedo) {
-      setCurrentStateIndex(currentStateIndex - 1);
+      setCurrentStateIndex(currentStateIndex + 1);
     }
   }, [canRedo, currentStateIndex]);
 
@@ -117,38 +117,29 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     const originalTransform = previewElement.style.transform;
 
     try {
-      // 2. Reseta a escala para capturar no tamanho real
+      // Reset scale for full-resolution capture
       previewElement.style.transform = 'scale(1)';
-      previewElement.style.transformOrigin = 'top left';
-  
-      // 3. Espera as fontes carregarem
+      
+      // Ensure fonts are ready
       await document.fonts.ready;
-  
-      // 4. Mede as dimensões reais do preview
-      const { width, height } = previewElement.getBoundingClientRect();
-  
-      // 5. Opções robustas para captura
-      const options = {
-        width: Math.round(width),
-        height: Math.round(height),
-        quality: 1, // Usado por toPng e toJpeg
-        cacheBust: true,
-      };
-  
-      // 6. Gera o dataURL
-      const dataUrl =
-        format === 'png'
-          ? await domtoimage.toPng(previewElement, options)
-          : await domtoimage.toJpeg(previewElement, { ...options, quality: 0.95 });
-  
-      // 7. Baixa o arquivo
+
+      const canvas = await html2canvas(previewElement, {
+        useCORS: true, // Important for external images (like picsum)
+        scale: 2, // Increase for higher resolution
+        backgroundColor: null, // Use transparent background
+      });
+
+      const dataUrl = format === 'png' 
+        ? canvas.toDataURL('image/png')
+        : canvas.toDataURL('image/jpeg', 0.95);
+
       const link = document.createElement('a');
       link.href = dataUrl;
       link.download = `inspire-me-export.${format}`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-  
+
       toast({
         title: 'Sucesso!',
         description: `A imagem foi baixada como ${link.download}.`
@@ -162,7 +153,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
         description: 'Não foi possível gerar a imagem.'
       });
     } finally {
-        // 8. Restaura o transform original
+        // Restore original transform
         previewElement.style.transform = originalTransform;
     }
   }, [toast, currentState]);
@@ -178,12 +169,10 @@ export function EditorProvider({ children }: { children: ReactNode }) {
         if (!previewElement) throw new Error("Elemento de preview não encontrado");
 
         await document.fonts.ready;
-
-        const thumbnail = await domtoimage.toPng(previewElement, {
-            width: 400,
-            height: 400,
-        });
-
+        
+        const canvas = await html2canvas(previewElement, { scale: 0.5, backgroundColor: null });
+        const thumbnail = canvas.toDataURL('image/png');
+        
         addTemplate(templateName, currentState, thumbnail);
         toast({ title: "Modelo Salvo!", description: `O modelo "${templateName}" foi adicionado.` });
     } catch (error) {
