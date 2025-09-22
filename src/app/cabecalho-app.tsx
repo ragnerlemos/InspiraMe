@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Film, GalleryVertical, Menu, Star, Settings, User, Clapperboard, GalleryHorizontal, Quote, Undo, Save, FileImage, Video, Redo } from "lucide-react";
+import { Film, GalleryVertical, Menu, Star, Settings, User, Clapperboard, GalleryHorizontal, Quote, Undo, Save, FileImage, Video, Redo, TestTube2, LayoutGrid } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -30,7 +30,7 @@ const navItems = [
 ];
 
 export function EditorHeader() {
-    const { isReady, canUndo, undo, canRedo, redo, onSaveAsTemplate, onExportJPG, onExportPNG, onExportMP4 } = useEditor();
+    const { canUndo, undo, canRedo, redo, onSaveAsTemplate, onExportJPG, onExportPNG, onExportMP4 } = useEditor();
 
     return (
         <div className="flex items-center justify-between w-full h-16 px-4 border-b bg-background shrink-0">
@@ -40,17 +40,17 @@ export function EditorHeader() {
             </Link>
 
             <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" onClick={undo} disabled={!canUndo || !isReady}>
+                <Button variant="ghost" size="icon" onClick={undo} disabled={!canUndo}>
                     <Undo className="h-5 w-5" />
                     <span className="sr-only">Desfazer</span>
                 </Button>
-                 <Button variant="ghost" size="icon" onClick={redo} disabled={!canRedo || !isReady}>
+                 <Button variant="ghost" size="icon" onClick={redo} disabled={!canRedo}>
                     <Redo className="h-5 w-5" />
                     <span className="sr-only">Refazer</span>
                 </Button>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button disabled={!isReady}>
+                        <Button>
                             <Save className="mr-2 h-4 w-4" />
                             Salvar
                         </Button>
@@ -78,7 +78,7 @@ export function EditorHeader() {
 }
 
 // Componente do cabeçalho da aplicação.
-export function AppHeader() {
+export function AppHeader({ onCategoryMenuClick, showCategoryMenuButton }: { onCategoryMenuClick?: () => void; showCategoryMenuButton?: boolean; }) {
   const pathname = usePathname();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
@@ -142,6 +142,12 @@ export function AppHeader() {
         </nav>
         {/* Navegação para telas menores (mobile) usando um menu lateral. */}
         <div className="md:hidden flex items-center gap-2">
+          {showCategoryMenuButton && (
+            <Button variant="outline" size="icon" onClick={onCategoryMenuClick}>
+              <LayoutGrid className="h-5 w-5" />
+              <span className="sr-only">Abrir categorias</span>
+            </Button>
+          )}
           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon">
@@ -151,7 +157,7 @@ export function AppHeader() {
             </SheetTrigger>
             <SheetContent side="left">
                 <SheetHeader>
-                    <SheetTitle>Navegação</SheetTitle>
+                    <SheetTitle className="sr-only">Menu de Navegação</SheetTitle>
                 </SheetHeader>
                 <nav className="grid gap-2 text-lg font-medium pt-8">
                     {navLinks("text-base")}

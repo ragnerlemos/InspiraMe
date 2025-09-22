@@ -5,9 +5,9 @@ import Image from 'next/image';
 import { cn } from "@/lib/utils";
 import type { ProfileData } from "@/hooks/use-profile";
 import { AssinaturaPerfil } from "../modelos/assinatura-perfil";
+import type { EstiloFundo, VisualizacaoEditorProps } from '../tipos';
 import { ModeloTwitter } from '../modelos/modelo-twitter';
 import { ModeloPadrao } from '../modelos/modelo-padrao';
-import type { VisualizacaoEditorProps } from '../tipos';
 
 
 // Função para converter cor hexadecimal para RGB
@@ -37,7 +37,7 @@ const getMediaType = (src: string): "image" | "video" | "unknown" => {
 };
 
 
-export function PreviewCanva(props: VisualizacaoEditorProps & { scale: number }) {
+export function PreviewCanva(props: VisualizacaoEditorProps) {
     const { 
         aspectRatio, 
         backgroundStyle, 
@@ -79,38 +79,27 @@ export function PreviewCanva(props: VisualizacaoEditorProps & { scale: number })
   return (
     <main className="w-full h-full p-4 flex items-start justify-center overflow-hidden">
       <div
+        id="editor-preview-content"
         style={{
           transform: `scale(${scale})`,
           transformOrigin: "top center",
         }}
         className={cn(
-          "transition-all duration-300 ease-in-out shadow-2xl rounded-xl overflow-hidden @container",
-           {
-            "w-full max-w-sm": aspectRatio?.replace(/\s/g, "") === "9/16",
-            "w-full max-w-md": aspectRatio?.replace(/\s/g, "") === "1/1",
-            "w-full max-w-2xl": aspectRatio?.replace(/\s/g, "") === "16/9",
-           }
+          "transition-all duration-300 ease-in-out shadow-2xl rounded-xl w-full md:h-[83.5vh] md:w-auto relative overflow-hidden @container",
+          {
+            "aspect-square": aspectRatio?.replace(/\s/g, "") === "1/1",
+            "aspect-[9/16]": aspectRatio?.replace(/\s/g, "") === "9/16",
+            "aspect-[16/9]": aspectRatio?.replace(/\s/g, "") === "16/9",
+          }
         )}
       >
-        <div
-            id="editor-preview-content"
-            className={cn(
-                "relative h-full w-full",
-                {
-                    "aspect-square": aspectRatio?.replace(/\s/g, "") === "1/1",
-                    "aspect-[9/16]": aspectRatio?.replace(/\s/g, "") === "9/16",
-                    "aspect-[16/9]": aspectRatio?.replace(/\s/g, "") === "16/9",
-                }
-            )}
-        >
-            {renderBackground()}
+        {renderBackground()}
 
-            {filmOpacity > 0 && 
-                <div className="absolute inset-0 z-10" style={{ backgroundColor: filmBackgroundColor }} />
-            }
-            <div className="relative z-20 h-full w-full">
-                {renderContent()}
-            </div>
+        {filmOpacity > 0 && 
+            <div className="absolute inset-0 z-10" style={{ backgroundColor: filmBackgroundColor }} />
+        }
+        <div className="relative z-20 h-full w-full">
+            {renderContent()}
         </div>
       </div>
     </main>
