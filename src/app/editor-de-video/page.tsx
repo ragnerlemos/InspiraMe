@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, Suspense } from "react";
 import { useWindowSize } from "react-use";
 import { useProfile } from "@/hooks/use-profile";
 import { Sidebar } from "@/app/editor-de-video/components/sidebar";
@@ -15,8 +15,7 @@ import {
 } from "@/components/ui/resizable";
 import type { EditorState, EstiloFundo } from "@/app/editor-de-video/tipos";
 import { useEditor } from "./contexts/editor-context";
-import { useToast } from "@/hooks/use-toast";
-import { useTemplates } from "@/hooks/use-templates";
+import { useTemplates, type Template } from "@/hooks/use-templates";
 import { getAllQuotes } from "@/lib/dados";
 import { useSearchParams } from "next/navigation";
 
@@ -46,12 +45,48 @@ function ProporcaoSkeleton() {
     )
 }
 
-export default function AspectWeaver() {
+const getInitialState = (): Omit<EditorState, 'activeTemplateId' | 'text'> => ({
+    fontFamily: "Poppins",
+    fontSize: 5,
+    fontWeight: "bold",
+    fontStyle: "normal",
+    textColor: "#FFFFFF",
+    textAlign: "center",
+    textShadowBlur: 1,
+    textVerticalPosition: 50,
+    textStrokeColor: "#000000",
+    textStrokeWidth: 0.2,
+    letterSpacing: 0,
+    lineHeight: 1.3,
+    wordSpacing: 0,
+    backgroundStyle: { type: 'solid', value: '#000000' },
+    filmColor: "#000000",
+    filmOpacity: 0,
+    aspectRatio: "9 / 16",
+    showProfileSignature: false,
+    signaturePositionX: 50,
+    signaturePositionY: 90,
+    signatureScale: 63,
+    showSignaturePhoto: false,
+    showSignatureUsername: true,
+    showSignatureSocial: true,
+    showSignatureBackground: false,
+    signatureBgColor: "#000000",
+    signatureBgOpacity: 30,
+    profileVerticalPosition: 25,
+    showLogo: false,
+    logoPositionX: 50,
+    logoPositionY: 72,
+    logoScale: 40,
+    logoOpacity: 100,
+});
+
+function EditorCore() {
   const { width } = useWindowSize();
   const isDesktop = width >= 768;
   const { profile, isLoaded: isProfileLoaded } = useProfile();
   const searchParams = useSearchParams();
-  const { toast } = useToast();
+  const { templates: allTemplates, isLoaded: areTemplatesLoaded } = useTemplates();
   
   const { 
     isReady,
@@ -59,8 +94,6 @@ export default function AspectWeaver() {
     updateState,
     setInitialState
   } = useEditor();
-
-  const { templates: allTemplates, isLoaded: areTemplatesLoaded } = useTemplates();
 
 
   const [activeControl, setActiveControl] = useState<string | null>('texto');
@@ -70,36 +103,37 @@ export default function AspectWeaver() {
   useEffect(() => {
     if (isReady || !isProfileLoaded || !areTemplatesLoaded) return;
 
-    const initialize = async () => {
+    const initialize = async (templates: Template[]) => {
         const quoteParam = searchParams.get("quote");
         const templateIdParam = searchParams.get("templateId");
         
         let initialState: EditorState;
+        const baseState = getInitialState();
         
         const allQuotes = await getAllQuotes();
         const text = quoteParam 
             ? decodeURIComponent(quoteParam) 
             : allQuotes.length > 0 
-                ? allQuotes[Math.floor(Math.random() * allQuotes.length)].quote
+                ? allQuotes[Math.floor(Math.random() * allQuotes.length)].quote 
                 : "A inspiração está a caminho...";
         
         if (templateIdParam) {
-          const template = allTemplates.find(t => t.id === templateIdParam);
+          const template = templates.find(t => t.id === templateIdParam);
           if (template) {
-            initialState = { ...template.editorState as EditorState, text, activeTemplateId: template.id };
+            initialState = { ...baseState, ...template.editorState, text, activeTemplateId: template.id };
           } else {
-            initialState = { ...currentState!, text, activeTemplateId: null };
+            initialState = { ...baseState, text, activeTemplateId: null };
           }
         } else {
-            initialState = { ...currentState!, text, activeTemplateId: null };
+            initialState = { ...baseState, text, activeTemplateId: null };
         }
         
         setInitialState(initialState);
     }
 
-    initialize();
+    initialize(allTemplates);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams, isProfileLoaded, areTemplatesLoaded, allTemplates, isReady, setInitialState]);
+  }, [searchParams, isProfileLoaded, areTemplatesLoaded, isReady, setInitialState]);
 
 
   useEffect(() => {
@@ -117,7 +151,6 @@ export default function AspectWeaver() {
   
   const textStyle = useMemo(() => {
     if (!currentState) return {};
-
     const createTextStrokeShadow = (width: number, color: string): string => {
         if (width === 0) return "none";
         const shadows = [];
@@ -153,8 +186,7 @@ export default function AspectWeaver() {
     currentState?.fontFamily, currentState?.fontSize, currentState?.fontWeight, 
     currentState?.fontStyle, currentState?.textColor, currentState?.textAlign, 
     currentState?.textShadowBlur, currentState?.textStrokeColor, currentState?.textStrokeWidth, 
-    currentState?.letterSpacing, currentState?.lineHeight, currentState?.wordSpacing,
-    currentState
+    currentState?.letterSpacing, currentState?.lineHeight, currentState?.wordSpacing
   ]);
 
 
@@ -211,9 +243,9 @@ export default function AspectWeaver() {
 
   const previewProps = {
     ...currentState,
+    scale,
     textStyle: textStyle,
     profile,
-    scale,
   };
 
   return (
@@ -235,5 +267,11 @@ export default function AspectWeaver() {
   );
 }
 
-    
-    
+
+export default function AspectWeaver() {
+  return (
+    <Suspense fallback={<ProporcaoSkeleton />}>
+      <EditorCore />
+    </Suspense>
+  )
+}
