@@ -123,7 +123,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   }, [addTemplate, currentState, toast]);
 
   const captureCanvas = useCallback(async (format: 'jpeg' | 'png') => {
-    const previewElement = document.getElementById('editor-preview-content');
+    const previewElement = document.getElementById('editor-preview-content') as HTMLElement | null;
     if (!previewElement || !currentState) {
       toast({ variant: 'destructive', title: 'Erro', description: 'Não foi possível encontrar a área de visualização.' });
       return;
@@ -131,27 +131,80 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     toast({ title: 'Exportando...', description: `Gerando imagem ${format.toUpperCase()}.` });
   
     try {
-      // Garante que as fontes já estão carregadas
+      // 1) Garantir que as fontes estejam carregadas.
+      const fontsToLoad = [
+        '1em "Poppins"',
+        '700 1em "Poppins"',
+        '1em "PT Sans"',
+        '700 1em "PT Sans"',
+        '1em "Merriweather"',
+        'italic 1em "Merriweather"',
+        '700 1em "Merriweather"',
+        '1em "Lobster"'
+      ];
+      await Promise.all(fontsToLoad.map(f => document.fonts.load(f).catch(() => {})));
       await document.fonts.ready;
   
-      const { width, height } = previewElement.getBoundingClientRect();
+      // 2) Medir o elemento e preparar dimensões fixas em px
+      const rect = previewElement.getBoundingClientRect();
+      const width = Math.round(rect.width);
+      const height = Math.round(rect.height);
   
-      const options = {
+      // 3) Função para copiar estilos computados em linha (recursiva)
+      const cssProps = [
+        'font-family','font-size','font-weight','font-style','letter-spacing','line-height','text-align',
+        'color','direction','padding','margin','box-sizing','width','height','white-space','word-break',
+        'word-wrap','text-transform','display','vertical-align','background','background-image',
+        'background-size','background-position','background-repeat', 'text-shadow', 'transform'
+      ];
+  
+      function inlineStylesRecursively(sourceEl: Element, targetEl: HTMLElement) {
+        const computed = window.getComputedStyle(sourceEl);
+        let cssText = '';
+        cssProps.forEach(prop => {
+          const val = computed.getPropertyValue(prop);
+          if (val) cssText += `${prop}:${val};`;
+        });
+        targetEl.style.cssText += cssText;
+  
+        // processar filhos
+        Array.from(sourceEl.children).forEach((child, i) => {
+          const targetChild = targetEl.children[i] as HTMLElement | undefined;
+          if (targetChild) {
+            inlineStylesRecursively(child, targetChild);
+          }
+        });
+      }
+  
+      // 4) Clonar e inlinear estilos
+      const clone = previewElement.cloneNode(true) as HTMLElement;
+      clone.style.width = `${width}px`;
+      clone.style.height = `${height}px`;
+      clone.style.boxSizing = 'border-box';
+  
+      inlineStylesRecursively(previewElement, clone);
+  
+      // 5) Colocar o clone em um wrapper com dimensões exatas
+      const wrapper = document.createElement('div');
+      wrapper.style.width = `${width}px`;
+      wrapper.style.height = `${height}px`;
+      wrapper.style.overflow = 'hidden';
+      wrapper.style.boxSizing = 'border-box';
+      wrapper.appendChild(clone);
+  
+      // 7) Gerar a imagem com html-to-image
+      const options: any = {
         width,
         height,
         pixelRatio: 3,
-        fontEmbedCSS: `
-          @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
-          @import url('https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap');
-          @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap');
-          @import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
-        `,
+        cacheBust: true,
       };
   
       const dataUrl = format === 'png'
-        ? await toPng(previewElement, options)
-        : await toJpeg(previewElement, { ...options, quality: 0.95 });
+        ? await toPng(wrapper, options)
+        : await toJpeg(wrapper, { ...options, quality: 0.95 });
   
+      // 8) Forçar download
       const link = document.createElement('a');
       link.href = dataUrl;
       link.download = `inspire-me-export.${format}`;
