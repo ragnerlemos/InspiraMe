@@ -128,6 +128,8 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     document.body.appendChild(clone);
 
     try {
+      // Força o navegador a carregar todas as fontes antes da captura.
+      // Isso é crucial para que o html2canvas calcule o layout corretamente.
       await document.fonts.ready;
 
       const canvas = await html2canvas(clone, {
