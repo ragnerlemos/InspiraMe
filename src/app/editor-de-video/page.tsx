@@ -17,7 +17,7 @@ import type { EditorState, EstiloFundo } from "@/app/editor-de-video/tipos";
 import { useEditor } from "./contexts/editor-context";
 import { useToast } from "@/hooks/use-toast";
 import { useTemplates } from "@/hooks/use-templates";
-import html2canvas from 'html2canvas';
+import { captureAndDownload_final } from './exportar';
 import { getAllQuotes } from "@/lib/dados";
 import { useSearchParams } from "next/navigation";
 
@@ -134,68 +134,29 @@ export default function AspectWeaver() {
   const handleSaveAsTemplate = useCallback(async () => {
         const templateName = prompt("Digite um nome para o novo modelo:");
         if (!templateName) return;
-        const previewElement = document.getElementById('editor-preview-content');
-        if (previewElement) {
-            try {
-                const canvas = await html2canvas(previewElement, {
-                    scale: 0.5,
-                    useCORS: true,
-                    backgroundColor: null, 
-                });
-                const thumbnail = canvas.toDataURL('image/jpeg', 0.8);
-                
-                addTemplate(templateName, currentState, thumbnail);
-
-                toast({
-                    title: "Modelo Salvo!",
-                    description: `O modelo "${templateName}" foi adicionado à sua coleção.`,
-                });
-            } catch (error) {
-                console.error("Erro ao criar thumbnail:", error);
-                toast({
-                    variant: "destructive",
-                    title: "Erro ao Salvar",
-                    description: "Não foi possível gerar a pré-visualização do modelo.",
-                });
-            }
-        }
-    }, [addTemplate, currentState, toast]);
-
-    const captureCanvas = useCallback(async (format: 'jpeg' | 'png') => {
-        const previewElement = document.getElementById('editor-preview-content');
-        if (!previewElement) {
-            toast({ variant: 'destructive', title: 'Erro', description: 'Não foi possível encontrar a área de visualização.' });
-            return;
-        }
-
-        toast({ title: 'Exportando...', description: `Gerando imagem ${format.toUpperCase()}.` });
         
         try {
-            const canvas = await html2canvas(previewElement, {
-                useCORS: true,
-                backgroundColor: null, 
-                scale: 4, // Aumenta a resolução para melhor qualidade
+            const thumbnail = await captureThumbnail(toast);
+            if (!thumbnail) return;
+            
+            addTemplate(templateName, currentState, thumbnail);
+
+            toast({
+                title: "Modelo Salvo!",
+                description: `O modelo "${templateName}" foi adicionado à sua coleção.`,
             });
-
-            const image = canvas.toDataURL(`image/${format}`, format === 'png' ? 1.0 : 0.9);
-            
-            const link = document.createElement('a');
-            link.href = image;
-            link.download = `quotevid-export.${format}`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            toast({ title: 'Sucesso!', description: `A imagem foi baixada como ${link.download}.` });
-
         } catch (error) {
-            console.error('Erro ao exportar imagem:', error);
-            toast({ variant: 'destructive', title: 'Erro de Exportação', description: 'Não foi possível gerar a imagem.' });
+            console.error("Erro ao criar thumbnail:", error);
+            toast({
+                variant: "destructive",
+                title: "Erro ao Salvar",
+                description: "Não foi possível gerar a pré-visualização do modelo.",
+            });
         }
-    }, [toast]);
+    }, [addTemplate, currentState, toast]);
     
-    const onExportJPG = useCallback(() => captureCanvas('jpeg'), [captureCanvas]);
-    const onExportPNG = useCallback(() => captureCanvas('png'), [captureCanvas]);
+    const onExportJPG = useCallback(() => captureAndDownload_final('jpeg', currentState, toast), [currentState, toast]);
+    const onExportPNG = useCallback(() => captureAndDownload_final('png', currentState, toast), [currentState, toast]);
 
     const onExportMP4 = useCallback(() => {
         toast({ title: 'Em breve!', description: 'A exportação de vídeo MP4 estará disponível em futuras atualizações.' });
@@ -215,7 +176,6 @@ export default function AspectWeaver() {
     if (!isProfileLoaded || !areTemplatesLoaded) return;
 
     const initialize = async () => {
-        // Acessa as frases da variável global `quotes`, que é preenchida no servidor
         const quoteParam = searchParams.get("quote");
         const templateIdParam = searchParams.get("templateId");
         
@@ -353,32 +313,10 @@ export default function AspectWeaver() {
   };
 
   const previewProps = {
-    aspectRatio: currentState.aspectRatio,
-    backgroundStyle: currentState.backgroundStyle,
-    filmColor: currentState.filmColor,
-    filmOpacity: currentState.filmOpacity,
-    text: currentState.text,
-    textStyle: textStyle,
-    textVerticalPosition: currentState.textVerticalPosition,
-    profile,
-    showProfileSignature: currentState.showProfileSignature,
-    signaturePositionX: currentState.signaturePositionX,
-    signaturePositionY: currentState.signaturePositionY,
-    signatureScale: currentState.signatureScale,
-    showSignaturePhoto: currentState.showSignaturePhoto,
-    showSignatureUsername: currentState.showSignatureUsername,
-    showSignatureSocial: currentState.showSignatureSocial,
-    showSignatureBackground: currentState.showSignatureBackground,
-    signatureBgColor: currentState.signatureBgColor,
-    signatureBgOpacity: currentState.signatureBgOpacity,
-    showLogo: currentState.showLogo,
-    logoPositionX: currentState.logoPositionX,
-    logoPositionY: currentState.logoPositionY,
-    logoScale: currentState.logoScale,
-    logoOpacity: currentState.logoOpacity,
-    activeTemplateId: currentState.activeTemplateId,
-    profileVerticalPosition: currentState.profileVerticalPosition,
+    ...currentState,
     scale,
+    textStyle: textStyle,
+    profile,
   };
 
   return (
