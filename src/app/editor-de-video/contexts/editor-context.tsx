@@ -114,41 +114,29 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     }
     toast({ title: 'Exportando...', description: `Gerando imagem ${format.toUpperCase()}.` });
     
-    // Salvar estado original para restauração
-    const originalTransform = previewElement.style.transform;
-    const originalTransformOrigin = previewElement.style.transformOrigin;
-    const originalClassName = previewElement.className;
+    const clone = previewElement.cloneNode(true) as HTMLElement;
+    clone.style.position = 'absolute';
+    clone.style.top = '-9999px';
+    clone.style.left = '-9999px';
+    // Importante: garantir que o clone tenha as mesmas dimensões do original
+    const rect = previewElement.getBoundingClientRect();
+    clone.style.width = `${rect.width}px`;
+    clone.style.height = `${rect.height}px`;
+    clone.style.transform = 'scale(1)'; // Remover qualquer escala do clone
+
+    document.body.appendChild(clone);
 
     try {
-      // Garantir que fontes externas estejam prontas
       await document.fonts.ready;
 
-      // Medir as dimensões reais do elemento com a proporção aplicada
-      const rect = previewElement.getBoundingClientRect();
-      const width = rect.width;
-      const height = rect.height;
-
-      // Resetar transformações e classes de aspecto, e forçar dimensões fixas
-      previewElement.style.transform = 'scale(1)';
-      previewElement.style.transformOrigin = 'center';
-      
-      // Remover classes que definem aspect-ratio para evitar conflitos
-      previewElement.className = originalClassName
-        .replace(/aspect-\[.*?\]/g, '')
-        .replace(/aspect-square/g, '');
-
-      // Aplicar dimensões exatas via style
-      previewElement.style.width = `${width}px`;
-      previewElement.style.height = `${height}px`;
-      
-      const canvas = await html2canvas(previewElement, {
+      const canvas = await html2canvas(clone, {
         useCORS: true, 
         scale: 2, // Aumentar resolução
         backgroundColor: null, // Fundo transparente
-        width: width,
-        height: height,
-        windowWidth: width,
-        windowHeight: height,
+        width: rect.width,
+        height: rect.height,
+        windowWidth: rect.width,
+        windowHeight: rect.height,
       });
 
       const dataUrl = format === 'png' 
@@ -175,12 +163,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
         description: 'Não foi possível gerar a imagem.'
       });
     } finally {
-        // Restaurar estado original do elemento
-        previewElement.style.transform = originalTransform;
-        previewElement.style.transformOrigin = originalTransformOrigin;
-        previewElement.className = originalClassName;
-        previewElement.style.width = '';
-        previewElement.style.height = '';
+        document.body.removeChild(clone);
     }
   }, [toast, currentState]);
 
@@ -190,13 +173,25 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     const templateName = prompt("Digite um nome para o novo modelo:");
     if (!templateName) return;
 
-    try {
-        const previewElement = document.getElementById('editor-preview-content') as HTMLElement;
-        if (!previewElement) throw new Error("Elemento de preview não encontrado");
+    const previewElement = document.getElementById('editor-preview-content') as HTMLElement | null;
+    if (!previewElement) {
+        toast({ variant: "destructive", title: "Erro ao Salvar", description: "Elemento de preview não encontrado." });
+        return;
+    }
+    
+    const clone = previewElement.cloneNode(true) as HTMLElement;
+    clone.style.position = 'absolute';
+    clone.style.top = '-9999px';
+    clone.style.left = '-9999px';
+    const rect = previewElement.getBoundingClientRect();
+    clone.style.width = `${rect.width}px`;
+    clone.style.height = `${rect.height}px`;
+    clone.style.transform = 'scale(1)';
+    document.body.appendChild(clone);
 
+    try {
         await document.fonts.ready;
-        
-        const canvas = await html2canvas(previewElement, { scale: 0.5, backgroundColor: null, useCORS: true });
+        const canvas = await html2canvas(clone, { scale: 0.5, backgroundColor: null, useCORS: true });
         const thumbnail = canvas.toDataURL('image/png');
         
         addTemplate(templateName, currentState, thumbnail);
@@ -204,6 +199,8 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     } catch (error) {
         console.error("Erro ao criar thumbnail:", error);
         toast({ variant: "destructive", title: "Erro ao Salvar", description: "Não foi possível gerar a pré-visualização." });
+    } finally {
+        document.body.removeChild(clone);
     }
   }, [addTemplate, currentState, toast]);
 
