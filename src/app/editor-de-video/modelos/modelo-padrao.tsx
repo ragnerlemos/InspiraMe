@@ -31,23 +31,17 @@ export function ModeloPadrao({
   logoOpacity,
 }: ModeloPadraoProps) {
 
-  const getJustifyClass = (align: React.CSSProperties['textAlign']) => {
-    switch (align) {
-      case 'left': return 'justify-start';
-      case 'right': return 'justify-end';
-      default: return 'justify-center';
-    }
-  };
-
   return (
-    <div className="relative w-full h-full p-8 flex flex-col">
+    <div className="relative w-full h-full">
       
       {/* Container de Texto Principal */}
       <div 
-        className="w-full flex-grow flex"
+        className="absolute w-full px-8"
         style={{
-          alignItems: 'center', // Centraliza verticalmente no espaço disponível
-          justifyContent: getJustifyClass(textStyle.textAlign),
+          top: `${textVerticalPosition}%`,
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          textAlign: textStyle.textAlign,
         }}
       >
         <div
@@ -61,13 +55,11 @@ export function ModeloPadrao({
       {/* Container da Assinatura */}
       {showProfileSignature && (
         <div
-          className="w-full flex justify-center"
+          className="absolute"
           style={{
-            flexGrow: 0, // Não permite que cresça
-            flexShrink: 0, // Não permite que encolha
-            transform: `scale(${signatureScale / 100})`,
-            transformOrigin: 'bottom center',
-            paddingBottom: `${100 - signaturePositionY}%` // Usa padding para empurrar para a posição correta
+            top: `${signaturePositionY}%`,
+            left: `${signaturePositionX}%`,
+            transform: `translate(-50%, -50%) scale(${signatureScale / 100})`,
           }}
         >
           <AssinaturaPerfil
@@ -82,7 +74,7 @@ export function ModeloPadrao({
         </div>
       )}
 
-      {/* Container da Logo (Posicionamento Absoluto ainda é melhor aqui) */}
+      {/* Container da Logo */}
       {showLogo && profile.logo && (
          <div
           className="absolute"
