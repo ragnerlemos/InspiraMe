@@ -4,7 +4,7 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode, useMemo } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { useTemplates } from "@/hooks/use-templates";
-import { toPng, toJpeg } from 'html-to-image';
+import domtoimage from 'dom-to-image-more';
 import type { EditorState } from '../tipos';
 
 // Interface for the shared editor state and controls
@@ -98,7 +98,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
 
   const redo = useCallback(() => {
     if (canRedo) {
-      setCurrentStateIndex(currentStateIndex + 1);
+      setCurrentStateIndex(currentStateIndex - 1);
     }
   }, [canRedo, currentStateIndex]);
 
@@ -115,54 +115,44 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     toast({ title: 'Exportando...', description: `Gerando imagem ${format.toUpperCase()}.` });
 
     try {
-      // 1. Salva o transform original (se houver zoom/escala no preview)
       const originalTransform = previewElement.style.transform;
-  
-      // 2. Reseta a escala para capturar no tamanho real
       previewElement.style.transform = 'scale(1)';
       previewElement.style.transformOrigin = 'top left';
-  
-      // 3. Espera as fontes carregarem
+
       await document.fonts.ready;
-  
-      // 4. Mede as dimensões reais do preview
+
       const { width, height } = previewElement.getBoundingClientRect();
-  
-      // 5. Opções robustas para captura
+
       const options = {
         width: Math.round(width),
         height: Math.round(height),
-        pixelRatio: 3,
+        quality: 1,
         cacheBust: true,
-        fontEmbedCSS: `
-          @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
-          @import url('https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap');
-          @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap');
-          @import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
-        `,
+        style: {
+            transform: 'scale(1)',
+            transformOrigin: 'top left',
+        }
       };
-  
-      // 6. Gera o dataURL
+
       const dataUrl =
         format === 'png'
-          ? await toPng(previewElement, options)
-          : await toJpeg(previewElement, { ...options, quality: 0.95 });
-  
-      // 7. Baixa o arquivo
+          ? await domtoimage.toPng(previewElement, options)
+          : await domtoimage.toJpeg(previewElement, { ...options, quality: 0.95 });
+      
+      previewElement.style.transform = originalTransform;
+
       const link = document.createElement('a');
       link.href = dataUrl;
       link.download = `inspire-me-export.${format}`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-  
+
       toast({
         title: 'Sucesso!',
         description: `A imagem foi baixada como ${link.download}.`
       });
-  
-      // 8. Restaura o transform original
-      previewElement.style.transform = originalTransform;
+
     } catch (error) {
       console.error('Erro ao exportar imagem:', error);
       toast({
@@ -170,8 +160,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
         title: 'Erro de Exportação',
         description: 'Não foi possível gerar a imagem.'
       });
-      // Garante que o transform seja restaurado mesmo em caso de erro
-      if (previewElement) {
+       if (previewElement) {
         previewElement.style.transform = (previewElement.dataset.originalTransform || '');
       }
     }
@@ -188,10 +177,9 @@ export function EditorProvider({ children }: { children: ReactNode }) {
 
         await document.fonts.ready;
 
-        const thumbnail = await toPng(previewElement, {
+        const thumbnail = await domtoimage.toPng(previewElement, {
             width: 400,
             height: 400,
-            pixelRatio: 1,
         });
 
         addTemplate(templateName, currentState, thumbnail);
