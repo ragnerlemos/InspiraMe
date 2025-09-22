@@ -1,4 +1,3 @@
-
 // Componente que exibe a assinatura do perfil do usuário na tela de visualização.
 // Inclui avatar, nome de usuário e rede social, com opções de customização.
 
@@ -46,7 +45,7 @@ export function AssinaturaPerfil({
 
   return (
     <div 
-        className="flex gap-3 p-2 rounded-lg max-w-max"
+        className="flex items-center gap-3 p-3 rounded-lg max-w-max"
         style={{
             backgroundColor: showBackground ? backgroundColor : 'transparent',
         }}
