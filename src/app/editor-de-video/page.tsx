@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, Suspense } from "react";
 import { useWindowSize } from "react-use";
 import { useProfile } from "@/hooks/use-profile";
 import { Sidebar } from "@/app/editor-de-video/components/sidebar";
@@ -15,9 +15,7 @@ import {
 } from "@/components/ui/resizable";
 import type { EditorState, EstiloFundo } from "@/app/editor-de-video/tipos";
 import { useEditor } from "./contexts/editor-context";
-import { useToast } from "@/hooks/use-toast";
-import { useTemplates } from "@/hooks/use-templates";
-import { captureAndDownload_final, captureThumbnail } from './exportar';
+import { useTemplates, type Template } from "@/hooks/use-templates";
 import { getAllQuotes } from "@/lib/dados";
 import { useSearchParams } from "next/navigation";
 
@@ -83,99 +81,29 @@ const getInitialState = (): Omit<EditorState, 'activeTemplateId' | 'text'> => ({
     logoOpacity: 100,
 });
 
-
-export default function AspectWeaver() {
+function EditorCore() {
   const { width } = useWindowSize();
   const isDesktop = width >= 768;
   const { profile, isLoaded: isProfileLoaded } = useProfile();
   const searchParams = useSearchParams();
-  const { toast } = useToast();
-  const { setUndoState, setSaveActions } = useEditor();
-  const { templates: allTemplates, isLoaded: areTemplatesLoaded, addTemplate } = useTemplates();
+  const { templates: allTemplates, isLoaded: areTemplatesLoaded } = useTemplates();
+  
+  const { 
+    isReady,
+    currentState,
+    updateState,
+    setInitialState
+  } = useEditor();
 
-  // Histórico de estados
-  const [history, setHistory] = useState<EditorState[]>([]);
-  const [currentStateIndex, setCurrentStateIndex] = useState(0);
-  const [isReady, setIsReady] = useState(false);
 
   const [activeControl, setActiveControl] = useState<string | null>('texto');
   const [scale, setScale] = useState(1);
   
-  const currentState = history[currentStateIndex] || {};
-
-  const updateState = (newState: Partial<EditorState>) => {
-    const nextState = { ...currentState, ...newState };
-    const newHistory = history.slice(0, currentStateIndex + 1);
-    setHistory([...newHistory, nextState]);
-    setCurrentStateIndex(newHistory.length);
-  };
-  
-  // Funções de Desfazer e Refazer
-  const undo = useCallback(() => {
-    if (currentStateIndex > 0) {
-      setCurrentStateIndex(currentStateIndex - 1);
-    }
-  }, [currentStateIndex]);
-
-  const redo = useCallback(() => {
-    if (currentStateIndex < history.length - 1) {
-      setCurrentStateIndex(currentStateIndex + 1);
-    }
-  }, [currentStateIndex, history.length]);
-
-  const canUndo = currentStateIndex > 0;
-  const canRedo = currentStateIndex < history.length - 1;
-  
-  useEffect(() => {
-    setUndoState({ canUndo, undo, canRedo, redo });
-  }, [canUndo, undo, canRedo, redo, setUndoState]);
-
-  // Lógica de Salvamento e Exportação
-  const handleSaveAsTemplate = useCallback(async () => {
-        const templateName = prompt("Digite um nome para o novo modelo:");
-        if (!templateName) return;
-        
-        try {
-            const thumbnail = await captureThumbnail(toast);
-            if (!thumbnail) return;
-            
-            addTemplate(templateName, currentState, thumbnail);
-
-            toast({
-                title: "Modelo Salvo!",
-                description: `O modelo "${templateName}" foi adicionado à sua coleção.`,
-            });
-        } catch (error) {
-            console.error("Erro ao criar thumbnail:", error);
-            toast({
-                variant: "destructive",
-                title: "Erro ao Salvar",
-                description: "Não foi possível gerar a pré-visualização do modelo.",
-            });
-        }
-    }, [addTemplate, currentState, toast]);
-    
-    const onExportJPG = useCallback(() => captureAndDownload_final('jpeg', currentState, toast), [currentState, toast]);
-    const onExportPNG = useCallback(() => captureAndDownload_final('png', currentState, toast), [currentState, toast]);
-
-    const onExportMP4 = useCallback(() => {
-        toast({ title: 'Em breve!', description: 'A exportação de vídeo MP4 estará disponível em futuras atualizações.' });
-    }, [toast]);
-    
-    useEffect(() => {
-        setSaveActions({
-            onSaveAsTemplate: handleSaveAsTemplate,
-            onExportJPG,
-            onExportPNG,
-            onExportMP4,
-        });
-    }, [handleSaveAsTemplate, onExportJPG, onExportPNG, onExportMP4, setSaveActions]);
-
   // Efeito de inicialização
   useEffect(() => {
-    if (!isProfileLoaded || !areTemplatesLoaded) return;
+    if (isReady || !isProfileLoaded || !areTemplatesLoaded) return;
 
-    const initialize = async () => {
+    const initialize = async (templates: Template[]) => {
         const quoteParam = searchParams.get("quote");
         const templateIdParam = searchParams.get("templateId");
         
@@ -190,7 +118,7 @@ export default function AspectWeaver() {
                 : "A inspiração está a caminho...";
         
         if (templateIdParam) {
-          const template = allTemplates.find(t => t.id === templateIdParam);
+          const template = templates.find(t => t.id === templateIdParam);
           if (template) {
             initialState = { ...baseState, ...template.editorState, text, activeTemplateId: template.id };
           } else {
@@ -200,16 +128,15 @@ export default function AspectWeaver() {
             initialState = { ...baseState, text, activeTemplateId: null };
         }
         
-        setHistory([initialState]);
-        setCurrentStateIndex(0);
-        setIsReady(true);
+        setInitialState(initialState);
     }
 
-    initialize();
-  }, [searchParams, isProfileLoaded, areTemplatesLoaded, allTemplates]);
+    initialize(allTemplates);
+  }, [searchParams, isProfileLoaded, areTemplatesLoaded, allTemplates, isReady, setInitialState]);
 
 
   useEffect(() => {
+    if (!currentState) return;
     if (isDesktop) {
         setScale(1);
     } else {
@@ -219,9 +146,10 @@ export default function AspectWeaver() {
             setScale(1);
         }
     }
-  }, [currentState.aspectRatio, isDesktop]);
+  }, [currentState?.aspectRatio, isDesktop, currentState]);
   
   const textStyle = useMemo(() => {
+    if (!currentState) return {};
     const createTextStrokeShadow = (width: number, color: string): string => {
         if (width === 0) return "none";
         const shadows = [];
@@ -254,14 +182,14 @@ export default function AspectWeaver() {
         textShadow: textStrokeShadow !== "none" && mainTextShadow !== "none" ? `${textStrokeShadow}, ${mainTextShadow}` : textStrokeShadow !== "none" ? textStrokeShadow : mainTextShadow,
     }
   }, [
-    currentState.fontFamily, currentState.fontSize, currentState.fontWeight, 
-    currentState.fontStyle, currentState.textColor, currentState.textAlign, 
-    currentState.textShadowBlur, currentState.textStrokeColor, currentState.textStrokeWidth, 
-    currentState.letterSpacing, currentState.lineHeight, currentState.wordSpacing
+    currentState?.fontFamily, currentState?.fontSize, currentState?.fontWeight, 
+    currentState?.fontStyle, currentState?.textColor, currentState?.textAlign, 
+    currentState?.textShadowBlur, currentState?.textStrokeColor, currentState?.textStrokeWidth, 
+    currentState?.letterSpacing, currentState?.lineHeight, currentState?.wordSpacing
   ]);
 
 
-  if (!isReady || !isProfileLoaded) {
+  if (!isReady || !isProfileLoaded || !currentState) {
     return <ProporcaoSkeleton />;
   }
 
@@ -336,4 +264,13 @@ export default function AspectWeaver() {
       <MobileToolbar {...commonProps} />
     </div>
   );
+}
+
+
+export default function AspectWeaver() {
+  return (
+    <Suspense fallback={<ProporcaoSkeleton />}>
+      <EditorCore />
+    </Suspense>
+  )
 }
