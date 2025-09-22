@@ -136,7 +136,11 @@ export function EditorProvider({ children }: { children: ReactNode }) {
             width,
             height,
             pixelRatio: 2, 
-            skipFonts: true, // Ignora a verificação de fontes externas
+            fetchRequestInit: {
+                headers: {
+                  'cache-control': 'no-cache',
+                },
+            },
             style: {
                 transform: `scale(1)`,
                 transformOrigin: 'top left',
