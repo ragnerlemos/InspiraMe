@@ -46,7 +46,7 @@ export function AssinaturaPerfil({
 
   return (
     <div 
-        className={cn("flex items-center gap-3 p-2 rounded-lg max-w-max")}
+        className={cn("flex items-center gap-3 p-2 rounded-lg max-w-max", { 'items-center': !showPhoto })}
         style={{
             backgroundColor: showBackground ? backgroundColor : 'transparent',
         }}
@@ -59,7 +59,7 @@ export function AssinaturaPerfil({
           </AvatarFallback>
         </Avatar>
       )}
-      <div className="flex flex-col justify-center">
+      <div className={cn("flex flex-col", { 'justify-center': showPhoto })}>
         {showUsername && (
           <p className="font-bold text-white text-sm leading-none m-0 p-0 whitespace-nowrap">
             {profile.username}
