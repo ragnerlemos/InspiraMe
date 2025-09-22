@@ -5,9 +5,15 @@ import Image from 'next/image';
 import { cn } from "@/lib/utils";
 import type { ProfileData } from "@/hooks/use-profile";
 import { AssinaturaPerfil } from "../modelos/assinatura-perfil";
-import type { EstiloFundo, VisualizacaoEditorProps } from '../tipos';
 import { ModeloTwitter } from '../modelos/modelo-twitter';
 import { ModeloPadrao } from '../modelos/modelo-padrao';
+import type { EditorState, EstiloTexto } from '../tipos';
+
+interface PreviewCanvaProps extends EditorState {
+    profile: ProfileData;
+    textStyle: EstiloTexto;
+    scale: number;
+}
 
 
 // Função para converter cor hexadecimal para RGB
@@ -37,7 +43,7 @@ const getMediaType = (src: string): "image" | "video" | "unknown" => {
 };
 
 
-export function PreviewCanva(props: VisualizacaoEditorProps) {
+export function PreviewCanva(props: PreviewCanvaProps) {
     const { 
         aspectRatio, 
         backgroundStyle, 

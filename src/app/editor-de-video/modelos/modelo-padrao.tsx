@@ -1,6 +1,12 @@
 
 import type { VisualizacaoEditorProps } from '../tipos';
 import { AssinaturaPerfil } from './assinatura-perfil';
+import type { EstiloTexto } from '../tipos';
+
+interface ModeloPadraoProps extends VisualizacaoEditorProps {
+    textStyle: EstiloTexto;
+}
+
 
 export function ModeloPadrao({
   text,
@@ -22,7 +28,7 @@ export function ModeloPadrao({
   logoPositionY,
   logoScale,
   logoOpacity,
-}: VisualizacaoEditorProps) {
+}: ModeloPadraoProps) {
   return (
     <>
       <div className="absolute inset-0 flex items-center justify-center p-8">

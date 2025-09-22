@@ -1,25 +1,19 @@
 
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useEffect, useMemo } from "react";
 import { useWindowSize } from "react-use";
 import { useProfile } from "@/hooks/use-profile";
 import { Sidebar } from "@/app/editor-de-video/components/sidebar";
 import { PreviewCanva } from "@/app/editor-de-video/components/preview-canva";
 import { MobileToolbar } from "@/app/editor-de-video/components/mobile-toolbar";
-import {
-  Panel,
-  PanelGroup,
-  PanelResizeHandle,
-} from "@/components/ui/resizable";
-import type { EditorState, EstiloFundo, EditorControlState } from "@/app/editor-de-video/tipos";
-import { useToast } from "@/hooks/use-toast";
-import { useTemplates, type Template } from "@/hooks/use-templates";
-import html2canvas from 'html2canvas';
+import { Panel, PanelGroup, PanelResizeHandle } from "@/components/ui/resizable";
+import type { EditorState, EstiloFundo } from "@/app/editor-de-video/tipos";
 import { getAllQuotes } from "@/lib/dados";
 import { useSearchParams } from "next/navigation";
+import { useTemplates, type Template } from "@/hooks/use-templates";
+import { useEditor } from "./contexts/editor-context";
 import Loading from './loading';
-
 
 const getInitialState = (): Omit<EditorState, 'activeTemplateId' | 'text'> => ({
     fontFamily: "Poppins",
@@ -58,139 +52,26 @@ const getInitialState = (): Omit<EditorState, 'activeTemplateId' | 'text'> => ({
 });
 
 
-export default function Editor({ registerControls }: { registerControls: (controls: Partial<EditorControlState>) => void }) {
+export default function Editor() {
   const { width } = useWindowSize();
   const isDesktop = width >= 768;
   const { profile, isLoaded: isProfileLoaded } = useProfile();
   const searchParams = useSearchParams();
-  const { toast } = useToast();
-  const { templates: allTemplates, isLoaded: areTemplatesLoaded, addTemplate } = useTemplates();
+  const { templates: allTemplates, isLoaded: areTemplatesLoaded } = useTemplates();
 
-  // Histórico de estados
-  const [history, setHistory] = useState<EditorState[]>([]);
-  const [currentStateIndex, setCurrentStateIndex] = useState(0);
-  const [isReady, setIsReady] = useState(false);
+  const {
+    isReady,
+    currentState,
+    updateState,
+    setInitialState,
+  } = useEditor();
 
   const [activeControl, setActiveControl] = useState<string | null>('texto');
   const [scale, setScale] = useState(1);
-  
-  const currentState = history[currentStateIndex] || {};
-
-  const updateState = (newState: Partial<EditorState>) => {
-    const nextState = { ...currentState, ...newState };
-    const newHistory = history.slice(0, currentStateIndex + 1);
-    setHistory([...newHistory, nextState]);
-    setCurrentStateIndex(newHistory.length);
-  };
-  
-  // Funções de Desfazer e Refazer
-  const undo = useCallback(() => {
-    if (currentStateIndex > 0) {
-      setCurrentStateIndex(currentStateIndex - 1);
-    }
-  }, [currentStateIndex]);
-
-  const redo = useCallback(() => {
-    if (currentStateIndex < history.length - 1) {
-      setCurrentStateIndex(currentStateIndex + 1);
-    }
-  }, [currentStateIndex, history.length]);
-
-  const canUndo = currentStateIndex > 0;
-  const canRedo = currentStateIndex < history.length - 1;
-  
-
-  // Lógica de Salvamento e Exportação
-  const handleSaveAsTemplate = useCallback(async () => {
-        const templateName = prompt("Digite um nome para o novo modelo:");
-        if (!templateName) return;
-        const previewElement = document.getElementById('editor-preview-content');
-        if (previewElement) {
-            try {
-                const canvas = await html2canvas(previewElement, {
-                    scale: 0.5,
-                    useCORS: true,
-                    backgroundColor: null, 
-                });
-                const thumbnail = canvas.toDataURL('image/jpeg', 0.8);
-                
-                addTemplate(templateName, currentState, thumbnail);
-
-                toast({
-                    title: "Modelo Salvo!",
-                    description: `O modelo "${templateName}" foi adicionado à sua coleção.`,
-                });
-            } catch (error) {
-                console.error("Erro ao criar thumbnail:", error);
-                toast({
-                    variant: "destructive",
-                    title: "Erro ao Salvar",
-                    description: "Não foi possível gerar a pré-visualização do modelo.",
-                });
-            }
-        }
-    }, [addTemplate, currentState, toast]);
-
-    const captureCanvas = useCallback(async (format: 'jpeg' | 'png') => {
-        const previewElement = document.getElementById('editor-preview-content');
-        if (!previewElement) {
-            toast({ variant: 'destructive', title: 'Erro', description: 'Não foi possível encontrar a área de visualização.' });
-            return;
-        }
-
-        toast({ title: 'Exportando...', description: `Gerando imagem ${format.toUpperCase()}.` });
-        
-        try {
-            const canvas = await html2canvas(previewElement, {
-                useCORS: true,
-                backgroundColor: null, 
-                scale: 4, // Aumenta a resolução para melhor qualidade
-            });
-
-            const image = canvas.toDataURL(`image/${format}`, format === 'png' ? 1.0 : 0.9);
-            
-            const link = document.createElement('a');
-            link.href = image;
-            link.download = `inspire-me-export.${format}`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            toast({ title: 'Sucesso!', description: `A imagem foi baixada como ${link.download}.` });
-
-        } catch (error) {
-            console.error('Erro ao exportar imagem:', error);
-            toast({ variant: 'destructive', title: 'Erro de Exportação', description: 'Não foi possível gerar a imagem.' });
-        }
-    }, [toast]);
-    
-    const onExportJPG = useCallback(() => captureCanvas('jpeg'), [captureCanvas]);
-    const onExportPNG = useCallback(() => captureCanvas('png'), [captureCanvas]);
-
-    const onExportMP4 = useCallback(() => {
-        toast({ title: 'Em breve!', description: 'A exportação de vídeo MP4 estará disponível em futuras atualizações.' });
-    }, [toast]);
-    
-    // Efeito para atualizar o contexto do editor
-    useEffect(() => {
-        if (registerControls) {
-            registerControls({
-                canUndo,
-                undo,
-                canRedo,
-                redo,
-                onSaveAsTemplate: handleSaveAsTemplate,
-                onExportJPG,
-                onExportPNG,
-                onExportMP4,
-                isReady,
-            });
-        }
-    }, [canUndo, undo, canRedo, redo, handleSaveAsTemplate, onExportJPG, onExportPNG, onExportMP4, registerControls, isReady]);
 
   // Efeito de inicialização
   useEffect(() => {
-    if (!isProfileLoaded || !areTemplatesLoaded) return;
+    if (isReady || !isProfileLoaded || !areTemplatesLoaded) return;
 
     const initialize = async (templates: Template[]) => {
         const quoteParam = searchParams.get("quote");
@@ -217,16 +98,15 @@ export default function Editor({ registerControls }: { registerControls: (contro
             initialState = { ...baseState, text, activeTemplateId: null };
         }
         
-        setHistory([initialState]);
-        setCurrentStateIndex(0);
-        setIsReady(true);
+        setInitialState(initialState);
     }
 
     initialize(allTemplates);
-  }, [searchParams, isProfileLoaded, areTemplatesLoaded]);
+  }, [searchParams, isProfileLoaded, areTemplatesLoaded, isReady, setInitialState, allTemplates]);
 
 
   useEffect(() => {
+    if (!currentState) return;
     if (isDesktop) {
         setScale(1);
     } else {
@@ -236,9 +116,10 @@ export default function Editor({ registerControls }: { registerControls: (contro
             setScale(1);
         }
     }
-  }, [currentState.aspectRatio, isDesktop]);
+  }, [currentState?.aspectRatio, isDesktop, currentState]);
   
   const textStyle = useMemo(() => {
+    if (!currentState) return {};
     const createTextStrokeShadow = (width: number, color: string): string => {
         if (width === 0) return "none";
         const shadows = [];
@@ -271,14 +152,14 @@ export default function Editor({ registerControls }: { registerControls: (contro
         textShadow: textStrokeShadow !== "none" && mainTextShadow !== "none" ? `${textStrokeShadow}, ${mainTextShadow}` : textStrokeShadow !== "none" ? textStrokeShadow : mainTextShadow,
     }
   }, [
-    currentState.fontFamily, currentState.fontSize, currentState.fontWeight, 
-    currentState.fontStyle, currentState.textColor, currentState.textAlign, 
-    currentState.textShadowBlur, currentState.textStrokeColor, currentState.textStrokeWidth, 
-    currentState.letterSpacing, currentState.lineHeight, currentState.wordSpacing
+    currentState?.fontFamily, currentState?.fontSize, currentState?.fontWeight, 
+    currentState?.fontStyle, currentState?.textColor, currentState?.textAlign, 
+    currentState?.textShadowBlur, currentState?.textStrokeColor, currentState?.textStrokeWidth, 
+    currentState?.letterSpacing, currentState?.lineHeight, currentState?.wordSpacing
   ]);
 
 
-  if (!isReady || !isProfileLoaded) {
+  if (!isReady || !isProfileLoaded || !currentState) {
     return <Loading />;
   }
 
@@ -330,31 +211,9 @@ export default function Editor({ registerControls }: { registerControls: (contro
   };
 
   const previewProps = {
-    aspectRatio: currentState.aspectRatio,
-    backgroundStyle: currentState.backgroundStyle,
-    filmColor: currentState.filmColor,
-    filmOpacity: currentState.filmOpacity,
-    text: currentState.text,
-    textStyle: textStyle,
-    textVerticalPosition: currentState.textVerticalPosition,
+    ...currentState,
     profile,
-    showProfileSignature: currentState.showProfileSignature,
-    signaturePositionX: currentState.signaturePositionX,
-    signaturePositionY: currentState.signaturePositionY,
-    signatureScale: currentState.signatureScale,
-    showSignaturePhoto: currentState.showSignaturePhoto,
-    showSignatureUsername: currentState.showSignatureUsername,
-    showSignatureSocial: currentState.showSignatureSocial,
-    showSignatureBackground: currentState.showSignatureBackground,
-    signatureBgColor: currentState.signatureBgColor,
-    signatureBgOpacity: currentState.signatureBgOpacity,
-    showLogo: currentState.showLogo,
-    logoPositionX: currentState.logoPositionX,
-    logoPositionY: currentState.logoPositionY,
-    logoScale: currentState.logoScale,
-    logoOpacity: currentState.logoOpacity,
-    activeTemplateId: currentState.activeTemplateId,
-    profileVerticalPosition: currentState.profileVerticalPosition,
+    textStyle,
     scale,
   };
 

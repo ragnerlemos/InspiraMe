@@ -1,13 +1,18 @@
 
-import type { VisualizacaoPerfilProps } from '../tipos';
+import type { VisualizacaoEditorProps, EstiloTexto } from '../tipos';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { User } from 'lucide-react';
+
+interface ModeloTwitterProps extends VisualizacaoEditorProps {
+    textStyle: EstiloTexto;
+}
+
 
 export function ModeloTwitter({
   profile,
   text,
   textStyle,
-}: VisualizacaoPerfilProps) {
+}: ModeloTwitterProps) {
   return (
     <div className="absolute inset-0 flex items-center justify-center p-8">
       {/* Container que agrupa a assinatura e o texto para garantir o alinhamento */}
