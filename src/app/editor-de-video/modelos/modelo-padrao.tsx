@@ -10,6 +10,7 @@ interface ModeloPadraoProps extends VisualizacaoEditorProps {
 export function ModeloPadrao({
   text,
   textStyle,
+  textVerticalPosition,
   showProfileSignature,
   profile,
   signaturePositionX,
@@ -27,74 +28,78 @@ export function ModeloPadrao({
   logoScale,
   logoOpacity,
 }: ModeloPadraoProps) {
-  
-  const textSpacer = Math.max(0, signaturePositionY - 50 - 25);
-  const logoSpacer = Math.max(0, 50 - logoPositionY - 25);
-
-
   return (
-    <div className="relative w-full h-full flex flex-col p-8">
-      
-        {/* Spacer to push logo down */}
-        <div style={{ flexGrow: logoPositionY > 50 ? logoSpacer : logoPositionY - 5 }}></div>
-
-        {/* Logo Container */}
-        {showLogo && profile.logo && (
-            <div className="flex justify-center" style={{ flexGrow: 0 }}>
-                <div
-                    style={{
-                        transform: `scale(${logoScale / 100})`,
-                        opacity: logoOpacity / 100,
-                    }}
-                >
-                    <img
-                      src={profile.logo}
-                      alt="Logomarca"
-                      className="max-w-[150px] max-h-[150px]"
-                    />
-                </div>
-            </div>
-        )}
-
-        {/* Spacer between logo and text */}
-        <div style={{ flexGrow: 10 }}></div>
-      
-        {/* Main Text Container */}
-        <div className="flex-grow flex items-center justify-center">
-            <div
-                style={textStyle}
-                className="break-words"
-            >
-                {text}
-            </div>
+    <div className="relative w-full h-full">
+      {/* Main Text Container */}
+      <div
+        className="absolute w-full px-8"
+        style={{
+          top: `${textVerticalPosition}%`,
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          ...textStyle,
+        }}
+      >
+        <div
+            style={textStyle}
+            className="break-words"
+        >
+            {text}
         </div>
-
-        {/* Spacer to push signature down */}
-        <div style={{ flexGrow: textSpacer }}></div>
+      </div>
       
-        {/* Signature Container */}
-        {showProfileSignature && (
-            <div className="flex justify-center" style={{ flexGrow: 0 }}>
-                <div
-                    style={{
-                        transform: `scale(${signatureScale / 100})`,
-                    }}
-                >
-                    <AssinaturaPerfil
-                        profile={profile}
-                        showPhoto={showSignaturePhoto}
-                        showUsername={showSignatureUsername}
-                        showSocial={showSignatureSocial}
-                        showBackground={showSignatureBackground}
-                        bgColor={signatureBgColor}
-                        bgOpacity={signatureBgOpacity}
-                    />
-                </div>
-            </div>
-        )}
-
-        {/* Bottom spacer */}
-        <div style={{ flexGrow: 100 - signaturePositionY }}></div>
+      {/* Logo Container */}
+      {showLogo && profile.logo && (
+        <div
+          className="absolute"
+          style={{
+            top: `${logoPositionY}%`,
+            left: `${logoPositionX}%`,
+            transform: 'translate(-50%, -50%)',
+          }}
+        >
+          <div
+            style={{
+              transform: `scale(${logoScale / 100})`,
+              opacity: logoOpacity / 100,
+            }}
+          >
+            <img
+              src={profile.logo}
+              alt="Logomarca"
+              className="max-w-[150px] max-h-[150px]"
+            />
+          </div>
+        </div>
+      )}
+      
+      {/* Signature Container */}
+      {showProfileSignature && (
+        <div
+          className="absolute"
+          style={{
+            top: `${signaturePositionY}%`,
+            left: `${signaturePositionX}%`,
+            transform: 'translate(-50%, -50%)',
+          }}
+        >
+          <div
+            style={{
+              transform: `scale(${signatureScale / 100})`,
+            }}
+          >
+            <AssinaturaPerfil
+              profile={profile}
+              showPhoto={showSignaturePhoto}
+              showUsername={showSignatureUsername}
+              showSocial={showSignatureSocial}
+              showBackground={showSignatureBackground}
+              bgColor={signatureBgColor}
+              bgOpacity={signatureBgOpacity}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
