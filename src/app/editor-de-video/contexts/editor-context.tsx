@@ -98,7 +98,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
 
   const redo = useCallback(() => {
     if (canRedo) {
-      setCurrentStateIndex(currentStateIndex - 1);
+      setCurrentStateIndex(currentStateIndex + 1);
     }
   }, [canRedo, currentStateIndex]);
 
@@ -113,7 +113,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
       return;
     }
     toast({ title: 'Exportando...', description: `Gerando imagem ${format.toUpperCase()}.` });
-
+    
     // Salvar estado original para restauração
     const originalTransform = previewElement.style.transform;
     const originalTransformOrigin = previewElement.style.transformOrigin;
