@@ -125,42 +125,44 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   const captureCanvas = useCallback(async (format: 'jpeg' | 'png') => {
     const previewElement = document.getElementById('editor-preview-content');
     if (!previewElement || !currentState) {
-        toast({ variant: 'destructive', title: 'Erro', description: 'Não foi possível encontrar la área de visualização.' });
-        return;
+      toast({ variant: 'destructive', title: 'Erro', description: 'Não foi possível encontrar a área de visualização.' });
+      return;
     }
     toast({ title: 'Exportando...', description: `Gerando imagem ${format.toUpperCase()}.` });
-    
+  
     try {
-        const { width, height } = previewElement.getBoundingClientRect();
-        
-        const fontEmbedCSS = `
-            @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
-            @import url('https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap');
-            @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap');
-            @import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
-        `;
-        
-        const options = {
-            width,
-            height,
-            pixelRatio: 3, 
-            fontEmbedCSS: fontEmbedCSS,
-        };
-
-        const dataUrl = format === 'png' 
-            ? await toPng(previewElement, options) 
-            : await toJpeg(previewElement, { ...options, quality: 0.95 });
-
-        const link = document.createElement('a');
-        link.href = dataUrl;
-        link.download = `inspire-me-export.${format}`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        toast({ title: 'Sucesso!', description: `A imagem foi baixada como ${link.download}.` });
+      // Garante que as fontes já estão carregadas
+      await document.fonts.ready;
+  
+      const { width, height } = previewElement.getBoundingClientRect();
+  
+      const options = {
+        width,
+        height,
+        pixelRatio: 3,
+        fontEmbedCSS: `
+          @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+          @import url('https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap');
+          @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap');
+          @import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
+        `,
+      };
+  
+      const dataUrl = format === 'png'
+        ? await toPng(previewElement, options)
+        : await toJpeg(previewElement, { ...options, quality: 0.95 });
+  
+      const link = document.createElement('a');
+      link.href = dataUrl;
+      link.download = `inspire-me-export.${format}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+  
+      toast({ title: 'Sucesso!', description: `A imagem foi baixada como ${link.download}.` });
     } catch (error) {
-        console.error('Erro ao exportar imagem:', error);
-        toast({ variant: 'destructive', title: 'Erro de Exportação', description: 'Não foi possível gerar a imagem.' });
+      console.error('Erro ao exportar imagem:', error);
+      toast({ variant: 'destructive', title: 'Erro de Exportação', description: 'Não foi possível gerar a imagem.' });
     }
   }, [toast, currentState]);
 
