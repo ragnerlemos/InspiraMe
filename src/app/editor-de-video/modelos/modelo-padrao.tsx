@@ -31,61 +31,43 @@ export function ModeloPadrao({
   logoOpacity,
 }: ModeloPadraoProps) {
 
-  const getAlignmentClass = (align: React.CSSProperties['textAlign']) => {
+  const getJustifyContentClass = (align: React.CSSProperties['textAlign']) => {
     switch (align) {
       case 'left':
-        return 'items-start';
+        return 'justify-start';
       case 'right':
-        return 'items-end';
+        return 'justify-end';
       default:
-        return 'items-center';
-    }
-  };
-
-  const getTextAlignmentClass = (align: React.CSSProperties['textAlign']) => {
-    switch (align) {
-      case 'left':
-        return 'text-left';
-      case 'right':
-        return 'text-right';
-      default:
-        return 'text-center';
+        return 'justify-center';
     }
   };
 
   return (
     <>
       <div 
-        className={cn("absolute inset-0 flex flex-col p-8", getAlignmentClass(textStyle.textAlign))}
+        className={cn("absolute inset-x-0 flex p-8", getJustifyContentClass(textStyle.textAlign))}
         style={{
-          justifyContent: 'center', // Garante que o container flex esteja centralizado para o html2canvas
           top: `${textVerticalPosition}%`,
           transform: 'translateY(-50%)',
         }}
       >
         <div
           style={textStyle}
-          className={cn("break-words w-full transition-all duration-200", getTextAlignmentClass(textStyle.textAlign))}
+          className={cn("break-words w-full transition-all duration-200")}
         >
           {text}
         </div>
       </div>
 
       {showProfileSignature && (
-        <div 
-          className="absolute inset-0 flex items-center justify-center pointer-events-none"
+        <div
+          className="absolute inset-0 flex items-end justify-start pointer-events-none p-4"
           style={{
-            top: `${signaturePositionY}%`,
-            left: `${signaturePositionX}%`,
-            transform: `translate(-50%, -50%)`, // Apenas para a preview
+            transform: `scale(${signatureScale / 100})`,
+            transformOrigin: `${signaturePositionX}% ${signaturePositionY}%`,
           }}
         >
-          <div 
-            className="flex items-center justify-center pointer-events-auto"
-            style={{
-              transform: `scale(${signatureScale / 100})`,
-            }}
-          >
+          <div className="absolute" style={{ top: `${signaturePositionY}%`, left: `${signaturePositionX}%`, transform: 'translate(-50%, -50%)'}}>
             <AssinaturaPerfil
               profile={profile}
               showPhoto={showSignaturePhoto}
@@ -100,21 +82,15 @@ export function ModeloPadrao({
       )}
 
       {showLogo && profile.logo && (
-         <div 
-          className="absolute inset-0 flex items-center justify-center pointer-events-none"
+         <div
+          className="absolute inset-0 flex items-end justify-start pointer-events-none p-4"
           style={{
-            top: `${logoPositionY}%`,
-            left: `${logoPositionX}%`,
-            transform: `translate(-50%, -50%)`, // Apenas para a preview
+            transform: `scale(${logoScale / 100})`,
+            transformOrigin: `${logoPositionX}% ${logoPositionY}%`,
+            opacity: logoOpacity / 100,
           }}
         >
-            <div 
-              className="flex items-center justify-center pointer-events-auto"
-              style={{
-                transform: `scale(${logoScale / 100})`,
-                opacity: logoOpacity / 100,
-              }}
-            >
+            <div className="absolute" style={{ top: `${logoPositionY}%`, left: `${logoPositionX}%`, transform: 'translate(-50%, -50%)'}}>
               <img
                 src={profile.logo}
                 alt="Logomarca"
