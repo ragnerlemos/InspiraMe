@@ -63,6 +63,51 @@ const defaultState: EditorState = {
     logoOpacity: 100,
 };
 
+const fontEmbedCSS = `
+  @font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 400;
+    src: url(https://fonts.gstatic.com/s/poppins/v21/pxiEyp8kv8JHgFVrJJfecg.woff2) format('woff2');
+  }
+  @font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 700;
+    src: url(https://fonts.gstatic.com/s/poppins/v21/pxiByp8kv8JHgFVrLCz7V1w.woff2) format('woff2');
+  }
+  @font-face {
+    font-family: 'PT Sans';
+    font-style: normal;
+    font-weight: 400;
+    src: url(https://fonts.gstatic.com/s/ptsans/v17/jizaRExUiTo99u79D_ci.woff2) format('woff2');
+  }
+  @font-face {
+    font-family: 'PT Sans';
+    font-style: normal;
+    font-weight: 700;
+    src: url(https://fonts.gstatic.com/s/ptsans/v17/jizfRExUiTo99u79B_mh1uSt.woff2) format('woff2');
+  }
+  @font-face {
+    font-family: 'Merriweather';
+    font-style: normal;
+    font-weight: 400;
+    src: url(https://fonts.gstatic.com/s/merriweather/v30/u-440qyriQwlOrhSvowK_l5-eCZO.woff2) format('woff2');
+  }
+  @font-face {
+    font-family: 'Merriweather';
+    font-style: normal;
+    font-weight: 700;
+    src: url(https://fonts.gstatic.com/s/merriweather/v30/u-4n0qyriQwlOrhSvowK_l52xwNZV8f_.woff2) format('woff2');
+  }
+  @font-face {
+    font-family: 'Lobster';
+    font-style: normal;
+    font-weight: 400;
+    src: url(https://fonts.gstatic.com/s/lobster/v30/neILzCirqoswsqX9zoamMw.woff2) format('woff2');
+  }
+`;
+
 
 // Editor Provider Component
 export function EditorProvider({ children }: { children: ReactNode }) {
@@ -125,7 +170,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   const captureCanvas = useCallback(async (format: 'jpeg' | 'png') => {
     const previewElement = document.getElementById('editor-preview-content');
     if (!previewElement || !currentState) {
-        toast({ variant: 'destructive', title: 'Erro', description: 'Não foi possível encontrar a área de visualização.' });
+        toast({ variant: 'destructive', title: 'Erro', description: 'Não foi possível encontrar la área de visualização.' });
         return;
     }
     toast({ title: 'Exportando...', description: `Gerando imagem ${format.toUpperCase()}.` });
@@ -137,7 +182,8 @@ export function EditorProvider({ children }: { children: ReactNode }) {
             width,
             height,
             pixelRatio: 3, 
-            cacheBust: true,
+            skipFonts: true,
+            fontEmbedCSS: fontEmbedCSS,
         };
 
         const dataUrl = format === 'png' 
