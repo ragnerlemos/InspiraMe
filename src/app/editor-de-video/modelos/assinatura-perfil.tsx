@@ -53,35 +53,35 @@ export function AssinaturaPerfil({
             backgroundColor: showBackground ? backgroundColor : 'transparent',
         }}
     >
-      {showPhoto && (
-        <Avatar className={cn("absolute top-1/2 -translate-y-1/2 left-2", avatarSize)}>
-          <AvatarImage src={profile.photo || ""} alt={profile.username} />
-          <AvatarFallback>
-            <User className="text-white" />
-          </AvatarFallback>
-        </Avatar>
-      )}
-      <div className={cn("flex items-center", textLeftMargin)}>
-        <div className="flex flex-col">
+      <div className="flex items-center gap-3">
+        {showPhoto && (
+            <Avatar className={cn("flex-shrink-0", avatarSize)}>
+                <AvatarImage src={profile.photo || ""} alt={profile.username} />
+                <AvatarFallback>
+                    <User className="text-white" />
+                </AvatarFallback>
+            </Avatar>
+        )}
+        <div className="flex flex-col justify-center">
             {showUsername && (
-              <p className="font-bold text-white text-sm leading-none m-0 p-0 whitespace-nowrap">
+            <p className="font-bold text-white text-sm leading-none m-0 p-0 whitespace-nowrap">
                 {profile.username}
-              </p>
+            </p>
             )}
             {showSocial && (
-              <p className="text-gray-300 text-xs leading-tight m-0 p-0">
+            <p className="text-gray-300 text-xs leading-tight m-0 p-0">
                 {profile.social}
-              </p>
+            </p>
             )}
         </div>
-         {shouldShowIcon && (
-           <div className="pl-3 flex items-center h-full">
-              {profile.iconUrl ? (
-                  <img src={profile.iconUrl} alt="Ícone social" className="h-5 w-5" />
-              ) : (
-                  <Twitter className="h-5 w-5 text-blue-400" />
-              )}
-           </div>
+        {shouldShowIcon && (
+            <div className="flex items-center justify-center">
+                {profile.iconUrl ? (
+                    <img src={profile.iconUrl} alt="Ícone social" className="h-5 w-5" />
+                ) : (
+                    <Twitter className="h-5 w-5 text-blue-400" />
+                )}
+            </div>
         )}
       </div>
     </div>
