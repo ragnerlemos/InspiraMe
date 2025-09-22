@@ -2,7 +2,6 @@
 "use client";
 
 import { useFavorites } from "@/hooks/use-favorites";
-import { quotes } from "@/lib/dados";
 import Link from "next/link";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,6 +9,7 @@ import { Film, Copy, Trash2, Share2, HeartCrack } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
 import type { Quote } from "@/lib/dados";
+import { getAllQuotes } from "@/lib/dados";
 
 // Página para exibir as frases favoritas do usuário.
 export default function FavoritesPage() {
@@ -21,14 +21,12 @@ export default function FavoritesPage() {
   // Filtra as frases da lista principal para obter apenas as favoritas.
   useEffect(() => {
     const getQuotes = async () => {
-      // Como 'quotes' é carregado no servidor na página inicial, aqui apenas filtramos.
-      if (quotes.length > 0) {
-        setFavoriteQuotes(quotes.filter((quote) => favorites.includes(quote.id)));
+        setIsLoading(true);
+        const allQuotes = await getAllQuotes();
+        if (allQuotes.length > 0) {
+            setFavoriteQuotes(allQuotes.filter((quote) => favorites.includes(quote.id)));
+        }
         setIsLoading(false);
-      } else {
-         // Se 'quotes' está vazio, o usuário provavelmente não visitou a home page.
-         setIsLoading(true);
-      }
     };
     getQuotes();
   }, [favorites]);
@@ -59,7 +57,7 @@ export default function FavoritesPage() {
     });
   };
 
-  if (isLoading && favoriteQuotes.length === 0 && quotes.length === 0) {
+  if (isLoading) {
     return (
        <main className="overflow-y-auto">
         <div className="container mx-auto py-8 px-4">
@@ -73,8 +71,7 @@ export default function FavoritesPage() {
           </div>
            <div className="text-center py-20 bg-card border rounded-lg flex flex-col items-center">
                 <p className="text-muted-foreground mb-6">
-                    Parece que os dados das frases ainda não foram carregados. 
-                    Por favor, visite a <Link href="/" className="text-primary underline">página inicial</Link> primeiro.
+                    Carregando frases...
                 </p>
             </div>
         </div>
@@ -146,7 +143,7 @@ export default function FavoritesPage() {
             <p className="text-muted-foreground mb-6">
               Clique no ícone de coração (❤️) em uma frase para adicioná-la aqui.
             </p>
-            <Link href="/" passHref>
+            <Link href="/frases" passHref>
               <Button>Encontrar Inspiração</Button>
             </Link>
           </div>
@@ -155,5 +152,3 @@ export default function FavoritesPage() {
     </main>
   );
 }
-
-    

@@ -52,16 +52,156 @@ function EditorCore() {
     const { profile, isLoaded: isProfileLoaded } = useProfile();
     const searchParams = useSearchParams();
     const { templates: allTemplates, isLoaded: areTemplatesLoaded } = useTemplates();
-    const {
-        currentState,
-        setInitialState,
-        updateState,
-        isReady,
-        activeControl,
-        setActiveControl,
-        scale,
-        setScale
-    } = useEditor();
+    const { addTemplate } = useTemplates();
+    const { toast } = useToast();
+
+    const [isReady, setIsReady] = useState(false);
+    const [currentState, setCurrentState] = useState<EditorState>({
+        text: "A inspiração está a caminho...",
+        fontFamily: "Poppins",
+        fontSize: 7,
+        fontWeight: "600",
+        fontStyle: "normal",
+        textColor: "#FFFFFF",
+        textAlign: "center",
+        textShadowBlur: 2,
+        textVerticalPosition: 50,
+        textStrokeColor: "#000000",
+        textStrokeWidth: 0,
+        letterSpacing: 0,
+        lineHeight: 1.2,
+        wordSpacing: 0,
+        backgroundStyle: { type: 'solid', value: '#1a1a1a' },
+        filmColor: "#000000",
+        filmOpacity: 20,
+        aspectRatio: "9 / 16",
+        activeTemplateId: null,
+        showProfileSignature: false,
+        signaturePositionX: 50,
+        signaturePositionY: 90,
+        signatureScale: 100,
+        showSignaturePhoto: true,
+        showSignatureUsername: true,
+        showSignatureSocial: true,
+        showSignatureBackground: false,
+        signatureBgColor: "#000000",
+        signatureBgOpacity: 50,
+        profileVerticalPosition: 50,
+        showLogo: false,
+        logoPositionX: 90,
+        logoPositionY: 10,
+        logoScale: 100,
+        logoOpacity: 80,
+    });
+    const [history, setHistory] = useState<EditorState[]>([]);
+    const [historyIndex, setHistoryIndex] = useState(-1);
+    const [activeControl, setActiveControl] = useState<string | null>('texto');
+    const [scale, setScale] = useState(1);
+
+    const setInitialState = useCallback((state: EditorState) => {
+        const fullInitialState = { ...currentState, ...state };
+        setCurrentState(fullInitialState);
+        setHistory([fullInitialState]);
+        setHistoryIndex(0);
+        setIsReady(true);
+    }, []);
+
+    const updateState = useCallback((newState: Partial<EditorState>) => {
+        setCurrentState(prevState => {
+            const updatedState = { ...prevState, ...newState };
+            const newHistory = history.slice(0, historyIndex + 1);
+            newHistory.push(updatedState);
+            setHistory(newHistory);
+            setHistoryIndex(newHistory.length - 1);
+            return updatedState;
+        });
+    }, [history, historyIndex]);
+
+    const canUndo = historyIndex > 0;
+    const canRedo = historyIndex < history.length - 1;
+
+    const undo = useCallback(() => {
+        if (canUndo) {
+            setHistoryIndex(historyIndex - 1);
+            setCurrentState(history[historyIndex - 1]);
+        }
+    }, [canUndo, history, historyIndex]);
+
+    const redo = useCallback(() => {
+        if (canRedo) {
+            setHistoryIndex(historyIndex + 1);
+            setCurrentState(history[historyIndex + 1]);
+        }
+    }, [canRedo, history, historyIndex]);
+
+    const captureScreenshot = async (): Promise<string | null> => {
+        const element = document.getElementById('editor-preview-content');
+        if (!element) return null;
+        try {
+            const canvas = await html2canvas(element, { 
+                allowTaint: true, 
+                useCORS: true,
+                scale: 1, // Captura em resolução 1x para performance
+            });
+            return canvas.toDataURL('image/jpeg', 0.8); // Qualidade de 80%
+        } catch (error) {
+            console.error("Erro ao capturar screenshot:", error);
+            toast({ variant: 'destructive', title: "Erro ao Salvar", description: "Não foi possível gerar a imagem do modelo." });
+            return null;
+        }
+    };
+
+    const onSaveAsTemplate = async () => {
+        const thumbnail = await captureScreenshot();
+        if (thumbnail) {
+            const templateName = prompt("Digite um nome para o seu modelo:", "Meu Modelo");
+            if (templateName) {
+                addTemplate(templateName, currentState, thumbnail);
+                toast({ title: "Modelo Salvo!", description: "Seu novo modelo foi adicionado à galeria de modelos." });
+            }
+        }
+    };
+    
+    const downloadImage = async (format: 'png' | 'jpeg') => {
+        const element = document.getElementById('editor-preview-content');
+        if (!element) return;
+        
+        toast({ title: "Exportando...", description: "Aguarde enquanto sua imagem está sendo gerada." });
+
+        try {
+             const canvas = await html2canvas(element, { 
+                allowTaint: true, 
+                useCORS: true,
+                scale: 2, // Aumenta a resolução da captura para melhor qualidade
+            });
+
+            const link = document.createElement('a');
+            link.download = `quotevid-export.${format}`;
+            link.href = canvas.toDataURL(`image/${format}`, format === 'jpeg' ? 0.9 : 1.0);
+            link.click();
+            toast({ title: "Download Iniciado!", description: `Sua imagem foi exportada como ${format.toUpperCase()}.` });
+        } catch (error) {
+             console.error("Erro ao exportar imagem:", error);
+            toast({ variant: 'destructive', title: "Erro na Exportação", description: "Ocorreu um problema ao gerar sua imagem." });
+        }
+    };
+
+    const onExportJPG = () => downloadImage('jpeg');
+    const onExportPNG = () => downloadImage('png');
+    
+    const onExportMP4 = () => {
+        toast({
+            variant: "default",
+            title: "Em Breve!",
+            description: "A exportação de vídeo (MP4) ainda não está disponível, mas estamos trabalhando nisso!"
+        });
+    };
+
+    const { setUndoState, setSaveActions } = useEditor();
+    useEffect(() => {
+        setUndoState({ canUndo, undo, canRedo, redo });
+        setSaveActions({ onSaveAsTemplate, onExportJPG, onExportPNG, onExportMP4 });
+    }, [canUndo, undo, canRedo, redo, onSaveAsTemplate, onExportJPG, onExportPNG, onExportMP4, setUndoState, setSaveActions]);
 
 
     // Efeito de inicialização
@@ -78,7 +218,7 @@ function EditorCore() {
             } else {
                 const allQuotes = await getAllQuotes();
                 if (allQuotes.length > 0) {
-                    text = allQuotes[Math.floor(Math.random() * allQuotes.length)].quote;
+                    text = allQuotes[Math.floor(Math.random() * allQuotes.length)].text;
                 }
             }
             
@@ -88,10 +228,10 @@ function EditorCore() {
                 if (template) {
                     initialState = { ...(template.editorState as EditorState), text, activeTemplateId: template.id };
                 } else {
-                     initialState = { text, activeTemplateId: null } as EditorState;
+                     initialState = { ...currentState, text, activeTemplateId: null };
                 }
             } else {
-                 initialState = { text, activeTemplateId: null } as EditorState;
+                 initialState = { ...currentState, text, activeTemplateId: null };
             }
 
             setInitialState(initialState);
@@ -260,5 +400,3 @@ export default function AspectWeaver() {
         </Suspense>
     )
 }
-
-    

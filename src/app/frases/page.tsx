@@ -1,12 +1,13 @@
 
-import { getQuoteData, getCategoriesFromQuotes } from '@/lib/dados';
+
+import { getAllQuotes, getCategoriesFromQuotes } from '@/lib/dados';
 import { FrasesClientPage } from './frases-client';
 
 
 // Componente de Servidor: Busca os dados antes de renderizar a página.
 export default async function FrasesPage() {
   // Busca os dados da planilha no lado do servidor.
-  const { quotes } = await getQuoteData();
+  const quotes = await getAllQuotes();
   
   // Extrai as categorias e subcategorias dos dados obtidos.
   const { mainCategories, subCategoriesByMain } = getCategoriesFromQuotes(quotes);
