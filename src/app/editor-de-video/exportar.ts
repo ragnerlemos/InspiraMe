@@ -28,7 +28,7 @@ const getClonedElement = async (toast: (props: Parameters<typeof Toast>[0]) => v
     document.body.appendChild(clone);
     
     // Aguarda um ciclo de renderização para garantir que o clone esteja no DOM e com estilos aplicados
-    await delay(50); 
+    await delay(100); 
 
     return { clone, original: previewElement };
 }
@@ -50,16 +50,15 @@ const downloadDataUrl = (dataUrl: string, format: 'jpeg' | 'png', toast: (props:
 
 
 /**
- * LOGICA ORIGINAL: Captura simples com clonagem e escala.
+ * Captura a imagem do preview e inicia o download.
  */
 export const captureAndDownload = async (format: 'jpeg' | 'png', toast: (props: Parameters<typeof Toast>[0]) => void) => {
-    toast({ title: 'Exportando (Original)...', description: `Gerando imagem ${format.toUpperCase()}, por favor aguarde.` });
+    toast({ title: 'Exportando...', description: `Gerando imagem ${format.toUpperCase()}, por favor aguarde.` });
 
     const elements = await getClonedElement(toast);
     if (!elements) return;
 
     const { clone, original } = elements;
-    // Define dimensões fixas no clone para garantir consistência
     clone.style.width = `${original.offsetWidth}px`;
     clone.style.height = `${original.offsetHeight}px`;
 
@@ -74,80 +73,11 @@ export const captureAndDownload = async (format: 'jpeg' | 'png', toast: (props: 
         const dataUrl = format === 'png' ? canvas.toDataURL('image/png') : canvas.toDataURL('image/jpeg', 0.95);
         downloadDataUrl(dataUrl, format, toast);
     } catch (error) {
-        console.error('Erro ao exportar imagem (Original):', error);
+        console.error('Erro ao exportar imagem:', error);
         toast({ variant: 'destructive', title: 'Erro de Exportação', description: 'Não foi possível gerar a imagem.' });
         if (document.body.contains(clone)) document.body.removeChild(clone);
     }
 };
-
-/**
- * LOGICA TESTE 1: Força o navegador a recalcular os estilos do clone antes da captura.
- * Esta é uma tentativa de garantir que o `html2canvas` leia o layout final e renderizado.
- */
-export const captureAndDownload_v1 = async (format: 'jpeg' | 'png', toast: (props: Parameters<typeof Toast>[0]) => void) => {
-    toast({ title: 'Exportando (Teste 1)...', description: `Forçando recálculo de estilo.` });
-
-    const elements = await getClonedElement(toast);
-    if (!elements) return;
-
-    const { clone, original } = elements;
-    clone.style.width = `${original.offsetWidth}px`;
-    clone.style.height = `${original.offsetHeight}px`;
-    
-    // Força o navegador a recalcular todos os estilos computados do clone
-    window.getComputedStyle(clone).getPropertyValue('display');
-    
-    // Um delay adicional pode ajudar em casos complexos
-    await delay(100);
-
-    try {
-        const canvas = await html2canvas(clone, {
-            useCORS: true,
-            scale: 2,
-            backgroundColor: null,
-            logging: false,
-        });
-        document.body.removeChild(clone);
-        const dataUrl = format === 'png' ? canvas.toDataURL('image/png') : canvas.toDataURL('image/jpeg', 0.95);
-        downloadDataUrl(dataUrl, format, toast);
-    } catch (error) {
-        console.error('Erro ao exportar imagem (Teste 1):', error);
-        toast({ variant: 'destructive', title: 'Erro de Exportação', description: 'Não foi possível gerar a imagem.' });
-        if (document.body.contains(clone)) document.body.removeChild(clone);
-    }
-};
-
-
-/**
- * LOGICA TESTE 2: Simplifica a captura, confiando apenas na opção `scale` da biblioteca
- * e removendo a manipulação manual de `width` e `height` do clone.
- */
-export const captureAndDownload_v2 = async (format: 'jpeg' | 'png', toast: (props: Parameters<typeof Toast>[0]) => void) => {
-    toast({ title: 'Exportando (Teste 2)...', description: `Captura simplificada com alta resolução.` });
-
-    const elements = await getClonedElement(toast);
-    if (!elements) return;
-
-    const { clone } = elements;
-
-    try {
-        // Não definimos width/height no clone, deixamos que a biblioteca calcule com base no elemento original
-        const canvas = await html2canvas(clone, {
-            useCORS: true,
-            scale: 2, // A própria biblioteca deve escalar o elemento e o canvas
-            backgroundColor: null,
-            logging: false,
-        });
-        document.body.removeChild(clone);
-        const dataUrl = format === 'png' ? canvas.toDataURL('image/png') : canvas.toDataURL('image/jpeg', 0.95);
-        downloadDataUrl(dataUrl, format, toast);
-    } catch (error) {
-        console.error('Erro ao exportar imagem (Teste 2):', error);
-        toast({ variant: 'destructive', title: 'Erro de Exportação', description: 'Não foi possível gerar a imagem.' });
-        if (document.body.contains(clone)) document.body.removeChild(clone);
-    }
-};
-
 
 /**
  * Captura o estado atual do canvas como uma thumbnail.

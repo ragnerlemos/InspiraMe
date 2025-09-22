@@ -59,7 +59,6 @@ export function AssinaturaPerfil({
         </Avatar>
       )}
       
-      {/* Bloco de texto com alinhamento vertical explícito */}
       <div className="flex flex-col justify-center">
         {showUsername && (
           <p className="font-bold text-white text-sm leading-none m-0 p-0 whitespace-nowrap">
