@@ -32,7 +32,7 @@ const navItems = [
 
 export function EditorHeader() {
     const { controls } = useEditor();
-    const { canUndo, undo, canRedo, redo, onSaveAsTemplate, onExportJPG, onExportPNG, onExportMP4 } = controls;
+    const { isReady, canUndo, undo, canRedo, redo, onSaveAsTemplate, onExportJPG, onExportPNG, onExportMP4 } = controls;
 
     return (
         <div className="flex items-center justify-between w-full h-16 px-4 border-b bg-background shrink-0">
@@ -42,17 +42,17 @@ export function EditorHeader() {
             </Link>
 
             <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" onClick={undo} disabled={!canUndo}>
+                <Button variant="ghost" size="icon" onClick={undo} disabled={!canUndo || !isReady}>
                     <Undo className="h-5 w-5" />
                     <span className="sr-only">Desfazer</span>
                 </Button>
-                 <Button variant="ghost" size="icon" onClick={redo} disabled={!canRedo}>
+                 <Button variant="ghost" size="icon" onClick={redo} disabled={!canRedo || !isReady}>
                     <Redo className="h-5 w-5" />
                     <span className="sr-only">Refazer</span>
                 </Button>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button>
+                        <Button disabled={!isReady}>
                             <Save className="mr-2 h-4 w-4" />
                             Salvar
                         </Button>

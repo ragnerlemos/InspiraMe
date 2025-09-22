@@ -2,6 +2,7 @@
 "use client";
 
 import { createContext, useContext, ReactNode } from 'react';
+import type { EditorState } from '../tipos';
 
 // Define a interface para o estado completo do editor que será compartilhado.
 export interface EditorControlState {
@@ -9,10 +10,11 @@ export interface EditorControlState {
   undo: () => void;
   canRedo: boolean;
   redo: () => void;
-  onSaveAsTemplate: () => void;
+  onSaveAsTemplate: () => Promise<void>;
   onExportJPG: () => void;
   onExportPNG: () => void;
   onExportMP4: () => void;
+  isReady: boolean;
 }
 
 const defaultControls: EditorControlState = {
@@ -20,10 +22,11 @@ const defaultControls: EditorControlState = {
     undo: () => {},
     canRedo: false,
     redo: () => {},
-    onSaveAsTemplate: () => {},
+    onSaveAsTemplate: async () => {},
     onExportJPG: () => {},
     onExportPNG: () => {},
     onExportMP4: () => {},
+    isReady: false,
 };
 
 // Define a interface para o valor do contexto.

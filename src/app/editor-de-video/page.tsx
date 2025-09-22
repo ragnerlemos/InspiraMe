@@ -4,10 +4,10 @@ import type { EditorControlState } from "./contexts/editor-context";
 import Editor from './editor';
 import Loading from './loading';
 
-export default function EditorPage({ setControls }: { setControls: (controls: Partial<EditorControlState>) => void }) {
+export default function EditorPage({ registerControls }: { registerControls: (controls: Partial<EditorControlState>) => void }) {
   return (
     <Suspense fallback={<Loading />}>
-      <Editor setControls={setControls} />
+      <Editor registerControls={registerControls} />
     </Suspense>
   );
 }

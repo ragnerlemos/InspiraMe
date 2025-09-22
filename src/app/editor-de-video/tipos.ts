@@ -53,6 +53,18 @@ export interface EditorState {
     logoOpacity: number;
 }
 
+export interface EditorControlState {
+  canUndo: boolean;
+  undo: () => void;
+  canRedo: boolean;
+  redo: () => void;
+  onSaveAsTemplate: () => Promise<void>;
+  onExportJPG: () => void;
+  onExportPNG: () => void;
+  onExportMP4: () => void;
+  isReady: boolean;
+}
+
 // Tipo para um vídeo salvo pelo usuário.
 export interface SavedVideo {
     id: string;

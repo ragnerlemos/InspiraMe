@@ -12,13 +12,12 @@ import {
   PanelGroup,
   PanelResizeHandle,
 } from "@/components/ui/resizable";
-import type { EditorState, EstiloFundo } from "@/app/editor-de-video/tipos";
+import type { EditorState, EstiloFundo, EditorControlState } from "@/app/editor-de-video/tipos";
 import { useToast } from "@/hooks/use-toast";
 import { useTemplates, type Template } from "@/hooks/use-templates";
 import html2canvas from 'html2canvas';
 import { getAllQuotes } from "@/lib/dados";
 import { useSearchParams } from "next/navigation";
-import type { EditorControlState } from "./contexts/editor-context";
 import Loading from './loading';
 
 
@@ -59,7 +58,7 @@ const getInitialState = (): Omit<EditorState, 'activeTemplateId' | 'text'> => ({
 });
 
 
-export default function Editor({ setControls }: { setControls: (controls: Partial<EditorControlState>) => void }) {
+export default function Editor({ registerControls }: { registerControls: (controls: Partial<EditorControlState>) => void }) {
   const { width } = useWindowSize();
   const isDesktop = width >= 768;
   const { profile, isLoaded: isProfileLoaded } = useProfile();
@@ -174,8 +173,8 @@ export default function Editor({ setControls }: { setControls: (controls: Partia
     
     // Efeito para atualizar o contexto do editor
     useEffect(() => {
-        if (setControls) {
-            setControls({
+        if (registerControls) {
+            registerControls({
                 canUndo,
                 undo,
                 canRedo,
@@ -184,9 +183,10 @@ export default function Editor({ setControls }: { setControls: (controls: Partia
                 onExportJPG,
                 onExportPNG,
                 onExportMP4,
+                isReady,
             });
         }
-    }, [canUndo, undo, canRedo, redo, handleSaveAsTemplate, onExportJPG, onExportPNG, onExportMP4, setControls]);
+    }, [canUndo, undo, canRedo, redo, handleSaveAsTemplate, onExportJPG, onExportPNG, onExportMP4, registerControls, isReady]);
 
   // Efeito de inicialização
   useEffect(() => {
