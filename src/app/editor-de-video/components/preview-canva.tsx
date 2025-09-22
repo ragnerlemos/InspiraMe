@@ -84,7 +84,7 @@ export function PreviewCanva(props: VisualizacaoEditorProps & { scale: number })
           transformOrigin: "top center",
         }}
         className={cn(
-          "transition-all duration-300 ease-in-out shadow-2xl rounded-xl overflow-hidden @container md:w-auto",
+          "transition-all duration-300 ease-in-out shadow-2xl rounded-xl overflow-hidden @container",
            {
             "w-full max-w-sm": aspectRatio?.replace(/\s/g, "") === "9/16",
             "w-full max-w-md": aspectRatio?.replace(/\s/g, "") === "1/1",
