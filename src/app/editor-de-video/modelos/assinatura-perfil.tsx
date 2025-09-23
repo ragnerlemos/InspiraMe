@@ -66,7 +66,10 @@ export function AssinaturaPerfil({
       )}
 
       {(showUsername || showSocial) && (
-        <div className="flex flex-col justify-center ml-3 leading-[1.05]">
+        <div 
+          className="flex flex-col justify-center ml-3 leading-[1.05]"
+          style={{ height: "40px" }} // Garante a mesma altura do avatar
+        >
           {showUsername && (
             <p className="font-bold text-white text-base m-0 whitespace-nowrap">
               {profile.username}
