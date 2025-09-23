@@ -1,4 +1,3 @@
-
 // Arquivo para centralizar as definições de tipos compartilhadas entre os componentes do editor.
 
 // Define a interface para os dados do perfil do usuário.
@@ -91,6 +90,7 @@ export interface VisualizacaoEditorProps {
     logoPositionY: number;
     logoScale: number;
     logoOpacity: number;
+    scale: number;
 }
 
 // Define as propriedades para o componente que contém os painéis de controle.
@@ -190,6 +190,4 @@ export interface VisualizacaoPerfilProps {
   profile: ProfileData;
   text: string;
   textStyle: EstiloTexto;
-  textVerticalPosition: number;
-  profileVerticalPosition: number;
 }
