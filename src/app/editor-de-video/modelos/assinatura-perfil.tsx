@@ -45,13 +45,12 @@ export function AssinaturaPerfil({
 
   return (
     <div 
-        className={cn("inline-flex items-center rounded-lg p-2")}
+        className={cn("flex items-center rounded-lg max-w-max p-2")}
         style={{
             backgroundColor: showBackground ? backgroundColor : 'transparent',
         }}
     >
-      <div className="flex items-center">
-        {showPhoto && (
+      {showPhoto && (
             <Avatar 
             className="h-10 w-10 flex-shrink-0"
             >
@@ -60,9 +59,9 @@ export function AssinaturaPerfil({
                 <User className="text-white h-5 w-5"/>
             </AvatarFallback>
             </Avatar>
-        )}
-        {(showUsername || showSocial) && (
-            <div className="flex flex-col justify-center ml-3 leading-[1.1]">
+      )}
+      {(showUsername || showSocial) && (
+            <div className="flex flex-col justify-center ml-3 leading-[1.05]">
                 {showUsername && (
                 <p 
                     className="font-bold text-white text-base m-0 whitespace-nowrap"
@@ -78,8 +77,7 @@ export function AssinaturaPerfil({
                 </p>
                 )}
             </div>
-        )}
-      </div>
+      )}
        {shouldShowIcon && (
          <div className="pl-2">
             {profile.iconUrl ? (
