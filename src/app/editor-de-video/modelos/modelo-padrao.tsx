@@ -26,15 +26,20 @@ export function ModeloPadrao({
 }: VisualizacaoEditorProps) {
   return (
     <>
-      <div className="flex-1 flex items-center justify-center">
-        <div className="relative w-full">
-            <TextareaAutosize
-              readOnly
-              value={text}
-              style={textStyle}
-              className="w-full bg-transparent border-none resize-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 p-0 m-0 overflow-hidden"
-            />
-        </div>
+      <div
+        className="absolute w-full px-[10%]"
+        style={{
+            top: `${textVerticalPosition}%`,
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+        }}
+      >
+        <TextareaAutosize
+          readOnly
+          value={text}
+          style={textStyle}
+          className="w-full bg-transparent border-none resize-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 p-0 m-0 overflow-hidden"
+        />
       </div>
       
       {showProfileSignature && (
@@ -56,7 +61,6 @@ export function ModeloPadrao({
             showBackground={showSignatureBackground}
             bgColor={signatureBgColor}
             bgOpacity={signatureBgOpacity}
-            scale={signatureScale}
           />
         </div>
       )}
