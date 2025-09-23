@@ -642,8 +642,6 @@ interface MobileToolbarProps extends ControleAssinaturaProps, ControleLogoProps,
   setFilmOpacity: (opacity: number) => void;
   fgColor: string;
   setFgColor: (color: string) => void;
-  activeControl: string | null;
-  setActiveControl: (control: string | null) => void;
   text: string;
   setText: (text: string) => void;
   profile: ProfileData;
@@ -664,8 +662,6 @@ export function MobileToolbar({
   setFilmOpacity,
   fgColor,
   setFgColor,
-  activeControl,
-  setActiveControl,
   text,
   setText,
   ...props
@@ -675,7 +671,6 @@ export function MobileToolbar({
 
   const handlePanelChange = (panel: ActivePanel) => {
     setActivePanel(panel);
-    setActiveControl(panel);
     setActiveSubControl(null); // Reset sub-controls when main panel changes
   };
 
@@ -841,11 +836,11 @@ export function MobileToolbar({
         {mainToolbar}
       </div>
 
-      <Sheet open={!!activePanel} onOpenChange={(open) => { if (!open) { setActivePanel(null); setActiveControl(null); }}}>
+      <Sheet open={!!activePanel} onOpenChange={(open) => { if (!open) { setActivePanel(null); }}}>
         <SheetContent side="bottom" className="h-auto max-h-[85vh] flex flex-col p-0">
           <SheetHeader className="p-4 pb-2">
             <SheetTitle className="flex items-center">
-              <Button variant="ghost" size="icon" className="mr-2" onClick={() => { setActivePanel(null); setActiveControl(null); }}>
+              <Button variant="ghost" size="icon" className="mr-2" onClick={() => { setActivePanel(null); }}>
                 <ArrowLeft className="h-5 w-5" />
               </Button>
               {getPanelTitle()}

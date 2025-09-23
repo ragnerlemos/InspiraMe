@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback, Suspense } from "react";
@@ -95,7 +96,7 @@ function EditorCore() {
     });
     const [history, setHistory] = useState<EditorState[]>([]);
     const [historyIndex, setHistoryIndex] = useState(-1);
-    const [activeControl, setActiveControl] = useState<string | null>('texto');
+    const [activeControl, setActiveControl] = useState<string | null>(null);
     const [scale, setScale] = useState(1);
     
     const setInitialState = useCallback((state: EditorState) => {
@@ -340,8 +341,8 @@ function EditorCore() {
         logoPositionY: currentState.logoPositionY, onLogoPositionYChange: (val: number) => updateState({ logoPositionY: val }),
         logoScale: currentState.logoScale, onLogoScaleChange: (val: number) => updateState({ logoScale: val }),
         logoOpacity: currentState.logoOpacity, onLogoOpacityChange: (val: number) => updateState({ logoOpacity: val }),
-        // Controle
-        activeControl, setActiveControl,
+        activeControl, 
+        setActiveControl,
     };
 
     const previewProps = {
