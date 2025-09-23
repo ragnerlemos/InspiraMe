@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import type { ProfileData } from "@/hooks/use-profile";
+import type { ProfileData } from "@/app/editor-de-video/tipos";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import type { EstiloFundo } from "../tipos";
 

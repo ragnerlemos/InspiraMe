@@ -5,17 +5,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User, Twitter } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-// Definindo o tipo localmente para quebrar a cadeia de importação.
-interface ProfileData {
-  username: string;
-  social: string;
-  photo: string | null;
-  iconUrl: string;
-  showIcon: boolean;
-  showDate: boolean;
-  logo: string | null;
-}
+import type { ProfileData } from '../tipos';
 
 interface AssinaturaPerfilProps {
   profile: ProfileData;

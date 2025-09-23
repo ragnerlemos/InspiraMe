@@ -2,16 +2,8 @@
 import type { VisualizacaoEditorProps } from '../tipos';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { User } from 'lucide-react';
+import type { ProfileData } from '../tipos';
 
-interface ProfileData {
-  username: string;
-  social: string;
-  photo: string | null;
-  iconUrl: string;
-  showIcon: boolean;
-  showDate: boolean;
-  logo: string | null;
-}
 
 interface ModeloTwitterProps extends VisualizacaoEditorProps {
     profile: ProfileData;
