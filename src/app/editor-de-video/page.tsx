@@ -67,7 +67,7 @@ const getInitialState = (): Omit<EditorState, 'activeTemplateId' | 'text'> => ({
     showProfileSignature: false,
     signaturePositionX: 50,
     signaturePositionY: 90,
-    signatureScale: 63,
+    signatureScale: 100,
     showSignaturePhoto: false,
     showSignatureUsername: true,
     showSignatureSocial: true,
@@ -176,7 +176,12 @@ export default function AspectWeaver() {
       undo,
       canRedo,
       redo,
-      onSaveAsTemplate: () => handleSaveAsTemplate(currentState.aspectRatio as ProporcaoTela, currentState, addTemplate, toast),
+      onSaveAsTemplate: () => handleSaveAsTemplate(
+        currentState.aspectRatio as ProporcaoTela,
+        currentState,
+        addTemplate,
+        toast
+      ),
       onExportJPG: (highRes) => onExportJPG(currentState.aspectRatio as ProporcaoTela, highRes),
       onExportPNG: (highRes) => onExportPNG(currentState.aspectRatio as ProporcaoTela, highRes),
       onExportMP4,
