@@ -290,7 +290,7 @@ export default function AspectWeaver() {
     showProfileSignature: currentState.showProfileSignature,
     signaturePositionX: currentState.signaturePositionX,
     signaturePositionY: currentState.signaturePositionY,
-signatureScale: currentState.signatureScale,
+    signatureScale: currentState.signatureScale,
     showSignaturePhoto: currentState.showSignaturePhoto,
     showSignatureUsername: currentState.showSignatureUsername,
     showSignatureSocial: currentState.showSignatureSocial,

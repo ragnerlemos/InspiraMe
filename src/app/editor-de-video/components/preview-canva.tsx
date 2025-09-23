@@ -113,4 +113,3 @@ export function PreviewCanva(props: VisualizacaoEditorProps) {
     </main>
   );
 }
-
