@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -17,7 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useTemplates } from "@/hooks/use-templates";
 import { useSearchParams } from "next/navigation";
 import { useEditor } from "./contexts/editor-context";
-import { exportPreviewAsImage } from "./contexts/export";
+import { exportPreviewAsImage, savePreviewAsImage } from "./contexts/export";
 
 
 function ProporcaoSkeleton() {
@@ -185,17 +186,10 @@ export default function AspectWeaver() {
     const scale = highRes ? 2 : 1;
     toast({ title: 'Exportando...', description: `Gerando imagem ${format.toUpperCase()}${highRes ? ' em alta resolução' : ''}.` });
 
-    const image = await exportPreviewAsImage(currentState.aspectRatio as ProporcaoTela, format, scale);
-    
-    if (image) {
-        const link = document.createElement('a');
-        link.href = image;
-        link.download = `inspire-me-export.${format}`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        toast({ title: 'Sucesso!', description: `A imagem foi baixada como ${link.download}.` });
-    } else {
+    try {
+        await savePreviewAsImage(currentState.aspectRatio as ProporcaoTela, format, scale);
+        toast({ title: 'Sucesso!', description: `A imagem foi baixada com sucesso.` });
+    } catch {
         toast({ variant: 'destructive', title: 'Erro de Exportação', description: 'Não foi possível gerar a imagem.' });
     }
   }, [currentState.aspectRatio, toast]);

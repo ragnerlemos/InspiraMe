@@ -1,3 +1,4 @@
+
 "use client";
 
 import html2canvas from "html2canvas";
@@ -11,7 +12,7 @@ const exportDimensions: Record<ProporcaoTela, { width: number; height: number }>
 };
 
 /**
- * Captura o PreviewCanva exatamente como está na tela, com dimensões fixas.
+ * Captura o PreviewCanva exatamente como está na tela e retorna um Data URL.
  * @param proporcao "9 / 16" | "1 / 1" | "16 / 9"
  * @param formato "png" | "jpeg"
  * @param scaleExport Multiplicador de resolução (ex: 2 para alta resolução)
@@ -63,4 +64,22 @@ export async function exportPreviewAsImage(
     element.style.width = originalWidth;
     element.style.height = originalHeight;
   }
+}
+
+
+export async function savePreviewAsImage(
+  proporcao: ProporcaoTela,
+  formato: "png" | "jpeg" = "png",
+  scaleExport: number = 1,
+  filename: string = "inspire-me-export"
+) {
+  const dataUrl = await exportPreviewAsImage(proporcao, formato, scaleExport);
+  if (!dataUrl) return;
+
+  const link = document.createElement("a");
+  link.href = dataUrl;
+  link.download = `${filename}.${formato}`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
