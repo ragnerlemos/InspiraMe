@@ -1,5 +1,4 @@
 
-
 import { getAllQuotes } from "@/lib/dados";
 import { FavoritesClientPage } from './favoritos-client';
 import type { QuoteWithAuthor } from "@/lib/dados";
