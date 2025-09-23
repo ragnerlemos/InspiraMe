@@ -1,4 +1,3 @@
-
 // Componente que exibe a assinatura do perfil do usuário na tela de visualização.
 // Inclui avatar, nome de usuário e rede social, com opções de customização.
 
@@ -68,15 +67,15 @@ export function AssinaturaPerfil({
 
       {(showUsername || showSocial) && (
         <div 
-          className="flex flex-col justify-center ml-3 h-full"
+          className="flex flex-col justify-center ml-3"
         >
           {showUsername && (
-            <p className="font-bold text-white text-base m-0 whitespace-nowrap">
+            <p className="font-bold text-white text-base whitespace-nowrap leading-tight">
               {profile.username}
             </p>
           )}
           {showSocial && (
-            <p className="text-gray-300 text-xs m-0">
+            <p className="text-gray-300 text-xs leading-tight">
               {profile.social}
             </p>
           )}
