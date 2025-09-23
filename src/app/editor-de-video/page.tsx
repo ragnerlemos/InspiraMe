@@ -284,6 +284,13 @@ function EditorCore() {
         currentState.letterSpacing, currentState.lineHeight, currentState.wordSpacing
     ]);
 
+    const bgColor = useMemo(() => {
+        return currentState.backgroundStyle.type === 'solid' ? currentState.backgroundStyle.value : '#000000';
+    }, [currentState.backgroundStyle]);
+
+    const setBgColor = useCallback((color: string) => {
+        updateState({ backgroundStyle: { type: 'solid', value: color } });
+    }, [updateState]);
 
     if (!isReady || !isProfileLoaded) {
         return <ProporcaoSkeleton />;
@@ -295,6 +302,7 @@ function EditorCore() {
         scale, setScale,
         // Fundo
         backgroundStyle: currentState.backgroundStyle, setBackgroundStyle: (val: EstiloFundo) => updateState({ backgroundStyle: val }),
+        bgColor, setBgColor,
         // Película
         filmColor: currentState.filmColor, setFilmColor: (val: string) => updateState({ filmColor: val }),
         filmOpacity: currentState.filmOpacity, setFilmOpacity: (val: number) => updateState({ filmOpacity: val }),
