@@ -8,16 +8,24 @@ import { Heart, Search, Copy, Film, Share2, LayoutGrid } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import {
-  type QuoteWithAuthor,
-  type CategoriesHierarchy,
-} from '@/lib/dados';
 import { useFavorites } from '@/hooks/use-favorites';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { ScrollArea } from '@/components/ui/scroll-area';
+
+interface QuoteWithAuthor {
+    id: string;
+    quote: string;
+    author?: string;
+    category: string;
+    subCategory?: string;
+}
+
+interface CategoriesHierarchy {
+  [mainCategory: string]: string[];
+}
 
 type FrasesClientPageProps = {
   initialQuotes: QuoteWithAuthor[];

@@ -2,7 +2,6 @@
 "use client";
 
 import { useFavorites } from "@/hooks/use-favorites";
-import { type QuoteWithAuthor } from "@/lib/dados";
 import Link from "next/link";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,6 +10,14 @@ import { useToast } from "@/hooks/use-toast";
 import { useState, useMemo } from "react";
 import { cn } from "@/lib/utils";
 
+// Definindo o tipo aqui para evitar importação do server-side
+interface QuoteWithAuthor {
+    id: string;
+    quote: string;
+    author?: string;
+    category: string;
+    subCategory?: string;
+}
 
 // Componente Cliente para a página de favoritos
 export function FavoritesClientPage({ allQuotes }: { allQuotes: QuoteWithAuthor[] }) {

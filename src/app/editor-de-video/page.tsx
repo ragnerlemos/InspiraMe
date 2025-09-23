@@ -316,7 +316,6 @@ export default function AspectWeaver({ setControls }: { setControls: (controls: 
     scale, setScale,
     // Fundo
     backgroundStyle: currentState.backgroundStyle, setBackgroundStyle: (val: EstiloFundo) => updateState({ backgroundStyle: val }),
-    setBgColor,
     // Película
     filmColor: currentState.filmColor, setFilmColor: (val: string) => updateState({ filmColor: val }),
     filmOpacity: currentState.filmOpacity, setFilmOpacity: (val: number) => updateState({ filmOpacity: val }),
@@ -405,5 +404,7 @@ export default function AspectWeaver({ setControls }: { setControls: (controls: 
     </div>
   );
 }
+
+    
 
     
