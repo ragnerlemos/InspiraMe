@@ -77,7 +77,7 @@ const getInitialState = (): Omit<EditorState, 'activeTemplateId' | 'text'> => ({
     profileVerticalPosition: 25,
     showLogo: false,
     logoPositionX: 50,
-    logoPositionY: 72,
+    logoPositionY: 10,
     logoScale: 40,
     logoOpacity: 100,
 });
@@ -177,8 +177,8 @@ export default function AspectWeaver() {
       canRedo,
       redo,
       onSaveAsTemplate: () => handleSaveAsTemplate(currentState, addTemplate, toast),
-      onExportJPG: () => onExportImage('jpeg', toast),
-      onExportPNG: () => onExportImage('png', toast),
+      onExportJPG: () => onExportImage("jpeg", toast),
+      onExportPNG: () => onExportImage("png", toast),
       onExportMP4,
     });
   }, [
