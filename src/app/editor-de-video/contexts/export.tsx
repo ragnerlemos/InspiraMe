@@ -5,84 +5,60 @@ import html2canvas from "html2canvas";
 import type { ProporcaoTela, EditorState } from "../tipos";
 import type { Toast } from "@/hooks/use-toast";
 
-// Mapear proporções do app para dimensões fixas
-const exportDimensions: Record<ProporcaoTela, { width: number; height: number }> = {
-  "9 / 16": { width: 1080, height: 1920 },
-  "1 / 1": { width: 1080, height: 1080 },
-  "16 / 9": { width: 1920, height: 1080 },
-};
-
 /**
- * Captura o PreviewCanva e retorna um Data URL.
- * @param proporcao Proporção selecionada
+ * Captura o preview como imagem, salva no computador do usuário.
  * @param formato "png" | "jpeg"
- * @returns Data URL da imagem ou null
  */
-export async function exportPreviewAsImage(
-  proporcao: ProporcaoTela,
-  formato: "png" | "jpeg" = "png"
-): Promise<string | null> {
+export async function onExportImage(
+  formato: "png" | "jpeg" = "png",
+  toast: ({ title, description, variant }: { title: string; description: string; variant?: string }) => void
+) {
   const element = document.querySelector<HTMLElement>("#editor-preview-content");
   if (!element) {
-    console.error("Elemento #editor-preview-content não encontrado");
-    return null;
+    toast({ variant: 'destructive', title: 'Erro', description: 'Elemento de preview não encontrado.' });
+    return;
   }
+
+  toast({ title: 'Exportando...', description: 'Gerando imagem, por favor aguarde...' });
 
   await document.fonts.ready;
   await new Promise(r => setTimeout(r, 50));
 
-  const dims = exportDimensions[proporcao];
-  if (!dims) {
-    console.error(`Proporção inválida para exportação: ${proporcao}`);
-    return null;
-  }
-
   try {
     const canvas = await html2canvas(element, {
-      width: dims.width,
-      height: dims.height,
       backgroundColor: null,
       useCORS: true,
-      scale: 1, // Garante que a resolução base seja usada
+      scale: window.devicePixelRatio, // Captura na resolução nativa da tela para máxima qualidade
     });
 
-    return canvas.toDataURL(`image/${formato}`, formato === 'jpeg' ? 0.9 : 1.0);
+    const now = new Date();
+    const timestamp = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${now.getDate().toString().padStart(2,'0')}_${now.getHours().toString().padStart(2,'0')}-${now.getMinutes().toString().padStart(2,'0')}-${now.getSeconds().toString().padStart(2,'0')}`;
+    const filename = `inspire-me-${timestamp}`;
+
+    const link = document.createElement("a");
+    link.href = canvas.toDataURL(`image/${formato}`, formato === "jpeg" ? 0.9 : 1.0);
+    link.download = `${filename}.${formato}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    toast({ title: 'Sucesso!', description: `Imagem salva como ${link.download}` });
+
   } catch (err) {
     console.error("Erro ao capturar preview:", err);
-    return null;
+    toast({ variant: 'destructive', title: 'Erro de Exportação', description: 'Ocorreu um problema ao gerar a imagem.' });
   }
 }
 
-/** Salva imagem no computador */
-export async function savePreviewAsImage(
-  proporcao: ProporcaoTela,
-  formato: "png" | "jpeg" = "png"
-) {
-  const dataUrl = await exportPreviewAsImage(proporcao, formato);
-  if (!dataUrl) return;
 
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-  const filename = `inspire-me-${timestamp}`;
-
-  const link = document.createElement("a");
-  link.href = dataUrl;
-  link.download = `${filename}.${formato}`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-}
-
-/** Exporta uma imagem no formato especificado */
-export async function onExportImage(
-  proporcao: ProporcaoTela,
-  formato: "png" | "jpeg" = "png"
-) {
-  await savePreviewAsImage(proporcao, formato);
-}
-
-/** Salva template com miniatura */
+/**
+ * Gera uma miniatura para o template e o salva.
+ * @param proporcao Proporção da tela
+ * @param currentState Estado atual do editor
+ * @param addTemplate Função para adicionar o template
+ * @param toast Função para exibir notificações
+ */
 export async function handleSaveAsTemplate(
-  proporcao: ProporcaoTela,
   currentState: EditorState,
   addTemplate: (name: string, state: EditorState, thumbnail: string) => void,
   toast: ({ title, description, variant }: { title: string; description: string; variant?: string }) => void
@@ -91,15 +67,32 @@ export async function handleSaveAsTemplate(
   if (!templateName) return;
 
   toast({ title: 'Salvando modelo...', description: 'Gerando miniatura...' });
-  const thumbnail = await exportPreviewAsImage(proporcao, "jpeg");
-  if (!thumbnail) {
-    toast({ variant: 'destructive', title: 'Erro', description: 'Não foi possível gerar a miniatura do modelo.' });
+
+  const element = document.querySelector<HTMLElement>("#editor-preview-content");
+  if (!element) {
+    toast({ variant: 'destructive', title: 'Erro', description: 'Elemento de preview não encontrado.' });
     return;
   }
+  
+  await document.fonts.ready;
+  await new Promise(r => setTimeout(r, 50));
 
-  addTemplate(templateName, currentState, thumbnail);
-  toast({
-      title: "Modelo Salvo!",
-      description: `O modelo "${templateName}" foi adicionado à sua coleção.`,
-  });
+  try {
+     const canvas = await html2canvas(element, {
+        backgroundColor: null,
+        useCORS: true,
+        scale: 0.5, // Gera uma miniatura menor para performance
+     });
+     const thumbnail = canvas.toDataURL('image/jpeg', 0.8);
+
+     addTemplate(templateName, currentState, thumbnail);
+     toast({
+        title: "Modelo Salvo!",
+        description: `O modelo "${templateName}" foi adicionado à sua coleção.`,
+     });
+
+  } catch (err) {
+      console.error("Erro ao gerar miniatura:", err);
+      toast({ variant: 'destructive', title: 'Erro', description: 'Não foi possível gerar a miniatura do modelo.' });
+  }
 }

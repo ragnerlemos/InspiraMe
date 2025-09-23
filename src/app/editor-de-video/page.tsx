@@ -176,14 +176,9 @@ export default function AspectWeaver() {
       undo,
       canRedo,
       redo,
-      onSaveAsTemplate: () => handleSaveAsTemplate(
-        currentState.aspectRatio as ProporcaoTela,
-        currentState,
-        addTemplate,
-        toast
-      ),
-      onExportJPG: () => onExportImage(currentState.aspectRatio as ProporcaoTela, 'jpeg'),
-      onExportPNG: () => onExportImage(currentState.aspectRatio as ProporcaoTela, 'png'),
+      onSaveAsTemplate: () => handleSaveAsTemplate(currentState, addTemplate, toast),
+      onExportJPG: () => onExportImage('jpeg', toast),
+      onExportPNG: () => onExportImage('png', toast),
       onExportMP4,
     });
   }, [
