@@ -67,7 +67,7 @@ const getInitialState = (): Omit<EditorState, 'activeTemplateId' | 'text'> => ({
     showProfileSignature: false,
     signaturePositionX: 50,
     signaturePositionY: 90,
-    signatureScale: 100,
+    signatureScale: 70,
     showSignaturePhoto: false,
     showSignatureUsername: true,
     showSignatureSocial: true,
