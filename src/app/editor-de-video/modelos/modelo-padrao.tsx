@@ -41,6 +41,7 @@ export function ModeloPadrao({
       
       {showProfileSignature && (
         <div
+          id="editor-signature-wrapper"
           className="absolute"
           style={{
             top: `${signaturePositionY}%`,
@@ -63,10 +64,11 @@ export function ModeloPadrao({
       )}
       {showLogo && profile.logo && (
         <div
+          id="editor-logo-wrapper"
           className="absolute"
           style={{
             top: `${logoPositionY}%`,
-            left: `${logoPositionX}%`,
+            left: `${logoXPosition}%`,
             transform: `translate(-50%, -50%) scale(${logoScale / 100})`,
             opacity: logoOpacity / 100,
           }}
