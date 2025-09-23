@@ -13,7 +13,7 @@ import {
   PanelGroup,
   PanelResizeHandle,
 } from "@/components/ui/resizable";
-import type { EditorState, EstiloFundo, ProporcaoTela, VisualizacaoEditorProps } from "@/app/editor-de-video/tipos";
+import type { EditorState, EstiloFundo, VisualizacaoEditorProps } from "@/app/editor-de-video/tipos";
 import { useToast } from "@/hooks/use-toast";
 import { useTemplates } from "@/hooks/use-templates";
 import { useSearchParams } from "next/navigation";
@@ -290,7 +290,7 @@ export default function AspectWeaver() {
     showProfileSignature: currentState.showProfileSignature,
     signaturePositionX: currentState.signaturePositionX,
     signaturePositionY: currentState.signaturePositionY,
-    signatureScale: currentState.signatureScale,
+signatureScale: currentState.signatureScale,
     showSignaturePhoto: currentState.showSignaturePhoto,
     showSignatureUsername: currentState.showSignatureUsername,
     showSignatureSocial: currentState.showSignatureSocial,
