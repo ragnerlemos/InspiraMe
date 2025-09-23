@@ -18,7 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useTemplates, type Template } from "@/hooks/use-templates";
 import html2canvas from 'html2canvas';
 import { useSearchParams } from "next/navigation";
-import type { EditorControlState } from "./contexts/editor-context";
+import { useEditor } from "./contexts/editor-context";
 
 
 function ProporcaoSkeleton() {
@@ -83,13 +83,14 @@ const getInitialState = (): Omit<EditorState, 'activeTemplateId' | 'text'> => ({
 });
 
 
-export default function AspectWeaver({ setControls }: { setControls: (controls: Partial<EditorControlState>) => void }) {
+export default function AspectWeaver() {
   const { width } = useWindowSize();
   const isDesktop = width >= 768;
   const { profile, isLoaded: isProfileLoaded } = useProfile();
   const searchParams = useSearchParams();
   const { toast } = useToast();
   const { templates: allTemplates, isLoaded: areTemplatesLoaded, addTemplate } = useTemplates();
+  const { setControls } = useEditor();
 
   // Histórico de estados
   const [history, setHistory] = useState<EditorState[]>([]);
@@ -201,18 +202,16 @@ export default function AspectWeaver({ setControls }: { setControls: (controls: 
     
     // Efeito para atualizar o contexto do editor
     useEffect(() => {
-        if (setControls) {
-            setControls({
-                canUndo,
-                undo,
-                canRedo,
-                redo,
-                onSaveAsTemplate: handleSaveAsTemplate,
-                onExportJPG,
-                onExportPNG,
-                onExportMP4,
-            });
-        }
+        setControls({
+            canUndo,
+            undo,
+            canRedo,
+            redo,
+            onSaveAsTemplate: handleSaveAsTemplate,
+            onExportJPG,
+            onExportPNG,
+            onExportMP4,
+        });
     }, [canUndo, undo, canRedo, redo, handleSaveAsTemplate, onExportJPG, onExportPNG, onExportMP4, setControls]);
 
   // Efeito de inicialização
@@ -305,10 +304,6 @@ export default function AspectWeaver({ setControls }: { setControls: (controls: 
       updateState({ backgroundStyle: { type: 'solid', value: color } });
   }, [updateState]);
 
-  if (!isReady || !isProfileLoaded) {
-    return <ProporcaoSkeleton />;
-  }
-  
   const commonProps = {
     // Canvas
     aspectRatio: currentState.aspectRatio, setAspectRatio: (val: string) => updateState({ aspectRatio: val as any }),
@@ -384,6 +379,10 @@ export default function AspectWeaver({ setControls }: { setControls: (controls: 
     profileVerticalPosition: currentState.profileVerticalPosition,
     scale,
   };
+  
+  if (!isReady || !isProfileLoaded) {
+    return <ProporcaoSkeleton />;
+  }
 
   return (
     <div className="flex flex-col w-full bg-background font-body text-foreground h-full">
@@ -407,3 +406,4 @@ export default function AspectWeaver({ setControls }: { setControls: (controls: 
     
 
     
+
