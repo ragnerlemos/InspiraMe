@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -18,7 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useTemplates } from "@/hooks/use-templates";
 import { useSearchParams } from "next/navigation";
 import { useEditor } from "./contexts/editor-context";
-import { exportPreviewAsImage } from "./lib/export.tsx";
+import { exportPreviewAsImage } from "./lib/export";
 
 
 function ProporcaoSkeleton() {
@@ -165,61 +164,61 @@ export default function AspectWeaver() {
     currentState.letterSpacing, currentState.lineHeight, currentState.wordSpacing
   ]);
 
-    const handleSaveAsTemplate = useCallback(async () => {
-        const templateName = prompt("Digite um nome para o novo modelo:");
-        if (!templateName) return;
-        
-        toast({ title: 'Salvando modelo...', description: 'Gerando miniatura...' });
-        const thumbnail = await exportPreviewAsImage(currentState.aspectRatio as ProporcaoTela, 'jpeg', 1);
-        if (thumbnail) {
-            addTemplate(templateName, currentState, thumbnail);
-            toast({
-                title: "Modelo Salvo!",
-                description: `O modelo "${templateName}" foi adicionado à sua coleção.`,
-            });
-        } else {
-            toast({ variant: 'destructive', title: 'Erro', description: 'Não foi possível gerar a miniatura do modelo.' });
-        }
-    }, [addTemplate, currentState, toast]);
+  const handleSaveAsTemplate = useCallback(async () => {
+    const templateName = prompt("Digite um nome para o novo modelo:");
+    if (!templateName) return;
     
-    const onExport = useCallback(async (format: 'jpeg' | 'png', highRes: boolean = false) => {
-        const scale = highRes ? 2 : 1;
-        toast({ title: 'Exportando...', description: `Gerando imagem ${format.toUpperCase()}${highRes ? ' em alta resolução' : ''}.` });
-
-        const image = await exportPreviewAsImage(currentState.aspectRatio as ProporcaoTela, format, scale);
-        
-        if (image) {
-            const link = document.createElement('a');
-            link.href = image;
-            link.download = `inspire-me-export.${format}`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            toast({ title: 'Sucesso!', description: `A imagem foi baixada como ${link.download}.` });
-        } else {
-            toast({ variant: 'destructive', title: 'Erro de Exportação', description: 'Não foi possível gerar a imagem.' });
-        }
-    }, [currentState.aspectRatio, toast]);
-
-    const onExportJPG = useCallback((highRes: boolean = false) => onExport('jpeg', highRes), [onExport]);
-    const onExportPNG = useCallback((highRes: boolean = false) => onExport('png', highRes), [onExport]);
-
-    const onExportMP4 = useCallback(() => {
-        toast({ title: 'Em breve!', description: 'A exportação de vídeo MP4 estará disponível em futuras atualizações.' });
-    }, [toast]);
-    
-    useEffect(() => {
-        setControls({
-            canUndo,
-            undo,
-            canRedo,
-            redo,
-            onSaveAsTemplate: handleSaveAsTemplate,
-            onExportJPG,
-            onExportPNG,
-            onExportMP4,
+    toast({ title: 'Salvando modelo...', description: 'Gerando miniatura...' });
+    const thumbnail = await exportPreviewAsImage(currentState.aspectRatio as ProporcaoTela, 'jpeg', 1);
+    if (thumbnail) {
+        addTemplate(templateName, currentState, thumbnail);
+        toast({
+            title: "Modelo Salvo!",
+            description: `O modelo "${templateName}" foi adicionado à sua coleção.`,
         });
-    }, [canUndo, undo, canRedo, redo, handleSaveAsTemplate, onExportJPG, onExportPNG, onExportMP4, setControls]);
+    } else {
+        toast({ variant: 'destructive', title: 'Erro', description: 'Não foi possível gerar a miniatura do modelo.' });
+    }
+  }, [addTemplate, currentState, toast]);
+    
+  const onExport = useCallback(async (format: 'jpeg' | 'png', highRes: boolean = false) => {
+    const scale = highRes ? 2 : 1;
+    toast({ title: 'Exportando...', description: `Gerando imagem ${format.toUpperCase()}${highRes ? ' em alta resolução' : ''}.` });
+
+    const image = await exportPreviewAsImage(currentState.aspectRatio as ProporcaoTela, format, scale);
+    
+    if (image) {
+        const link = document.createElement('a');
+        link.href = image;
+        link.download = `inspire-me-export.${format}`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        toast({ title: 'Sucesso!', description: `A imagem foi baixada como ${link.download}.` });
+    } else {
+        toast({ variant: 'destructive', title: 'Erro de Exportação', description: 'Não foi possível gerar a imagem.' });
+    }
+  }, [currentState.aspectRatio, toast]);
+
+  const onExportJPG = useCallback((highRes: boolean = false) => onExport('jpeg', highRes), [onExport]);
+  const onExportPNG = useCallback((highRes: boolean = false) => onExport('png', highRes), [onExport]);
+
+  const onExportMP4 = useCallback(() => {
+    toast({ title: 'Em breve!', description: 'A exportação de vídeo MP4 estará disponível em futuras atualizações.' });
+  }, [toast]);
+    
+  useEffect(() => {
+      setControls({
+          canUndo,
+          undo,
+          canRedo,
+          redo,
+          onSaveAsTemplate: handleSaveAsTemplate,
+          onExportJPG,
+          onExportPNG,
+          onExportMP4,
+      });
+  }, [canUndo, undo, canRedo, redo, handleSaveAsTemplate, onExportJPG, onExportPNG, onExportMP4, setControls]);
 
   useEffect(() => {
     if (!isProfileLoaded || !areTemplatesLoaded || isReady) return;

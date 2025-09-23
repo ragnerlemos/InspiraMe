@@ -4,10 +4,10 @@ import html2canvas from "html2canvas";
 import type { ProporcaoTela } from "../tipos";
 
 // Mapear proporções do app para dimensões fixas e rótulos
-const exportDimensions: Record<ProporcaoTela, { label: "Story" | "Quadrado" | "Vídeo", width: number; height: number }> = {
-  "9 / 16": { label: "Story", width: 1080, height: 1920 },
-  "1 / 1": { label: "Quadrado", width: 1080, height: 1080 },
-  "16 / 9": { label: "Vídeo", width: 1920, height: 1080 },
+const exportDimensions: Record<ProporcaoTela, { width: number; height: number }> = {
+  "9 / 16": { width: 1080, height: 1920 },
+  "1 / 1": { width: 1080, height: 1080 },
+  "16 / 9": { width: 1920, height: 1080 },
 };
 
 /**
