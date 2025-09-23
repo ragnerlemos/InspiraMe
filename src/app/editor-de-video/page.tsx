@@ -313,24 +313,22 @@ export default function AspectWeaver() {
 
   if (isDesktop) {
     return (
-      <div className="flex flex-col w-full bg-background font-body text-foreground h-full">
-        <PanelGroup direction="horizontal" className="flex-1 min-h-0">
-          <Panel defaultSize={30} minSize={25} maxSize={40}>
-            <Sidebar {...commonProps} />
-          </Panel>
-          <PanelResizeHandle />
-          <Panel>
-            <main className="w-full h-full overflow-auto">
-              <PreviewCanva {...previewProps} />
-            </main>
-          </Panel>
-        </PanelGroup>
-      </div>
+      <PanelGroup direction="horizontal" className="h-full">
+        <Panel defaultSize={30} minSize={25} maxSize={40}>
+          <Sidebar {...commonProps} />
+        </Panel>
+        <PanelResizeHandle />
+        <Panel>
+          <main className="w-full h-full overflow-auto">
+            <PreviewCanva {...previewProps} />
+          </main>
+        </Panel>
+      </PanelGroup>
     );
   }
 
   return (
-    <div className="flex flex-col h-screen w-full bg-background font-body text-foreground">
+    <div className="flex flex-col h-full w-full bg-background font-body text-foreground">
       <main className="flex-1 overflow-hidden">
         <PreviewCanva {...previewProps} />
       </main>
