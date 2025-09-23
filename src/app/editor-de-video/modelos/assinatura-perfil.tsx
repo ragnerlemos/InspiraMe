@@ -45,7 +45,7 @@ export function AssinaturaPerfil({
 
   return (
     <div 
-        className={cn("flex items-center rounded-lg max-w-max p-2")}
+        className={cn("inline-flex items-center rounded-lg p-2")}
         style={{
             backgroundColor: showBackground ? backgroundColor : 'transparent',
         }}
