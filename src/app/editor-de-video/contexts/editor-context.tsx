@@ -10,8 +10,8 @@ export interface EditorControlState {
   canRedo: boolean;
   redo: () => void;
   onSaveAsTemplate: () => void;
-  onExportJPG: () => void;
-  onExportPNG: () => void;
+  onExportJPG: (highRes?: boolean) => void;
+  onExportPNG: (highRes?: boolean) => void;
   onExportMP4: () => void;
 }
 

@@ -182,9 +182,12 @@ export default function AspectWeaver() {
         }
     }, [addTemplate, currentState, toast]);
     
-    const onExport = useCallback(async (format: 'jpeg' | 'png') => {
-        toast({ title: 'Exportando...', description: `Gerando imagem ${format.toUpperCase()}.` });
-        const image = await exportPreviewAsImage(currentState.aspectRatio as ProporcaoTela, format, 2);
+    const onExport = useCallback(async (format: 'jpeg' | 'png', highRes: boolean = false) => {
+        const scale = highRes ? 2 : 1;
+        toast({ title: 'Exportando...', description: `Gerando imagem ${format.toUpperCase()}${highRes ? ' em alta resolução' : ''}.` });
+
+        const image = await exportPreviewAsImage(currentState.aspectRatio as ProporcaoTela, format, scale);
+        
         if (image) {
             const link = document.createElement('a');
             link.href = image;
@@ -196,10 +199,10 @@ export default function AspectWeaver() {
         } else {
             toast({ variant: 'destructive', title: 'Erro de Exportação', description: 'Não foi possível gerar a imagem.' });
         }
-    }, [toast, currentState.aspectRatio]);
+    }, [currentState.aspectRatio, toast]);
 
-    const onExportJPG = useCallback(() => onExport('jpeg'), [onExport]);
-    const onExportPNG = useCallback(() => onExport('png'), [onExport]);
+    const onExportJPG = useCallback((highRes: boolean = false) => onExport('jpeg', highRes), [onExport]);
+    const onExportPNG = useCallback((highRes: boolean = false) => onExport('png', highRes), [onExport]);
 
     const onExportMP4 = useCallback(() => {
         toast({ title: 'Em breve!', description: 'A exportação de vídeo MP4 estará disponível em futuras atualizações.' });
@@ -361,5 +364,3 @@ export default function AspectWeaver() {
     </div>
   );
 }
-
-    
