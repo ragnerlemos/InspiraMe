@@ -3,6 +3,7 @@
 
 import html2canvas from "html2canvas";
 import type { ProporcaoTela, EditorState } from "../tipos";
+import type { Toast } from "@/hooks/use-toast";
 
 // Mapear proporções do app para dimensões fixas
 const exportDimensions: Record<ProporcaoTela, { width: number; height: number }> = {
@@ -12,7 +13,7 @@ const exportDimensions: Record<ProporcaoTela, { width: number; height: number }>
 };
 
 /**
- * Captura o PreviewCanva exatamente como está na tela e retorna um Data URL.
+ * Captura o PreviewCanva e retorna um Data URL.
  * @param proporcao Proporção selecionada
  * @param formato "png" | "jpeg"
  * @returns Data URL da imagem ou null
@@ -36,41 +37,32 @@ export async function exportPreviewAsImage(
     return null;
   }
 
-  // Salva dimensões originais do elemento
-  const originalWidth = element.style.width;
-  const originalHeight = element.style.height;
-
-  // Define dimensões fixas para captura
-  element.style.width = `${dims.width}px`;
-  element.style.height = `${dims.height}px`;
-
   try {
     const canvas = await html2canvas(element, {
       width: dims.width,
       height: dims.height,
       backgroundColor: null,
       useCORS: true,
+      scale: 1, // Garante que a resolução base seja usada
     });
 
     return canvas.toDataURL(`image/${formato}`, formato === 'jpeg' ? 0.9 : 1.0);
   } catch (err) {
     console.error("Erro ao capturar preview:", err);
     return null;
-  } finally {
-    // Restaura dimensões originais
-    element.style.width = originalWidth;
-    element.style.height = originalHeight;
   }
 }
 
-
+/** Salva imagem no computador */
 export async function savePreviewAsImage(
   proporcao: ProporcaoTela,
-  formato: "png" | "jpeg" = "png",
-  filename: string = "inspire-me-export"
+  formato: "png" | "jpeg" = "png"
 ) {
   const dataUrl = await exportPreviewAsImage(proporcao, formato);
   if (!dataUrl) return;
+
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const filename = `inspire-me-${timestamp}`;
 
   const link = document.createElement("a");
   link.href = dataUrl;
@@ -80,14 +72,12 @@ export async function savePreviewAsImage(
   document.body.removeChild(link);
 }
 
-/** Exporta JPG */
-export async function onExportJPG(proporcao: ProporcaoTela) {
-  await savePreviewAsImage(proporcao, "jpeg", "inspire-me-export");
-}
-
-/** Exporta PNG */
-export async function onExportPNG(proporcao: ProporcaoTela) {
-  await savePreviewAsImage(proporcao, "png", "inspire-me-export");
+/** Exporta uma imagem no formato especificado */
+export async function onExportImage(
+  proporcao: ProporcaoTela,
+  formato: "png" | "jpeg" = "png"
+) {
+  await savePreviewAsImage(proporcao, formato);
 }
 
 /** Salva template com miniatura */
@@ -95,7 +85,7 @@ export async function handleSaveAsTemplate(
   proporcao: ProporcaoTela,
   currentState: EditorState,
   addTemplate: (name: string, state: EditorState, thumbnail: string) => void,
-  toast: (options: { title: string; description: string; variant?: string }) => void
+  toast: ({ title, description, variant }: { title: string; description: string; variant?: string }) => void
 ) {
   const templateName = prompt("Digite um nome para o novo modelo:");
   if (!templateName) return;

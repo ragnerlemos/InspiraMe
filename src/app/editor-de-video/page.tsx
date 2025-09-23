@@ -18,7 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useTemplates } from "@/hooks/use-templates";
 import { useSearchParams } from "next/navigation";
 import { useEditor } from "./contexts/editor-context";
-import { onExportJPG, onExportPNG, handleSaveAsTemplate } from "./contexts/export";
+import { onExportImage, handleSaveAsTemplate } from "./contexts/export";
 
 
 function ProporcaoSkeleton() {
@@ -182,8 +182,8 @@ export default function AspectWeaver() {
         addTemplate,
         toast
       ),
-      onExportJPG: () => onExportJPG(currentState.aspectRatio as ProporcaoTela),
-      onExportPNG: () => onExportPNG(currentState.aspectRatio as ProporcaoTela),
+      onExportJPG: () => onExportImage(currentState.aspectRatio as ProporcaoTela, 'jpeg'),
+      onExportPNG: () => onExportImage(currentState.aspectRatio as ProporcaoTela, 'png'),
       onExportMP4,
     });
   }, [
