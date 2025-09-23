@@ -60,14 +60,14 @@ export function AssinaturaPerfil({
           </AvatarFallback>
         </Avatar>
       )}
-      <div className="flex flex-col leading-tight whitespace-nowrap">
+      <div className="flex flex-col items-start leading-tight">
         {showUsername && (
-          <p className="font-bold text-white text-sm">
+          <p className="font-bold text-white text-sm whitespace-nowrap">
             {profile.username}
           </p>
         )}
         {showSocial && (
-          <p className="text-gray-300 text-xs">
+          <p className="text-gray-300 text-xs whitespace-nowrap">
             {profile.social}
           </p>
         )}

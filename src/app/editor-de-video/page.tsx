@@ -143,10 +143,11 @@ export default function AspectWeaver() {
         toast({ title: 'Exportando...', description: `Gerando imagem ${format.toUpperCase()}.` });
     }
 
-    const originalStyle = { width: element.style.width, height: element.style.height };
+    const originalWidth = element.style.width;
+    const originalHeight = element.style.height;
+
     const { width, height, scale } = exportDimensions[currentState.aspectRatio as ProporcaoTela];
     
-    // Força as dimensões para a exportação
     element.style.width = `${width}px`;
     element.style.height = `${height}px`;
 
@@ -165,12 +166,11 @@ export default function AspectWeaver() {
 
     } catch (error) {
         console.error('Erro ao exportar imagem:', error);
-        toast({ variant: 'destructive', title: 'Erro de Exportação', description: 'Não foi possível gerar a imagem.' });
+        toast({ variant: 'destructive', title: 'Erro de Exportação', description: 'Não foi possível gerar la imagem.' });
         return null;
     } finally {
-        // Restaura o estilo original
-        element.style.width = originalStyle.width;
-        element.style.height = originalStyle.height;
+        element.style.width = originalWidth;
+        element.style.height = originalHeight;
     }
   }, [toast, currentState.aspectRatio]);
 
