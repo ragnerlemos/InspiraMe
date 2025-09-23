@@ -97,14 +97,6 @@ function EditorCore() {
     const [historyIndex, setHistoryIndex] = useState(-1);
     const [activeControl, setActiveControl] = useState<string | null>(null);
     const [scale, setScale] = useState(1);
-    
-    const setInitialState = useCallback((state: EditorState) => {
-        const fullInitialState = { ...currentState, ...state };
-        setCurrentState(fullInitialState);
-        setHistory([fullInitialState]);
-        setHistoryIndex(0);
-        setIsReady(true);
-    }, [currentState]);
 
     const updateState = useCallback((newState: Partial<EditorState>) => {
         setCurrentState(prevState => {
@@ -208,29 +200,67 @@ function EditorCore() {
     useEffect(() => {
         if (!isProfileLoaded || !areTemplatesLoaded || isReady) return;
 
-        const initialize = () => {
-            const quoteParam = searchParams.get("quote");
-            const templateIdParam = searchParams.get("templateId");
-            
-            let text = quoteParam ? decodeURIComponent(quoteParam) : "A única maneira de fazer um ótimo trabalho é amar o que você faz.";
-            
-            let initialState: EditorState;
-            if (templateIdParam) {
-                const template = allTemplates.find(t => t.id === templateIdParam);
-                if (template) {
-                    initialState = { ...(template.editorState as EditorState), text, activeTemplateId: template.id };
-                } else {
-                     initialState = { ...currentState, text, activeTemplateId: null };
-                }
+        const defaultState = {
+            text: "A inspiração está a caminho...",
+            fontFamily: "Poppins",
+            fontSize: 7,
+            fontWeight: "600",
+            fontStyle: "normal",
+            textColor: "#FFFFFF",
+            textAlign: "center",
+            textShadowBlur: 2,
+            textVerticalPosition: 50,
+            textStrokeColor: "#000000",
+            textStrokeWidth: 0,
+            letterSpacing: 0,
+            lineHeight: 1.2,
+            wordSpacing: 0,
+            backgroundStyle: { type: 'solid', value: '#1a1a1a' },
+            filmColor: "#000000",
+            filmOpacity: 20,
+            aspectRatio: "9 / 16" as "9 / 16",
+            activeTemplateId: null,
+            showProfileSignature: false,
+            signaturePositionX: 50,
+            signaturePositionY: 90,
+            signatureScale: 100,
+            showSignaturePhoto: true,
+            showSignatureUsername: true,
+            showSignatureSocial: true,
+            showSignatureBackground: false,
+            signatureBgColor: "#000000",
+            signatureBgOpacity: 50,
+            profileVerticalPosition: 50,
+            showLogo: false,
+            logoPositionX: 90,
+            logoPositionY: 10,
+            logoScale: 100,
+            logoOpacity: 80,
+        };
+        
+        const quoteParam = searchParams.get("quote");
+        const templateIdParam = searchParams.get("templateId");
+        
+        let text = quoteParam ? decodeURIComponent(quoteParam) : "A única maneira de fazer um ótimo trabalho é amar o que você faz.";
+        
+        let initialState: EditorState;
+        if (templateIdParam) {
+            const template = allTemplates.find(t => t.id === templateIdParam);
+            if (template) {
+                initialState = { ...defaultState, ...(template.editorState as EditorState), text, activeTemplateId: template.id };
             } else {
-                 initialState = { ...currentState, text, activeTemplateId: null };
+                 initialState = { ...defaultState, text, activeTemplateId: null };
             }
-
-            setInitialState(initialState);
+        } else {
+             initialState = { ...defaultState, text, activeTemplateId: null };
         }
 
-        initialize();
-    }, [searchParams, isProfileLoaded, areTemplatesLoaded, isReady, setInitialState, allTemplates, currentState]);
+        setCurrentState(initialState);
+        setHistory([initialState]);
+        setHistoryIndex(0);
+        setIsReady(true);
+        
+    }, [searchParams, isProfileLoaded, areTemplatesLoaded, isReady, allTemplates]);
 
 
     useEffect(() => {
