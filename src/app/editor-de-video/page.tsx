@@ -17,7 +17,6 @@ import type { EditorState, EstiloFundo } from "@/app/editor-de-video/tipos";
 import { useToast } from "@/hooks/use-toast";
 import { useTemplates, type Template } from "@/hooks/use-templates";
 import html2canvas from 'html2canvas';
-import { getAllQuotes } from "@/lib/dados";
 import { useSearchParams } from "next/navigation";
 import type { EditorControlState } from "./contexts/editor-context";
 
@@ -102,12 +101,12 @@ export default function AspectWeaver({ setControls }: { setControls: (controls: 
   
   const currentState = history[currentStateIndex] || {};
 
-  const updateState = (newState: Partial<EditorState>) => {
+  const updateState = useCallback((newState: Partial<EditorState>) => {
     const nextState = { ...currentState, ...newState };
     const newHistory = history.slice(0, currentStateIndex + 1);
     setHistory([...newHistory, nextState]);
     setCurrentStateIndex(newHistory.length);
-  };
+  }, [currentState, history, currentStateIndex]);
   
   // Funções de Desfazer e Refazer
   const undo = useCallback(() => {
@@ -211,28 +210,25 @@ export default function AspectWeaver({ setControls }: { setControls: (controls: 
                 onExportMP4,
             });
         }
-    }, [canUndo, undo, canRedo, redo, handleSaveAsTemplate, onExportJPG, onExportPNG, onExportMP4]);
+    }, [canUndo, undo, canRedo, redo, handleSaveAsTemplate, onExportJPG, onExportPNG, onExportMP4, setControls]);
 
   // Efeito de inicialização
   useEffect(() => {
     if (!isProfileLoaded || !areTemplatesLoaded) return;
 
-    const initialize = async (templates: Template[]) => {
+    const initialize = () => {
         const quoteParam = searchParams.get("quote");
         const templateIdParam = searchParams.get("templateId");
         
         let initialState: EditorState;
         const baseState = getInitialState();
 
-        const allQuotes = await getAllQuotes();
         const text = quoteParam 
             ? decodeURIComponent(quoteParam) 
-            : allQuotes.length > 0 
-                ? allQuotes[Math.floor(Math.random() * allQuotes.length)].quote
-                : "A inspiração está a caminho...";
+            : "A inspiração está a caminho...";
         
         if (templateIdParam) {
-          const template = templates.find(t => t.id === templateIdParam);
+          const template = allTemplates.find(t => t.id === templateIdParam);
           if (template) {
             initialState = { ...baseState, ...template.editorState, text, activeTemplateId: template.id };
           } else {
@@ -247,8 +243,8 @@ export default function AspectWeaver({ setControls }: { setControls: (controls: 
         setIsReady(true);
     }
 
-    initialize(allTemplates);
-  }, [searchParams, isProfileLoaded, areTemplatesLoaded]);
+    initialize();
+  }, [searchParams, isProfileLoaded, areTemplatesLoaded, allTemplates]);
 
 
   useEffect(() => {
@@ -306,6 +302,10 @@ export default function AspectWeaver({ setControls }: { setControls: (controls: 
   if (!isReady || !isProfileLoaded) {
     return <ProporcaoSkeleton />;
   }
+  
+    const setBgColor = useCallback((color: string) => {
+        updateState({ backgroundStyle: { type: 'solid', value: color } });
+    }, [updateState]);
 
   const commonProps = {
     // Canvas
@@ -313,6 +313,7 @@ export default function AspectWeaver({ setControls }: { setControls: (controls: 
     scale, setScale,
     // Fundo
     backgroundStyle: currentState.backgroundStyle, setBackgroundStyle: (val: EstiloFundo) => updateState({ backgroundStyle: val }),
+    setBgColor,
     // Película
     filmColor: currentState.filmColor, setFilmColor: (val: string) => updateState({ filmColor: val }),
     filmOpacity: currentState.filmOpacity, setFilmOpacity: (val: number) => updateState({ filmOpacity: val }),
