@@ -24,9 +24,9 @@ export function ModeloPadrao({
   logoOpacity,
 }: VisualizacaoEditorProps) {
   return (
-    <div className="w-full h-full flex flex-col p-8">
+    <div className="w-full h-full flex flex-col p-8 justify-center">
       {/* Container do Texto */}
-      <div className="flex-1 flex items-center justify-center">
+      <div className="flex items-center justify-center">
         <div
           style={{
             ...textStyle,
@@ -37,13 +37,14 @@ export function ModeloPadrao({
         </div>
       </div>
 
-      {/* Container da Assinatura e Logo */}
-      <div className="relative h-24 flex-shrink-0">
-        {showProfileSignature && (
+      {/* Container da Assinatura e Logo (posicionados absolutamente) */}
+      {showProfileSignature && (
           <div
-            className="absolute bottom-0 left-1/2"
+            className="absolute"
             style={{
-              transform: `translateX(-50%)`,
+              left: `${signaturePositionX}%`,
+              top: `${signaturePositionY}%`,
+              transform: `translate(-50%, -50%)`,
             }}
           >
             <AssinaturaPerfil
@@ -62,9 +63,9 @@ export function ModeloPadrao({
           <div
             className="absolute"
             style={{
-              bottom: `${logoPositionY}%`, // Posição relativa ao rodapé
               left: `${logoPositionX}%`,
-              transform: `translate(-50%, 50%) scale(${logoScale / 100})`, // Ajusta para posicionar corretamente
+              top: `${logoPositionY}%`, 
+              transform: `translate(-50%, -50%) scale(${logoScale / 100})`,
               opacity: logoOpacity / 100,
             }}
           >
@@ -75,7 +76,6 @@ export function ModeloPadrao({
             />
           </div>
         )}
-      </div>
     </div>
   );
 }
