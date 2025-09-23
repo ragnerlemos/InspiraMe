@@ -13,9 +13,9 @@ const exportDimensions: Record<ProporcaoTela, { width: number; height: number }>
 
 /**
  * Captura o PreviewCanva exatamente como está na tela e retorna um Data URL.
- * @param proporcao "9 / 16" | "1 / 1" | "16 / 9"
+ * @param proporcao Proporção selecionada
  * @param formato "png" | "jpeg"
- * @param scaleExport Multiplicador de resolução (ex: 2 para alta resolução)
+ * @param scaleExport Multiplicador de resolução. Se 1, gera a resolução base (1080×1920), se >1 gera alta resolução.
  * @returns Data URL da imagem ou null
  */
 export async function exportPreviewAsImage(
@@ -52,7 +52,7 @@ export async function exportPreviewAsImage(
       height: dims.height,
       backgroundColor: null,
       useCORS: true,
-      scale: scaleExport,
+      scale: scaleExport, // 1 = base, >1 = alta resolução
     });
 
     return canvas.toDataURL(`image/${formato}`, formato === 'jpeg' ? 0.9 : 1.0);
