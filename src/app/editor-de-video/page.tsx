@@ -159,7 +159,7 @@ export default function AspectWeaver({ setControls }: { setControls: (controls: 
     const captureCanvas = useCallback(async (format: 'jpeg' | 'png') => {
         const previewElement = document.getElementById('editor-preview-content');
         if (!previewElement) {
-            toast({ variant: 'destructive', title: 'Erro', description: 'Não foi possível encontrar a área de visualização.' });
+            toast({ variant: 'destructive', title: 'Erro', description: 'Não foi possível encontrar la área de visualização.' });
             return;
         }
 
@@ -402,3 +402,5 @@ export default function AspectWeaver({ setControls }: { setControls: (controls: 
     </div>
   );
 }
+
+    
