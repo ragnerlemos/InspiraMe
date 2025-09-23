@@ -170,7 +170,7 @@ export default function AspectWeaver() {
         if (!templateName) return;
         
         toast({ title: 'Salvando modelo...', description: 'Gerando miniatura...' });
-        const thumbnail = await exportPreviewAsImage('jpeg', 1);
+        const thumbnail = await exportPreviewAsImage(currentState.aspectRatio as ProporcaoTela, 'jpeg', 1);
         if (thumbnail) {
             addTemplate(templateName, currentState, thumbnail);
             toast({
@@ -182,13 +182,13 @@ export default function AspectWeaver() {
         }
     }, [addTemplate, currentState, toast]);
     
-    const onExportJPG = useCallback(async () => {
-        toast({ title: 'Exportando...', description: `Gerando imagem JPG.` });
-        const image = await exportPreviewAsImage('jpeg');
+    const onExport = useCallback(async (format: 'jpeg' | 'png') => {
+        toast({ title: 'Exportando...', description: `Gerando imagem ${format.toUpperCase()}.` });
+        const image = await exportPreviewAsImage(currentState.aspectRatio as ProporcaoTela, format, 2);
         if (image) {
             const link = document.createElement('a');
             link.href = image;
-            link.download = `inspire-me-export.jpeg`;
+            link.download = `inspire-me-export.${format}`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -196,23 +196,10 @@ export default function AspectWeaver() {
         } else {
             toast({ variant: 'destructive', title: 'Erro de Exportação', description: 'Não foi possível gerar a imagem.' });
         }
-    }, [toast]);
+    }, [toast, currentState.aspectRatio]);
 
-    const onExportPNG = useCallback(async () => {
-        toast({ title: 'Exportando...', description: `Gerando imagem PNG.` });
-        const image = await exportPreviewAsImage('png');
-        if (image) {
-            const link = document.createElement('a');
-            link.href = image;
-            link.download = `inspire-me-export.png`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            toast({ title: 'Sucesso!', description: `A imagem foi baixada como ${link.download}.` });
-        } else {
-            toast({ variant: 'destructive', title: 'Erro de Exportação', description: 'Não foi possível gerar a imagem.' });
-        }
-    }, [toast]);
+    const onExportJPG = () => onExport('jpeg');
+    const onExportPNG = () => onExport('png');
 
     const onExportMP4 = useCallback(() => {
         toast({ title: 'Em breve!', description: 'A exportação de vídeo MP4 estará disponível em futuras atualizações.' });
