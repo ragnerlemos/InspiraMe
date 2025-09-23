@@ -1,6 +1,16 @@
 
 // Arquivo para centralizar as definições de tipos compartilhadas entre os componentes do editor.
-import type { ProfileData } from "@/hooks/use-profile";
+
+// Define a interface para os dados do perfil do usuário.
+export interface ProfileData {
+  username: string;
+  social: string;
+  photo: string | null;
+  iconUrl: string;
+  showIcon: boolean;
+  showDate: boolean;
+  logo: string | null;
+}
 
 // Define as possíveis proporções de tela que podem ser usadas no editor.
 export type ProporcaoTela = "1 / 1" | "9 / 16" | "16 / 9";
