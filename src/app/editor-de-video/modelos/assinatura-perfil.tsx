@@ -2,10 +2,20 @@
 // Componente que exibe a assinatura do perfil do usuário na tela de visualização.
 // Inclui avatar, nome de usuário e rede social, com opções de customização.
 
-import type { ProfileData } from "@/app/editor-de-video/tipos";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User, Twitter } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+// Definindo o tipo localmente para quebrar a cadeia de importação.
+interface ProfileData {
+  username: string;
+  social: string;
+  photo: string | null;
+  iconUrl: string;
+  showIcon: boolean;
+  showDate: boolean;
+  logo: string | null;
+}
 
 interface AssinaturaPerfilProps {
   profile: ProfileData;

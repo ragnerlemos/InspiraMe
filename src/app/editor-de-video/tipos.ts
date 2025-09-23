@@ -1,3 +1,4 @@
+
 // Arquivo para centralizar as definições de tipos compartilhadas entre os componentes do editor.
 
 // Define a interface para os dados do perfil do usuário.

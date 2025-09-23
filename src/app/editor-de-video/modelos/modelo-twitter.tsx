@@ -3,11 +3,26 @@ import type { VisualizacaoEditorProps } from '../tipos';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { User } from 'lucide-react';
 
+interface ProfileData {
+  username: string;
+  social: string;
+  photo: string | null;
+  iconUrl: string;
+  showIcon: boolean;
+  showDate: boolean;
+  logo: string | null;
+}
+
+interface ModeloTwitterProps extends VisualizacaoEditorProps {
+    profile: ProfileData;
+}
+
+
 export function ModeloTwitter({
   profile,
   text,
   textStyle,
-}: VisualizacaoEditorProps) {
+}: ModeloTwitterProps) {
   return (
     <div className="absolute inset-0 flex items-center justify-center p-8">
       {/* Container que agrupa a assinatura e o texto para garantir o alinhamento */}
