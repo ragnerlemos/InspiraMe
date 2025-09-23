@@ -26,7 +26,7 @@ export function ModeloPadrao({
   return (
     <>
       {/* Container do Texto */}
-      <div className="flex items-center justify-center text-center">
+      <div className="flex-1 flex items-center justify-center text-center">
         <div
           style={{
             ...textStyle,
@@ -38,7 +38,7 @@ export function ModeloPadrao({
       </div>
 
       {/* Container da Assinatura e Logo */}
-      <div className="relative">
+      <div className="relative h-1/4 flex-shrink-0">
         {showProfileSignature && (
             <div
               className="absolute"
