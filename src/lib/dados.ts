@@ -19,7 +19,8 @@ export interface QuoteWithAuthor {
     subCategory?: string;
 }
 
-export interface CategoriesHierarchy {
+// Interface movida para os componentes que a utilizam para evitar importação cruzada.
+interface CategoriesHierarchy {
   [mainCategory: string]: string[];
 }
 

@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useMemo } from "react";
 import { cn } from "@/lib/utils";
 
-// Definindo o tipo aqui para evitar importação do server-side
+// Definindo o tipo localmente para quebrar a cadeia de importação.
 interface QuoteWithAuthor {
     id: string;
     quote: string;

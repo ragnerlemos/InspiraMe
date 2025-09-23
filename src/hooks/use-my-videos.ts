@@ -2,9 +2,17 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import type { SavedVideo } from "@/app/editor-de-video/tipos";
+import type { EditorState } from "@/app/editor-de-video/tipos";
 
 const MY_VIDEOS_KEY = "quotevid_my_videos";
+
+// Define o tipo localmente para evitar importações cruzadas
+export interface SavedVideo {
+  id: string;
+  thumbnail: string;
+  editorState: EditorState;
+  createdAt: string;
+}
 
 // Hook para gerenciar os vídeos salvos usando o localStorage.
 export const useMyVideos = () => {
@@ -52,5 +60,3 @@ export const useMyVideos = () => {
 
   return { savedVideos, addVideo, removeVideo };
 };
-
-    

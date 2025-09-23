@@ -1,3 +1,4 @@
+
 // Arquivo para centralizar as definições de tipos compartilhadas entre os componentes do editor.
 import type { ProfileData } from "@/hooks/use-profile";
 
@@ -52,15 +53,6 @@ export interface EditorState {
     logoScale: number;
     logoOpacity: number;
 }
-
-// Tipo para um vídeo salvo pelo usuário.
-export interface SavedVideo {
-    id: string;
-    thumbnail: string; // Um data URL da imagem de preview
-    editorState: EditorState;
-    createdAt: string; // Data no formato ISO
-}
-
 
 // Define as propriedades (props) para o componente de visualização do editor.
 export interface VisualizacaoEditorProps {
