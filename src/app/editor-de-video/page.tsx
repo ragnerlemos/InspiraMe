@@ -19,6 +19,7 @@ import { useTemplates } from "@/hooks/use-templates";
 import { useSearchParams } from "next/navigation";
 import { useEditor } from "./contexts/editor-context";
 import { onExportImage, handleSaveAsTemplate } from "./contexts/export";
+import { getAllQuotes } from "@/lib/dados";
 
 
 function ProporcaoSkeleton() {
@@ -170,7 +171,7 @@ export default function AspectWeaver() {
   }, [toast]);
     
   useEffect(() => {
-    if (!currentState) return;
+    if (!isReady) return; // Só atualiza os controles se o editor estiver pronto
     setControls({
       canUndo,
       undo,
@@ -183,22 +184,25 @@ export default function AspectWeaver() {
     });
   }, [
     canUndo, undo, canRedo, redo, 
-    currentState, addTemplate, toast, onExportMP4, setControls
+    currentState, addTemplate, toast, onExportMP4, setControls, isReady
   ]);
 
   useEffect(() => {
     if (!isProfileLoaded || !areTemplatesLoaded || isReady) return;
 
-    const initialize = () => {
+    const initialize = async () => {
         const quoteParam = searchParams.get("quote");
         const templateIdParam = searchParams.get("templateId");
         
         let initialState: EditorState;
         const baseState = getInitialState();
 
+        const allQuotes = await getAllQuotes();
         const text = quoteParam 
             ? decodeURIComponent(quoteParam) 
-            : "A inspiração está a caminho...";
+            : allQuotes.length > 0 
+                ? allQuotes[Math.floor(Math.random() * allQuotes.length)].quote
+                : "A inspiração está a caminho...";
         
         if (templateIdParam) {
           const template = allTemplates.find(t => t.id === templateIdParam);
@@ -311,32 +315,26 @@ export default function AspectWeaver() {
     return <ProporcaoSkeleton />;
   }
 
-  if (isDesktop) {
-      return (
-        <PanelGroup direction="horizontal" className="h-full">
-            <Panel defaultSize={30} minSize={25} maxSize={40}>
+  return (
+    <div className="flex flex-col w-full bg-background font-body text-foreground h-full">
+        <PanelGroup direction="horizontal" className="flex-1 min-h-0">
+            <Panel defaultSize={30} minSize={25} maxSize={40} className="hidden md:flex flex-col">
                 <Sidebar {...commonProps} />
             </Panel>
-            <PanelResizeHandle />
+            {isDesktop && <PanelResizeHandle />}
             <Panel>
                 <main className="w-full h-full overflow-auto">
                     <PreviewCanva {...previewProps} />
                 </main>
             </Panel>
         </PanelGroup>
-      );
-  }
-
-  return (
-    <div className="flex flex-col h-screen">
-        <main className="flex-1 overflow-auto">
-            <PreviewCanva {...previewProps} />
-        </main>
-        <div className="h-16">
+        <div className="h-16 md:hidden">
             <MobileToolbar {...commonProps} />
         </div>
     </div>
   );
 }
+
+    
 
     

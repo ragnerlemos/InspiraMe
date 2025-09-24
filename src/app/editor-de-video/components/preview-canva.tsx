@@ -3,9 +3,7 @@
 
 import Image from 'next/image';
 import { cn } from "@/lib/utils";
-import type { ProfileData } from "@/hooks/use-profile";
-import { AssinaturaPerfil } from "../modelos/assinatura-perfil";
-import type { EstiloFundo, VisualizacaoEditorProps } from '../tipos';
+import type { VisualizacaoEditorProps } from '../tipos';
 import { ModeloTwitter } from '../modelos/modelo-twitter';
 import { ModeloPadrao } from '../modelos/modelo-padrao';
 
@@ -88,13 +86,14 @@ export function PreviewCanva(props: VisualizacaoEditorProps) {
         <div
             id="editor-preview-content"
             className={cn(
-                "shadow-2xl rounded-xl w-full md:h-[83.5vh] md:w-auto relative overflow-hidden @container bg-black flex flex-col",
+                "shadow-2xl rounded-xl w-full md:h-auto relative overflow-hidden @container bg-black flex flex-col",
                 {
                     "aspect-square": aspectRatio?.replace(/\s/g, "") === "1/1",
                     "aspect-[9/16]": aspectRatio?.replace(/\s/g, "") === "9/16",
                     "aspect-[16/9]": aspectRatio?.replace(/\s/g, "") === "16/9",
                 }
             )}
+            style={{ height: '84vh' }}
         >
             <div className="absolute inset-0 z-0">
                 {renderBackground()}
@@ -111,5 +110,7 @@ export function PreviewCanva(props: VisualizacaoEditorProps) {
     </main>
   );
 }
+
+    
 
     
