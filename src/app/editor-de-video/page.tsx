@@ -13,7 +13,7 @@ import {
   PanelGroup,
   PanelResizeHandle,
 } from "@/components/ui/resizable";
-import type { EditorState, EstiloFundo, VisualizacaoEditorProps } from "@/app/editor-de-video/tipos";
+import type { EditorState, EstiloFundo, ProporcaoTela, VisualizacaoEditorProps } from "@/app/editor-de-video/tipos";
 import { useToast } from "@/hooks/use-toast";
 import { useTemplates } from "@/hooks/use-templates";
 import { useSearchParams } from "next/navigation";
@@ -312,29 +312,29 @@ export default function AspectWeaver() {
   }
 
   if (isDesktop) {
-    return (
-      <PanelGroup direction="horizontal" className="h-full">
-        <Panel defaultSize={30} minSize={25} maxSize={40}>
-          <Sidebar {...commonProps} />
-        </Panel>
-        <PanelResizeHandle />
-        <Panel>
-          <main className="w-full h-full overflow-auto">
-            <PreviewCanva {...previewProps} />
-          </main>
-        </Panel>
-      </PanelGroup>
-    );
+      return (
+        <PanelGroup direction="horizontal" className="h-full">
+            <Panel defaultSize={30} minSize={25} maxSize={40}>
+                <Sidebar {...commonProps} />
+            </Panel>
+            <PanelResizeHandle />
+            <Panel>
+                <main className="w-full h-full overflow-auto">
+                    <PreviewCanva {...previewProps} />
+                </main>
+            </Panel>
+        </PanelGroup>
+      );
   }
 
   return (
-    <div className="flex flex-col h-full w-full bg-background font-body text-foreground">
-      <main className="flex-1 overflow-hidden">
-        <PreviewCanva {...previewProps} />
-      </main>
-      <div className="h-16">
-        <MobileToolbar {...commonProps} />
-      </div>
+    <div className="flex flex-col h-full">
+        <main className="flex-1 overflow-auto">
+            <PreviewCanva {...previewProps} />
+        </main>
+        <div className="h-16">
+            <MobileToolbar {...commonProps} />
+        </div>
     </div>
   );
 }

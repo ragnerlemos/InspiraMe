@@ -3,6 +3,9 @@
 
 import * as htmlToImage from 'html-to-image';
 import type { EditorState } from "../tipos";
+import type { useToast } from '@/hooks/use-toast';
+
+type ToastFn = ReturnType<typeof useToast>['toast'];
 
 function downloadDataUrl(dataUrl: string, filename: string) {
   const link = document.createElement('a');
@@ -19,7 +22,7 @@ function downloadDataUrl(dataUrl: string, filename: string) {
  */
 export async function onExportImage(
   formato: "png" | "jpeg" = "png",
-  toast: ({ title, description, variant }: { title: string; description: string; variant?: string }) => void
+  toast: ToastFn
 ) {
   const mainElement = document.querySelector<HTMLElement>("#editor-preview-content");
 
@@ -72,7 +75,7 @@ export async function onExportImage(
 export async function handleSaveAsTemplate(
   currentState: EditorState,
   addTemplate: (name: string, state: EditorState, thumbnail: string) => void,
-  toast: ({ title, description, variant }: { title: string; description: string; variant?: string }) => void
+  toast: ToastFn
 ) {
   const templateName = prompt("Digite um nome para o novo modelo:");
   if (!templateName) return;
