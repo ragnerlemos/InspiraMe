@@ -1,4 +1,6 @@
+
 "use client";
+
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs'; // Força o uso do runtime Node.js
 
@@ -193,37 +195,57 @@ export default function AspectWeaver() {
     if (!isProfileLoaded || !areTemplatesLoaded || isReady) return;
 
     const initialize = async () => {
-        const quoteParam = searchParams.get("quote");
-        const templateIdParam = searchParams.get("templateId");
-        
-        let initialState: EditorState;
-        const baseState = getInitialState();
+        try {
+            const quoteParam = searchParams.get("quote");
+            const templateIdParam = searchParams.get("templateId");
+            const baseState = getInitialState();
+            let initialState: EditorState;
 
-        const allQuotes = await getAllQuotes();
-        const text = quoteParam 
-            ? decodeURIComponent(quoteParam) 
-            : allQuotes.length > 0 
-                ? allQuotes[Math.floor(Math.random() * allQuotes.length)].quote
-                : "A inspiração está a caminho...";
-        
-        if (templateIdParam) {
-          const template = allTemplates.find(t => t.id === templateIdParam);
-          if (template) {
-            initialState = { ...baseState, ...template.editorState, text, activeTemplateId: template.id };
-          } else {
-            initialState = { ...baseState, text, activeTemplateId: null };
-          }
-        } else {
-            initialState = { ...baseState, text, activeTemplateId: null };
+            // Busca as frases de forma assíncrona
+            const allQuotes = await getAllQuotes();
+            let text: string;
+
+            if (quoteParam) {
+                text = decodeURIComponent(quoteParam);
+            } else if (allQuotes.length > 0) {
+                text = allQuotes[Math.floor(Math.random() * allQuotes.length)].quote;
+            } else {
+                text = "A inspiração está a caminho...";
+            }
+            
+            // Aplica o template se existir
+            if (templateIdParam) {
+              const template = allTemplates.find(t => t.id === templateIdParam);
+              if (template) {
+                initialState = { ...baseState, ...template.editorState, text, activeTemplateId: template.id };
+              } else {
+                initialState = { ...baseState, text, activeTemplateId: null };
+              }
+            } else {
+                initialState = { ...baseState, text, activeTemplateId: null };
+            }
+            
+            setHistory([initialState]);
+            setCurrentStateIndex(0);
+        } catch (error) {
+            console.error("Erro ao inicializar o editor:", error);
+            toast({
+                variant: "destructive",
+                title: "Erro ao Carregar",
+                description: "Não foi possível carregar os dados das frases. Tente novamente mais tarde.",
+            });
+            // Configura um estado de fallback em caso de erro
+            const fallbackState: EditorState = { ...getInitialState(), text: "Erro ao carregar frases.", activeTemplateId: null };
+            setHistory([fallbackState]);
+            setCurrentStateIndex(0);
+        } finally {
+            // Marca o editor como pronto para renderizar
+            setIsReady(true);
         }
-        
-        setHistory([initialState]);
-        setCurrentStateIndex(0);
-        setIsReady(true);
     }
 
     initialize();
-  }, [searchParams, isProfileLoaded, areTemplatesLoaded, allTemplates, isReady, addTemplate]);
+  }, [searchParams, isProfileLoaded, areTemplatesLoaded, allTemplates, isReady, toast]);
 
   useEffect(() => {
     if (isDesktop) {
@@ -313,7 +335,7 @@ export default function AspectWeaver() {
     scale,
   }), [currentState, profile, textStyle, scale]);
 
-  if (!isReady || !isProfileLoaded) {
+  if (!isReady) {
     return <ProporcaoSkeleton />;
   }
 
