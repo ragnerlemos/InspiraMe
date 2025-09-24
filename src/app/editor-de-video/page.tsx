@@ -328,8 +328,8 @@ export default function AspectWeaver() {
   }
 
   return (
-    <div className="flex flex-col h-full">
-        <main className="flex-1 overflow-hidden">
+    <div className="flex flex-col h-screen">
+        <main className="flex-1 overflow-auto">
             <PreviewCanva {...previewProps} />
         </main>
         <div className="h-16">
@@ -338,7 +338,5 @@ export default function AspectWeaver() {
     </div>
   );
 }
-
-    
 
     
