@@ -13,7 +13,7 @@ import {
   PanelGroup,
   PanelResizeHandle,
 } from "@/components/ui/resizable";
-import type { EditorState, EstiloFundo, ProporcaoTela, VisualizacaoEditorProps } from "@/app/editor-de-video/tipos";
+import type { EditorState, EstiloFundo, VisualizacaoEditorProps } from "@/app/editor-de-video/tipos";
 import { useToast } from "@/hooks/use-toast";
 import { useTemplates } from "@/hooks/use-templates";
 import { useSearchParams } from "next/navigation";
@@ -329,7 +329,7 @@ export default function AspectWeaver() {
 
   return (
     <div className="flex flex-col h-full">
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-hidden">
             <PreviewCanva {...previewProps} />
         </main>
         <div className="h-16">
@@ -338,3 +338,5 @@ export default function AspectWeaver() {
     </div>
   );
 }
+
+    
