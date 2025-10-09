@@ -1,0 +1,370 @@
+
+"use client";
+
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { useWindowSize } from "react-use";
+import { useProfile } from "@/hooks/use-profile";
+import { Sidebar } from "@/app/editor-de-video/components/sidebar";
+import { PreviewCanva } from "@/app/editor-de-video/components/preview-canva";
+import { MobileToolbar } from "@/app/editor-de-video/components/mobile-toolbar";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Panel,
+  PanelGroup,
+  PanelResizeHandle,
+} from "@/components/ui/resizable";
+import type { EditorState, EstiloFundo, VisualizacaoEditorProps, SavedProject } from "@/app/editor-de-video/tipos";
+import { useToast } from "@/hooks/use-toast";
+import { useTemplates } from "@/hooks/use-templates";
+import { useSearchParams } from "next/navigation";
+import { useEditor } from "./contexts/editor-context";
+import { onExportImage, handleSaveAsTemplate } from "./contexts/export";
+import { ProjectsProvider, useProjects } from "./contexts/projects";
+import { getAllQuotes } from "@/lib/actions";
+
+function ProporcaoSkeleton() {
+    return (
+        <div className="flex flex-col w-full bg-background font-body text-foreground h-full">
+            <PanelGroup direction="horizontal" className="flex-1 min-h-0">
+                <Panel defaultSize={30} minSize={25} maxSize={40} className="hidden md:flex flex-col">
+                     <Skeleton className="h-16 w-full border-b" />
+                     <div className="flex-1 p-4 space-y-4">
+                        <Skeleton className="h-24 w-full" />
+                        <Skeleton className="h-full w-full" />
+                     </div>
+                </Panel>
+                <PanelResizeHandle />
+                <Panel>
+                    <main className="flex-1 w-full h-full overflow-auto p-4 flex items-center justify-center">
+                        <Skeleton className="w-full h-full max-w-md aspect-[9/16]" />
+                    </main>
+                </Panel>
+            </PanelGroup>
+             <div className="md:hidden fixed bottom-0 left-0 w-full z-10 bg-background border-t p-2">
+                <Skeleton className="h-14 w-full" />
+            </div>
+        </div>
+    )
+}
+
+const getInitialState = (): Omit<EditorState, 'activeTemplateId' | 'text'> => ({
+    fontFamily: "Poppins",
+    fontSize: 5,
+    fontWeight: "bold",
+    fontStyle: "normal",
+    textColor: "#FFFFFF",
+    textAlign: "center",
+    textShadowBlur: 1,
+    textVerticalPosition: 50,
+    textStrokeColor: "#000000",
+    textStrokeWidth: 0.2,
+    letterSpacing: 0,
+    lineHeight: 1.3,
+    wordSpacing: 0,
+    backgroundStyle: { type: 'solid', value: '#000000' },
+    filmColor: "#000000",
+    filmOpacity: 0,
+    aspectRatio: "9 / 16",
+    showProfileSignature: false,
+    signaturePositionX: 50,
+    signaturePositionY: 90,
+    signatureScale: 70,
+    showSignaturePhoto: false,
+    showSignatureUsername: true,
+    showSignatureSocial: true,
+    showSignatureBackground: false,
+    signatureBgColor: "#000000",
+    signatureBgOpacity: 30,
+    profileVerticalPosition: 25,
+    showLogo: false,
+    logoPositionX: 50,
+    logoPositionY: 10,
+    logoScale: 40,
+    logoOpacity: 100,
+});
+
+function EditorCore() {
+  const { width } = useWindowSize();
+  const isDesktop = width >= 768;
+  const { profile, isLoaded: isProfileLoaded } = useProfile();
+  const searchParams = useSearchParams();
+  const { toast } = useToast();
+  const { templates: allTemplates, isLoaded: areTemplatesLoaded, addTemplate } = useTemplates();
+  const { setControls } = useEditor();
+  const { saveCurrentStateAsProject, getProjectById } = useProjects();
+
+  const [history, setHistory] = useState<EditorState[]>([]);
+  const [currentStateIndex, setCurrentStateIndex] = useState(-1);
+  const [isReady, setIsReady] = useState(false);
+
+  const [activeControl, setActiveControl] = useState<string | null>('texto');
+  const [scale, setScale] = useState(1);
+  
+  const currentState = history[currentStateIndex] || {};
+
+  const updateState = useCallback((newState: Partial<EditorState>) => {
+    setHistory(prevHistory => {
+        const nextState = { ...(prevHistory[currentStateIndex] || {}), ...newState };
+        const newHistory = prevHistory.slice(0, currentStateIndex + 1);
+        newHistory.push(nextState);
+        setCurrentStateIndex(newHistory.length - 1);
+        return newHistory;
+    });
+  }, [currentStateIndex]);
+  
+  const undo = useCallback(() => {
+    if (currentStateIndex > 0) {
+      setCurrentStateIndex(currentStateIndex - 1);
+    }
+  }, [currentStateIndex]);
+
+  const redo = useCallback(() => {
+    if (currentStateIndex < history.length - 1) {
+      setCurrentStateIndex(currentStateIndex + 1);
+    }
+  }, [currentStateIndex, history.length]);
+
+  const canUndo = currentStateIndex > 0;
+  const canRedo = currentStateIndex < history.length - 1;
+  
+  const textStyle = useMemo(() => {
+    const createTextStrokeShadow = (width: number, color: string): string => {
+        if (width === 0) return "none";
+        const shadows = [];
+        const numPoints = 12;
+        for (let i = 0; i < numPoints; i++) {
+            const angle = (i / numPoints) * 2 * Math.PI;
+            const x = Math.cos(angle) * (width * 0.1);
+            const y = Math.sin(angle) * (width * 0.1);
+            shadows.push(`${x.toFixed(2)}cqw ${y.toFixed(2)}cqw 0 ${color}`);
+        }
+        return shadows.join(', ');
+    };
+    const createMainShadow = (blur: number): string => {
+        if (blur === 0) return "none";
+        return `0 0 ${blur * 0.1}cqw rgba(0,0,0,0.5)`;
+    };
+    const textStrokeShadow = createTextStrokeShadow(currentState.textStrokeWidth || 0, currentState.textStrokeColor || '#000');
+    const mainTextShadow = createMainShadow(currentState.textShadowBlur || 0);
+
+    return {
+        fontFamily: currentState.fontFamily,
+        fontSize: `${currentState.fontSize}cqw`,
+        fontWeight: currentState.fontWeight,
+        fontStyle: currentState.fontStyle,
+        color: currentState.textColor,
+        textAlign: currentState.textAlign,
+        lineHeight: currentState.lineHeight,
+        letterSpacing: `${(currentState.letterSpacing || 0) / 100}em`,
+        wordSpacing: `${(currentState.wordSpacing || 0) / 100}em`,
+        textShadow: textStrokeShadow !== "none" && mainTextShadow !== "none" ? `${textStrokeShadow}, ${mainTextShadow}` : textStrokeShadow !== "none" ? textStrokeShadow : mainTextShadow,
+    }
+  }, [
+    currentState.fontFamily, currentState.fontSize, currentState.fontWeight, 
+    currentState.fontStyle, currentState.textColor, currentState.textAlign, 
+    currentState.textShadowBlur, currentState.textStrokeColor, currentState.textStrokeWidth, 
+    currentState.letterSpacing, currentState.lineHeight, currentState.wordSpacing
+  ]);
+
+  const onExportMP4 = useCallback(() => {
+    toast({ title: 'Em breve!', description: 'A exportação de vídeo MP4 estará disponível em futuras atualizações.' });
+  }, [toast]);
+    
+  useEffect(() => {
+    if (!isReady) return;
+    setControls({
+      canUndo,
+      undo,
+      canRedo,
+      redo,
+      onSaveAsTemplate: () => handleSaveAsTemplate(currentState, addTemplate, toast),
+      onSaveProject: () => saveCurrentStateAsProject(currentState),
+      onExportJPG: () => onExportImage("jpeg", toast),
+      onExportPNG: () => onExportImage("png", toast),
+      onExportMP4,
+    });
+  }, [
+    canUndo, undo, canRedo, redo, 
+    currentState, addTemplate, toast, onExportMP4, setControls, isReady, saveCurrentStateAsProject
+  ]);
+
+  useEffect(() => {
+    if (!isProfileLoaded || !areTemplatesLoaded || isReady) return;
+
+    const initialize = async () => {
+        try {
+            const projectId = searchParams.get("projectId");
+            const project = projectId ? getProjectById(projectId) : undefined;
+
+            if (project) {
+                setHistory([project.state]);
+                setCurrentStateIndex(0);
+            } else {
+                const quoteParam = searchParams.get("quote");
+                const templateIdParam = searchParams.get("templateId");
+                const baseState = getInitialState();
+                let initialState: EditorState;
+
+                const allQuotes = await getAllQuotes();
+                let text: string;
+
+                if (quoteParam) {
+                    text = decodeURIComponent(quoteParam);
+                } else if (allQuotes.length > 0) {
+                    text = allQuotes[Math.floor(Math.random() * allQuotes.length)].quote;
+                } else {
+                    text = "A inspiração está a caminho...";
+                }
+                
+                if (templateIdParam) {
+                  const template = allTemplates.find(t => t.id === templateIdParam);
+                  if (template) {
+                    initialState = { ...baseState, ...template.editorState, text, activeTemplateId: template.id };
+                  } else {
+                    initialState = { ...baseState, text, activeTemplateId: null };
+                  }
+                } else {
+                    initialState = { ...baseState, text, activeTemplateId: null };
+                }
+                
+                setHistory([initialState]);
+                setCurrentStateIndex(0);
+            }
+        } catch (error) {
+            console.error("Erro ao inicializar o editor:", error);
+            toast({
+                variant: "destructive",
+                title: "Erro ao Carregar",
+                description: "Não foi possível carregar os dados. Tente novamente mais tarde.",
+            });
+            const fallbackState: EditorState = { ...getInitialState(), text: "Erro ao carregar.", activeTemplateId: null };
+            setHistory([fallbackState]);
+            setCurrentStateIndex(0);
+        } finally {
+            setIsReady(true);
+        }
+    }
+
+    initialize();
+  }, [searchParams, isProfileLoaded, areTemplatesLoaded, allTemplates, isReady, toast, getProjectById]);
+
+  useEffect(() => {
+    if (isDesktop) {
+        setScale(1);
+    } else {
+        if (currentState.aspectRatio === "9 / 16") {
+            setScale(0.8);
+        } else {
+            setScale(1);
+        }
+    }
+  }, [currentState.aspectRatio, isDesktop]);
+  
+  const commonProps = {
+    // Props do estado do editor...
+    aspectRatio: currentState.aspectRatio, setAspectRatio: (val: string) => updateState({ aspectRatio: val as any }),
+    scale, setScale,
+    backgroundStyle: currentState.backgroundStyle, setBackgroundStyle: (val: EstiloFundo) => updateState({ backgroundStyle: val }),
+    filmColor: currentState.filmColor, setFilmColor: (val: string) => updateState({ filmColor: val }),
+    filmOpacity: currentState.filmOpacity, setFilmOpacity: (val: number) => updateState({ filmOpacity: val }),
+    text: currentState.text, setText: (val: string) => updateState({ text: val }),
+    fgColor: currentState.textColor, setFgColor: (val: string) => updateState({ textColor: val }),
+    fontFamily: currentState.fontFamily, onFontFamilyChange: (val: string) => updateState({ fontFamily: val }),
+    fontSize: currentState.fontSize, onFontSizeChange: (val: number) => updateState({ fontSize: val }),
+    fontWeight: currentState.fontWeight, onFontWeightChange: (val: "normal" | "bold") => updateState({ fontWeight: val }),
+    fontStyle: currentState.fontStyle, onFontStyleChange: (val: "normal" | "italic") => updateState({ fontStyle: val }),
+    textAlign: currentState.textAlign, onTextAlignChange: (val: "left" | "center" | "right") => updateState({ textAlign: val }),
+    textVerticalPosition: currentState.textVerticalPosition, onTextVerticalPositionChange: (val: number) => updateState({ textVerticalPosition: val }),
+    textShadowBlur: currentState.textShadowBlur, onTextShadowBlurChange: (val: number) => updateState({ textShadowBlur: val }),
+    textStrokeColor: currentState.textStrokeColor, onTextStrokeColorChange: (val: string) => updateState({ textStrokeColor: val }),
+    textStrokeWidth: currentState.textStrokeWidth, onTextStrokeWidthChange: (val: number) => updateState({ textStrokeWidth: val }),
+    letterSpacing: currentState.letterSpacing, onLetterSpacingChange: (val: number) => updateState({ letterSpacing: val }),
+    lineHeight: currentState.lineHeight, onLineHeightChange: (val: number) => updateState({ lineHeight: val }),
+    wordSpacing: currentState.wordSpacing, onWordSpacingChange: (val: number) => updateState({ wordSpacing: val }),
+    profile,
+    showProfileSignature: currentState.showProfileSignature, onShowProfileSignatureChange: (val: boolean) => updateState({ showProfileSignature: val }),
+    signaturePositionX: currentState.signaturePositionX, onSignaturePositionXChange: (val: number) => updateState({ signaturePositionX: val }),
+    signaturePositionY: currentState.signaturePositionY, onSignaturePositionYChange: (val: number) => updateState({ signaturePositionY: val }),
+    signatureScale: currentState.signatureScale, onSignatureScaleChange: (val: number) => updateState({ signatureScale: val }),
+    showSignaturePhoto: currentState.showSignaturePhoto, onShowSignaturePhotoChange: (val: boolean) => updateState({ showSignaturePhoto: val }),
+    showSignatureUsername: currentState.showSignatureUsername, onShowSignatureUsernameChange: (val: boolean) => updateState({ showSignatureUsername: val }),
+    showSignatureSocial: currentState.showSignatureSocial, onShowSignatureSocialChange: (val: boolean) => updateState({ showSignatureSocial: val }),
+    showSignatureBackground: currentState.showSignatureBackground, onShowSignatureBackgroundChange: (val: boolean) => updateState({ showSignatureBackground: val }),
+    signatureBgColor: currentState.signatureBgColor, onSignatureBgColorChange: (val: string) => updateState({ signatureBgColor: val }),
+    signatureBgOpacity: currentState.signatureBgOpacity, onSignatureBgOpacityChange: (val: number) => updateState({ signatureBgOpacity: val }),
+    showLogo: currentState.showLogo, onShowLogoChange: (val: boolean) => updateState({ showLogo: val }),
+    logoPositionX: currentState.logoPositionX, onLogoPositionXChange: (val: number) => updateState({ logoPositionX: val }),
+    logoPositionY: currentState.logoPositionY, onLogoPositionYChange: (val: number) => updateState({ logoPositionY: val }),
+    logoScale: currentState.logoScale, onLogoScaleChange: (val: number) => updateState({ logoScale: val }),
+    logoOpacity: currentState.logoOpacity, onLogoOpacityChange: (val: number) => updateState({ logoOpacity: val }),
+    activeControl, setActiveControl,
+  };
+
+  const previewProps: VisualizacaoEditorProps = useMemo(() => ({
+    aspectRatio: currentState.aspectRatio,
+    backgroundStyle: currentState.backgroundStyle,
+    filmColor: currentState.filmColor,
+    filmOpacity: currentState.filmOpacity,
+    text: currentState.text,
+    textStyle: textStyle,
+    textVerticalPosition: currentState.textVerticalPosition,
+    profile,
+    showProfileSignature: currentState.showProfileSignature,
+    signaturePositionX: currentState.signaturePositionX,
+    signaturePositionY: currentState.signaturePositionY,
+    signatureScale: currentState.signatureScale,
+    showSignaturePhoto: currentState.showSignaturePhoto,
+    showSignatureUsername: currentState.showSignatureUsername,
+    showSignatureSocial: currentState.showSignatureSocial,
+    showSignatureBackground: currentState.showSignatureBackground,
+    signatureBgColor: currentState.signatureBgColor,
+    signatureBgOpacity: currentState.signatureBgOpacity,
+    showLogo: currentState.showLogo,
+    logoPositionX: currentState.logoPositionX,
+    logoPositionY: currentState.logoPositionY,
+    logoScale: currentState.logoScale,
+    logoOpacity: currentState.logoOpacity,
+    activeTemplateId: currentState.activeTemplateId,
+    profileVerticalPosition: currentState.profileVerticalPosition,
+    scale,
+  }), [currentState, profile, textStyle, scale]);
+
+  if (!isReady) {
+    return <ProporcaoSkeleton />;
+  }
+
+  return (
+    <div className="flex flex-col w-full bg-background font-body text-foreground h-full">
+      <PanelGroup direction="horizontal" className="flex-1 min-h-0">
+         <Panel defaultSize={30} minSize={25} maxSize={40} className="hidden md:flex flex-col">
+            <Sidebar {...commonProps} />
+        </Panel>
+        {isDesktop && <PanelResizeHandle />}
+        <Panel>
+            <main className="flex-1 w-full h-full overflow-auto">
+                <PreviewCanva {...previewProps} />
+            </main>
+        </Panel>
+      </PanelGroup>
+
+      {!isDesktop && (
+        <div className="flex-col h-full">
+            <main className="flex-1 overflow-auto">
+                 <PreviewCanva {...previewProps} />
+            </main>
+            <div className="h-16">
+                 <MobileToolbar {...commonProps} />
+            </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function EditorClient() {
+    return (
+        <ProjectsProvider>
+            <EditorCore />
+        </ProjectsProvider>
+    )
+}

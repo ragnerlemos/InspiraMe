@@ -1,11 +1,13 @@
 
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { usePathname } from 'next/navigation';
 import { EditorProvider } from './editor-de-video/contexts/editor-context';
 import { AppHeader, EditorHeader } from './cabecalho-app';
 import { useGoogleFonts } from "@/hooks/use-google-fonts";
+import { PushNotifications } from '@capacitor/push-notifications';
+import { Capacitor } from '@capacitor/core';
 
 // Componente de layout que gerencia qual cabeçalho exibir.
 export function AppLayout({ children }: { children: React.ReactNode }) {
@@ -14,6 +16,27 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   
   // Carrega e injeta as fontes do Google para evitar problemas de CORS
   useGoogleFonts();
+
+  useEffect(() => {
+    const registerForPushNotifications = async () => {
+      if (Capacitor.isNativePlatform()) {
+        let permStatus = await PushNotifications.checkPermissions();
+
+        if (permStatus.receive === 'prompt') {
+          permStatus = await PushNotifications.requestPermissions();
+        }
+
+        if (permStatus.receive !== 'granted') {
+          console.error('User denied push notification permission.');
+          return;
+        }
+
+        await PushNotifications.register();
+      }
+    };
+
+    registerForPushNotifications();
+  }, []);
 
   if (isEditorPage) {
      return (

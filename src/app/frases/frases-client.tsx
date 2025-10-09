@@ -2,18 +2,27 @@
 
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { Heart, Search, Copy, Film, Share2, LayoutGrid } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { useFavorites } from '@/hooks/use-favorites';
-import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Share } from '@capacitor/share';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 interface QuoteWithAuthor {
     id: string;
@@ -33,7 +42,6 @@ type FrasesClientPageProps = {
   initialSubCategories: CategoriesHierarchy;
 };
 
-// Página principal que exibe uma lista de frases e permite ao usuário filtrá-las.
 export function FrasesClientPage({
   initialQuotes,
   initialMainCategories,
@@ -43,9 +51,10 @@ export function FrasesClientPage({
   const [selectedMainCategory, setSelectedMainCategory] = useState<string>('Todos');
   const [selectedSubCategory, setSelectedSubCategory] = useState<string>('Todos');
   const [isCategorySheetOpen, setIsCategorySheetOpen] = useState(false);
+  const [dialogContent, setDialogContent] = useState({ title: '', description: '', text: '' });
+  const [isInfoDialogOpen, setIsInfoDialogOpen] = useState(false);
 
   const { favorites, toggleFavorite } = useFavorites();
-  const { toast } = useToast();
   
   const filteredQuotes = useMemo(() => {
     let quotes = initialQuotes;
@@ -70,14 +79,48 @@ export function FrasesClientPage({
 
   }, [initialQuotes, searchTerm, selectedMainCategory, selectedSubCategory]);
 
+  const showInfoDialog = (title: string, description: string, text: string) => {
+    setDialogContent({ title, description, text });
+    setIsInfoDialogOpen(true);
+  };
 
-  const handleCopy = (text: string, author?: string) => {
-    const textToCopy = author ? `${text} - ${author}` : text;
-    navigator.clipboard.writeText(textToCopy);
-    toast({
-      title: 'Copiado!',
-      description: 'A frase foi copiada para a sua área de transferência.',
-    });
+  const handleCopyClick = (text: string, author?: string) => {
+    const fullText = author ? `${text} - ${author}` : text;
+    showInfoDialog(
+      'Copiar Frase',
+      'Pressione Ctrl+C para copiar a frase abaixo.',
+      fullText
+    );
+  };
+
+  const handleShare = async (text: string, author?: string) => {
+    const shareText = author ? `${text} - ${author}` : text;
+    try {
+      await Share.share({
+        title: 'InspireMe Frase',
+        text: shareText,
+        dialogTitle: 'Compartilhar Frase',
+      });
+    } catch (capacitorError) {
+      try {
+        if (!navigator.share) {
+          throw new Error("Web Share API not supported.");
+        }
+        await navigator.share({
+          title: 'InspireMe Frase',
+          text: shareText
+        });
+      } catch (webShareError) {
+        if (webShareError instanceof DOMException && webShareError.name === 'AbortError') {
+          return; 
+        }
+        showInfoDialog(
+          'Compartilhamento Indisponível',
+          'O compartilhamento não está disponível no seu navegador. Copie o texto para compartilhar manualmente.',
+          shareText
+        );
+      }
+    }
   };
 
   const handleMainCategorySelect = (mainCategory: string) => {
@@ -177,10 +220,30 @@ export function FrasesClientPage({
 
   return (
     <>
+       <AlertDialog open={isInfoDialogOpen} onOpenChange={setIsInfoDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{dialogContent.title}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {dialogContent.description}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="p-4 bg-muted rounded-md my-4">
+            <p className="text-sm select-all">{dialogContent.text}</p>
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setIsInfoDialogOpen(false)}>Fechar</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <Sheet open={isCategorySheetOpen} onOpenChange={setIsCategorySheetOpen}>
         <SheetContent side="left" className="flex flex-col">
           <SheetHeader>
             <SheetTitle>Categorias</SheetTitle>
+            <SheetDescription>
+              Navegue e filtre as frases por categoria para encontrar a inspiração perfeita.
+            </SheetDescription>
           </SheetHeader>
           <ScrollArea className="flex-1 pr-4 -mr-4">
             <div className="py-4">{renderFilters()}</div>
@@ -237,13 +300,13 @@ export function FrasesClientPage({
                               <Link href={`/editor-de-video?quote=${encodeURIComponent(quote.quote)}`} passHref>
                                 <Button variant="ghost" size="icon"><Film className="h-4 w-4" /></Button>
                               </Link>
-                              <Button variant="ghost" size="icon" onClick={() => handleCopy(quote.quote, quote.author)}>
+                              <Button variant="ghost" size="icon" onClick={() => handleCopyClick(quote.quote, quote.author)}>
                                 <Copy className="h-4 w-4" />
                               </Button>
                               <Button variant="ghost" size="icon" onClick={() => toggleFavorite(quote.id)}>
                                 <Heart className={cn("h-4 w-4", isFavorited ? "text-red-500 fill-current" : "text-gray-400")} />
                               </Button>
-                              <Button variant="ghost" size="icon"><Share2 className="h-4 w-4" /></Button>
+                              <Button variant="ghost" size="icon" onClick={() => handleShare(quote.quote, quote.author)}><Share2 className="h-4 w-4" /></Button>
                             </div>
                           </div>
                         </CardFooter>
