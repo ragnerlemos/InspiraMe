@@ -1,10 +1,17 @@
+import {Inter as FontSans} from 'next/font/google';
 import type {Metadata} from 'next';
 import './globals.css';
+import {cn} from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
 
+const fontSans = FontSans({
+  subsets: ['latin'],
+  variable: '--font-sans',
+});
+
 export const metadata: Metadata = {
-  title: 'InspiraMe',
-  description: 'Find Your Daily Inspiration',
+  title: 'QuoteVid',
+  description: 'AI-powered video highlights for your favorite quotes',
 };
 
 export default function RootLayout({
@@ -14,12 +21,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@400;500;700&display=swap" rel="stylesheet" />
-      </head>
-      <body className="font-body antialiased">
+      <body
+        className={cn(
+          'min-h-screen bg-background font-sans antialiased',
+          fontSans.variable
+        )}
+      >
         {children}
         <Toaster />
       </body>

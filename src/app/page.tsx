@@ -1,48 +1,70 @@
-import { Header } from '@/components/layout/header';
-import { Footer } from '@/components/layout/footer';
-import { QuoteCard } from '@/components/inspira-me/quote-card';
-import { VideoCard } from '@/components/inspira-me/video-card';
-import { inspirations } from '@/lib/data';
-
-// This function runs on the server, so Math.random is safe here.
-function shuffleArray<T>(array: T[]): T[] {
-  const newArray = [...array];
-  for (let i = newArray.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-  }
-  return newArray;
-}
+'use client';
+import {useState} from 'react';
+import {Button} from '@/components/ui/button';
+import {Input} from '@/components/ui/input';
+import {Label} from '@/components/ui/label';
+import {Textarea} from '@/components/ui/textarea';
+import {getQuote, type GetQuoteOutput} from '@/ai/flows/quote-flow';
+import {Loader} from 'lucide-react';
+import {useToast} from '@/hooks/use-toast';
 
 export default function Home() {
-  const shuffledInspirations = shuffleArray(inspirations);
+  const [topic, setTopic] = useState('');
+  const [quote, setQuote] = useState<GetQuoteOutput | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const {toast} = useToast();
+
+  async function handleGetQuote() {
+    setIsLoading(true);
+    const result = await getQuote(topic);
+    if (!result) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description:
+          'Could not retrieve quote. Please check your Gemini API key.',
+      });
+      setQuote(null);
+      setIsLoading(false);
+      return;
+    }
+    setQuote(result);
+    setIsLoading(false);
+  }
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <Header />
-      <main className="flex-grow container mx-auto px-4 py-8 md:px-8 md:py-12">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold font-headline text-primary mb-2">
-            Find Your Daily Spark
-          </h1>
-          <p className="text-lg md:text-xl text-muted-foreground">
-            A curated collection of quotes and videos to inspire your day.
-          </p>
-        </div>
+    <div className="container flex flex-col gap-4 p-4">
+      <div className="text-2xl font-bold">QuoteVid</div>
+      <div className="flex flex-col gap-2">
+        <Label>Topic</Label>
+        <Input value={topic} onChange={(e) => setTopic(e.target.value)} />
+        <Button onClick={handleGetQuote} disabled={isLoading}>
+          {isLoading && <Loader className="mr-2 h-4 w-4 animate-spin" />}
+          Get Quote
+        </Button>
+      </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {shuffledInspirations.map((item) => (
-            <div key={item.id} className="animate-in fade-in zoom-in-95 duration-500">
-              {item.type === 'quote' ? (
-                <QuoteCard item={item} />
-              ) : (
-                <VideoCard item={item} />
-              )}
-            </div>
-          ))}
+      {quote && (
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
+            <Label>Quote</Label>
+            <Textarea
+              className="min-h-32"
+              value={`${quote.quote} - ${quote.author}`}
+              readOnly
+            />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <Label>Video</Label>
+            {quote.videoUrl ? (
+              <video src={quote.videoUrl} controls />
+            ) : (
+              'No video available for this quote'
+            )}
+          </div>
         </div>
-      </main>
-      <Footer />
+      )}
     </div>
   );
 }
