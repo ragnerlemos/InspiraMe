@@ -1,3 +1,28 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "video-thumb-1",
+      "description": "A beautiful sunset over a mountain range.",
+      "imageUrl": "https://picsum.photos/seed/insp1/600/400",
+      "imageHint": "nature landscape"
+    },
+    {
+      "id": "video-thumb-2",
+      "description": "Aerial view of a city skyline at dusk.",
+      "imageUrl": "https://picsum.photos/seed/insp2/600/400",
+      "imageHint": "city sunset"
+    },
+    {
+      "id": "video-thumb-3",
+      "description": "Powerful ocean waves crashing on a beach.",
+      "imageUrl": "https://picsum.photos/seed/insp3/600/400",
+      "imageHint": "ocean waves"
+    },
+    {
+      "id": "video-thumb-4",
+      "description": "A person meditating in a peaceful forest.",
+      "imageUrl": "https://picsum.photos/seed/insp4/600/400",
+      "imageHint": "meditation peace"
+    }
+  ]
 }
