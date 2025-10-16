@@ -6,7 +6,7 @@ interface CategoriesHierarchy {
   [mainCategory: string]: string[];
 }
 
-// Função para buscar todas as frases do arquivo local
+// Esta função agora busca as frases de uma API route
 export async function getAllQuotes(): Promise<QuoteWithAuthor[]> {
     // Simula uma chamada assíncrona
     return Promise.resolve(quotes);

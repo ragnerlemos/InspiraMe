@@ -9,9 +9,8 @@ import { PreviewCanva } from "@/app/editor-de-video/components/preview-canva";
 import { MobileToolbar } from "@/app/editor-de-video/components/mobile-toolbar";
 import { Panel, PanelGroup, PanelResizeHandle } from "@/components/ui/resizable";
 import type { EditorState, EstiloFundo } from "@/app/editor-de-video/tipos";
-import { getAllQuotes } from "@/lib/dados";
 import { useSearchParams } from "next/navigation";
-import { useTemplates, type Template } from "@/hooks/use-templates";
+import { useTemplates } from "@/hooks/use-templates";
 import { useEditor } from "./contexts/editor-context";
 import Loading from './loading';
 
@@ -81,7 +80,9 @@ export default function Editor() {
         let initialState: EditorState;
         const baseState = getInitialState();
 
-        const allQuotes = await getAllQuotes();
+        const response = await fetch('/api/quotes');
+        const allQuotes = await response.json();
+
         const text = quoteParam 
             ? decodeURIComponent(quoteParam) 
             : allQuotes.length > 0 

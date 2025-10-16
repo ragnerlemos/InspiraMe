@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -14,6 +13,8 @@ import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Skeleton } from '@/components/ui/skeleton';
+
 
 interface QuoteWithAuthor {
     id: string;
@@ -28,17 +29,17 @@ interface CategoriesHierarchy {
 }
 
 type FrasesClientPageProps = {
-  initialQuotes: QuoteWithAuthor[];
   initialMainCategories: string[];
   initialSubCategories: CategoriesHierarchy;
 };
 
 // Página principal que exibe uma lista de frases e permite ao usuário filtrá-las.
 export function FrasesClientPage({
-  initialQuotes,
   initialMainCategories,
   initialSubCategories,
 }: FrasesClientPageProps) {
+  const [allQuotes, setAllQuotes] = useState<QuoteWithAuthor[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMainCategory, setSelectedMainCategory] = useState<string>('Todos');
   const [selectedSubCategory, setSelectedSubCategory] = useState<string>('Todos');
@@ -46,9 +47,34 @@ export function FrasesClientPage({
 
   const { favorites, toggleFavorite } = useFavorites();
   const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchQuotes = async () => {
+      try {
+        setIsLoading(true);
+        // Usamos um timestamp para evitar o cache da rota da API
+        const response = await fetch(`/api/quotes?_=${new Date().getTime()}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const quotes = await response.json();
+        setAllQuotes(quotes);
+      } catch (error) {
+        console.error("Failed to fetch quotes:", error);
+        toast({
+          variant: "destructive",
+          title: "Erro ao buscar frases",
+          description: "Não foi possível carregar as frases. Tente novamente mais tarde."
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchQuotes();
+  }, [toast]);
   
   const filteredQuotes = useMemo(() => {
-    let quotes = initialQuotes;
+    let quotes = allQuotes;
 
     if (selectedMainCategory !== 'Todos') {
       quotes = quotes.filter(q => q.category === selectedMainCategory);
@@ -68,7 +94,7 @@ export function FrasesClientPage({
     
     return quotes;
 
-  }, [initialQuotes, searchTerm, selectedMainCategory, selectedSubCategory]);
+  }, [allQuotes, searchTerm, selectedMainCategory, selectedSubCategory]);
 
 
   const handleCopy = (text: string, author?: string) => {
@@ -174,6 +200,21 @@ export function FrasesClientPage({
       </div>
     );
   };
+  
+    const renderSkeletons = () => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+                <Card key={i}>
+                    <CardContent className="p-4 pb-0">
+                        <Skeleton className="h-16 w-full" />
+                    </CardContent>
+                    <CardFooter className="p-4 pt-2 flex flex-col items-end gap-2">
+                        <Skeleton className="h-4 w-1/3" />
+                    </CardFooter>
+                </Card>
+            ))}
+        </div>
+    );
 
   return (
     <>
@@ -211,7 +252,7 @@ export function FrasesClientPage({
                 </div>
               </div>
               
-              {filteredQuotes.length > 0 ? (
+              {isLoading ? renderSkeletons() : filteredQuotes.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredQuotes.map((quote) => {
                     const isFavorited = favorites.includes(quote.id);
