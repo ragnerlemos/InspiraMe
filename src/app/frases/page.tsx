@@ -7,9 +7,9 @@ interface CategoriesHierarchy {
 }
 
 // Componente de Servidor: Busca os dados iniciais antes de renderizar a página.
-export default function FrasesPage() {
-  const allQuotes = getAllQuotes();
-  const categories = getCategories();
+export default async function FrasesPage() {
+  const allQuotes = await getAllQuotes();
+  const categories = await getCategories();
 
   // Transforma o objeto de categorias em um array para o cliente.
   const mainCategories = ['Todos', ...Object.keys(categories)];
