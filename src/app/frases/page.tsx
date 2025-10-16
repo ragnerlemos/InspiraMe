@@ -1,5 +1,5 @@
 
-import { getCategories } from '@/lib/dados';
+import { getCategories, getAllQuotes } from '@/lib/dados';
 import { FrasesClientPage } from './frases-client';
 
 interface CategoriesHierarchy {
@@ -7,8 +7,9 @@ interface CategoriesHierarchy {
 }
 
 // Componente de Servidor: Busca os dados iniciais antes de renderizar a página.
-export default async function FrasesPage() {
-  const categories = await getCategories();
+export default function FrasesPage() {
+  const allQuotes = getAllQuotes();
+  const categories = getCategories();
 
   // Transforma o objeto de categorias em um array para o cliente.
   const mainCategories = ['Todos', ...Object.keys(categories)];
@@ -19,6 +20,7 @@ export default async function FrasesPage() {
 
   return (
     <FrasesClientPage
+      initialQuotes={allQuotes}
       initialMainCategories={mainCategories}
       initialSubCategories={subCategories}
     />

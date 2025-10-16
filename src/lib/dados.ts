@@ -6,12 +6,12 @@ interface CategoriesHierarchy {
   [mainCategory: string]: string[];
 }
 
-export async function getAllQuotes(): Promise<QuoteWithAuthor[]> {
-    return Promise.resolve(quotes);
+export function getAllQuotes(): QuoteWithAuthor[] {
+    return quotes;
 }
 
-export async function getCategories(): Promise<CategoriesHierarchy> {
-    const allQuotes = await getAllQuotes();
+export function getCategories(): CategoriesHierarchy {
+    const allQuotes = getAllQuotes();
     const categories: CategoriesHierarchy = {};
     
     allQuotes.forEach(quote => {
@@ -32,12 +32,12 @@ export async function getCategories(): Promise<CategoriesHierarchy> {
     return categories;
 }
 
-export async function getQuotesForCategory(category: string): Promise<QuoteWithAuthor[]> {
-    const allQuotes = await getAllQuotes();
+export function getQuotesForCategory(category: string): QuoteWithAuthor[] {
+    const allQuotes = getAllQuotes();
     return allQuotes.filter(q => q.subCategory === category || q.category === category);
 }
 
-export async function getQuotesForMainCategory(mainCategory: string): Promise<QuoteWithAuthor[]> {
-    const allQuotes = await getAllQuotes();
+export function getQuotesForMainCategory(mainCategory: string): QuoteWithAuthor[] {
+    const allQuotes = getAllQuotes();
     return allQuotes.filter(q => q.category === mainCategory);
 }

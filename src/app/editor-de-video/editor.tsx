@@ -13,6 +13,7 @@ import { useSearchParams } from "next/navigation";
 import { useTemplates } from "@/hooks/use-templates";
 import { useEditor } from "./contexts/editor-context";
 import Loading from './loading';
+import { getAllQuotes } from '@/lib/dados';
 
 const getInitialState = (): Omit<EditorState, 'activeTemplateId' | 'text'> => ({
     fontFamily: "Poppins",
@@ -73,15 +74,14 @@ export default function Editor() {
   useEffect(() => {
     if (isReady || !isProfileLoaded || !areTemplatesLoaded) return;
 
-    const initialize = async () => {
+    const initialize = () => {
         const quoteParam = searchParams.get("quote");
         const templateIdParam = searchParams.get("templateId");
         
         let initialState: EditorState;
         const baseState = getInitialState();
 
-        const response = await fetch('/api/quotes');
-        const allQuotes = await response.json();
+        const allQuotes = getAllQuotes();
 
         const text = quoteParam 
             ? decodeURIComponent(quoteParam) 

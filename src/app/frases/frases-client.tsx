@@ -29,17 +29,19 @@ interface CategoriesHierarchy {
 }
 
 type FrasesClientPageProps = {
+  initialQuotes: QuoteWithAuthor[];
   initialMainCategories: string[];
   initialSubCategories: CategoriesHierarchy;
 };
 
 // Página principal que exibe uma lista de frases e permite ao usuário filtrá-las.
 export function FrasesClientPage({
+  initialQuotes,
   initialMainCategories,
   initialSubCategories,
 }: FrasesClientPageProps) {
-  const [allQuotes, setAllQuotes] = useState<QuoteWithAuthor[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [allQuotes, setAllQuotes] = useState<QuoteWithAuthor[]>(initialQuotes);
+  const [isLoading, setIsLoading] = useState(false); // Já que os dados são iniciais, não precisamos mais de loading.
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMainCategory, setSelectedMainCategory] = useState<string>('Todos');
   const [selectedSubCategory, setSelectedSubCategory] = useState<string>('Todos');
@@ -47,31 +49,6 @@ export function FrasesClientPage({
 
   const { favorites, toggleFavorite } = useFavorites();
   const { toast } = useToast();
-
-  useEffect(() => {
-    const fetchQuotes = async () => {
-      try {
-        setIsLoading(true);
-        // Usamos um timestamp para evitar o cache da rota da API
-        const response = await fetch(`/api/quotes?_=${new Date().getTime()}`);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const quotes = await response.json();
-        setAllQuotes(quotes);
-      } catch (error) {
-        console.error("Failed to fetch quotes:", error);
-        toast({
-          variant: "destructive",
-          title: "Erro ao buscar frases",
-          description: "Não foi possível carregar as frases. Tente novamente mais tarde."
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchQuotes();
-  }, [toast]);
   
   const filteredQuotes = useMemo(() => {
     let quotes = allQuotes;
@@ -98,7 +75,7 @@ export function FrasesClientPage({
 
 
   const handleCopy = (text: string, author?: string) => {
-    const textToCopy = author ? `${text} - ${author}` : text;
+    const textToCopy = author ? `"${text}" - ${author}` : text;
     navigator.clipboard.writeText(textToCopy);
     toast({
       title: 'Copiado!',
