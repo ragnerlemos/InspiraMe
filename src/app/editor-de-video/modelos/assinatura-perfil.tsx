@@ -1,5 +1,5 @@
 // Componente que exibe a assinatura do perfil do usuário na tela de visualização.
-// Inclui avatar, nome de usuário e rede social, com alinhamento otimizado para exportação.
+// Estrutura: [ Bloco Assinatura > Avatar | Bloco Texto (nome + rede) | Ícone opcional ]
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { ProfileData } from "@/hooks/use-profile";
@@ -19,8 +19,10 @@ export function AssinaturaPerfil({
   showSocial = true,
 }: AssinaturaPerfilProps) {
   return (
+    // 🔹 BLOCO PRINCIPAL - agrupa tudo
     <div className="flex items-center gap-3 p-2 text-white">
-      {/* Bloco do Avatar */}
+      
+      {/* 🔸 BLOCO DO AVATAR */}
       {showPhoto && (
         <Avatar className="h-10 w-10 flex-shrink-0">
           <AvatarImage src={profile.photo || ""} alt={profile.username} />
@@ -30,23 +32,25 @@ export function AssinaturaPerfil({
         </Avatar>
       )}
 
-      {/* Bloco de Texto (Nome e Rede Social) */}
+      {/* 🔸 BLOCO DE TEXTO (NOME + REDE SOCIAL) */}
       {(showUsername || showSocial) && (
-        <div className="flex flex-col justify-center">
+        <div className="flex flex-col justify-center leading-none">
+          {/* Nome */}
           {showUsername && (
-            <p className="font-bold text-base leading-tight">
+            <p className="font-bold text-base m-0 leading-none">
               {profile.username}
             </p>
           )}
+          {/* Rede social */}
           {showSocial && (
-            <p className="text-sm opacity-80 leading-tight">
+            <p className="text-sm opacity-80 m-0 leading-none mt-[2px]">
               {profile.social}
             </p>
           )}
         </div>
       )}
 
-      {/* Ícone opcional */}
+      {/* 🔸 BLOCO DO ÍCONE (opcional) */}
       {profile.showIcon && profile.iconUrl && (
         <img
           src={profile.iconUrl}
