@@ -15,20 +15,14 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   // Carrega e injeta as fontes do Google para evitar problemas de CORS
   useGoogleFonts();
 
-  if (isEditorPage) {
-     return (
-        <div className="flex flex-col h-full">
-            {children}
-        </div>
-     )
-  }
-
   return (
-    <div className="flex flex-col h-full">
-      <AppHeader />
-      <div className="flex-1 flex flex-col min-h-0">
-        {children}
-      </div>
-    </div>
+    <EditorProvider>
+        <div className="flex flex-col h-full">
+            {!isEditorPage && <AppHeader />}
+            <div className="flex-1 flex flex-col min-h-0">
+                {children}
+            </div>
+        </div>
+    </EditorProvider>
   );
 }

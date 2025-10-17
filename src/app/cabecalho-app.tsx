@@ -39,7 +39,7 @@ export function EditorHeader() {
 
     return (
         <div className="flex items-center justify-between w-full h-16 px-4 border-b bg-background shrink-0">
-            <Link href="/" className="flex items-center gap-2">
+            <Link href="/frases" className="flex items-center gap-2">
                 <Feather className="h-6 w-6 text-primary" />
                 {isClient && <span className="font-headline text-xl font-bold">InspireMe</span>}
             </Link>
@@ -147,7 +147,7 @@ export function AppHeader() {
     <header className="w-full border-b bg-background/95 backdrop-blur-sm">
       <div className="container flex h-16 items-center justify-between">
         {/* Logo e link para a página inicial. */}
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/frases" className="flex items-center gap-2">
           <Feather className="h-6 w-6 text-primary" />
           {isClient && <span className="font-headline text-xl font-bold">InspireMe</span>}
         </Link>
