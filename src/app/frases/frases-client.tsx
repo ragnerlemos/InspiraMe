@@ -89,28 +89,30 @@ export function FrasesClientPage({
       text: shareText,
       url: window.location.origin,
     };
-    try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        // Fallback para desktops ou navegadores sem suporte
-        handleCopy(text, author);
-        toast({
-          title: 'Copiado!',
-          description: 'O compartilhamento não é suportado, então a frase foi copiada.',
-        });
-      }
-    } catch (error) {
-        // Se o usuário cancelar o compartilhamento ou ocorrer um erro, copia para a área de transferência como fallback.
-        if (error instanceof DOMException && error.name === 'AbortError') {
-            console.log('Compartilhamento cancelado pelo usuário.');
-            return;
+    
+    if (navigator.share) {
+        try {
+            await navigator.share(shareData);
+        } catch (error) {
+             if (error instanceof DOMException && error.name === 'AbortError') {
+                // O usuário cancelou o compartilhamento, não faz nada.
+                return;
+            }
+            // Para outros erros, talvez um fallback seja necessário, mas não copiar automaticamente.
+            console.error("Erro ao compartilhar:", error);
+             toast({
+                variant: "destructive",
+                title: 'Erro ao compartilhar',
+                description: 'Não foi possível abrir a janela de compartilhamento.',
+            });
         }
-        handleCopy(text, author);
-        toast({
-            title: 'Copiado!',
-            description: 'Não foi possível compartilhar. A frase foi copiada para a área de transferência.',
-        });
+    } else {
+      // Fallback para desktops ou navegadores sem suporte
+      handleCopy(text, author);
+      toast({
+        title: 'Copiado!',
+        description: 'O compartilhamento não é suportado neste navegador, a frase foi copiada.',
+      });
     }
   };
 
