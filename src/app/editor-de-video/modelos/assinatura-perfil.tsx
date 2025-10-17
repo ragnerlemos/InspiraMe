@@ -59,14 +59,14 @@ export function AssinaturaPerfil({
         </Avatar>
       )}
       
-      <div className="flex flex-col justify-center">
+      <div className="flex flex-col justify-center transform-gpu translate-y-[-1px]">
         {showUsername && (
           <p className="font-bold text-white text-sm leading-none m-0 p-0 whitespace-nowrap">
             {profile.username}
           </p>
         )}
         {showSocial && (
-          <p className="text-gray-300 text-xs leading-tight m-0 p-0">
+          <p className="text-gray-300 text-xs leading-tight m-0 p-0 mt-[2px]">
             {profile.social}
           </p>
         )}
