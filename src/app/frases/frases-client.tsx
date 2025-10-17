@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -81,6 +80,34 @@ export function FrasesClientPage({
       title: 'Copiado!',
       description: 'A frase foi copiada para a sua área de transferência.',
     });
+  };
+
+  const handleShare = async (text: string, author?: string) => {
+    const shareText = author ? `"${text}" - ${author}` : text;
+    const shareData = {
+      title: 'InspireMe',
+      text: shareText,
+      url: window.location.origin,
+    };
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        // Fallback para desktops ou navegadores sem suporte
+        navigator.clipboard.writeText(shareText);
+        toast({
+          title: 'Copiado!',
+          description: 'O compartilhamento não é suportado neste navegador. A frase foi copiada para a área de transferência.',
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao compartilhar', error);
+      toast({
+        variant: 'destructive',
+        title: 'Erro',
+        description: 'Não foi possível compartilhar a frase.',
+      });
+    }
   };
 
   const handleMainCategorySelect = (mainCategory: string) => {
@@ -261,7 +288,9 @@ export function FrasesClientPage({
                               <Button variant="ghost" size="icon" onClick={() => toggleFavorite(quote.id)}>
                                 <Heart className={cn("h-4 w-4", isFavorited ? "text-red-500 fill-current" : "text-gray-400")} />
                               </Button>
-                              <Button variant="ghost" size="icon"><Share2 className="h-4 w-4" /></Button>
+                              <Button variant="ghost" size="icon" onClick={() => handleShare(quote.quote, quote.author)}>
+                                <Share2 className="h-4 w-4" />
+                              </Button>
                             </div>
                           </div>
                         </CardFooter>
