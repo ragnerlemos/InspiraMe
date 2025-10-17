@@ -29,17 +29,13 @@ export function AssinaturaPerfil({
             </Avatar>
         )}
         {(showUsername || showSocial) && (
-            <div className="flex-1">
-                <div className="flex items-center justify-between">
-                    <div>
-                        {showUsername && <p className="font-bold">{profile.username}</p>}
-                        {showSocial && <p className="text-sm opacity-80">{profile.social}</p>}
-                    </div>
-                    {profile.showIcon && profile.iconUrl && (
-                        <img src={profile.iconUrl} alt="Ícone" className="h-5 w-5" />
-                    )}
-                </div>
+            <div className="flex flex-col justify-center">
+                {showUsername && <p className="font-bold leading-tight">{profile.username}</p>}
+                {showSocial && <p className="text-sm opacity-80 leading-tight">{profile.social}</p>}
             </div>
+        )}
+         {profile.showIcon && profile.iconUrl && (
+            <img src={profile.iconUrl} alt="Ícone" className="h-5 w-5 ml-auto" />
         )}
     </div>
   );
