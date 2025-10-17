@@ -55,6 +55,7 @@ const getInitialState = (): Omit<EditorState, 'activeTemplateId' | 'text'> => ({
     logoPositionY: 10,
     logoScale: 40,
     logoOpacity: 100,
+    signatureLayout: "vertical",
 });
 
 export default function EditorClient() {
@@ -253,6 +254,7 @@ export default function EditorClient() {
     showSignatureBackground: currentState.showSignatureBackground, onShowSignatureBackgroundChange: (val: boolean) => updateState({ showSignatureBackground: val }),
     signatureBgColor: currentState.signatureBgColor, onSignatureBgColorChange: (val: string) => updateState({ signatureBgColor: val }),
     signatureBgOpacity: currentState.signatureBgOpacity, onSignatureBgOpacityChange: (val: number) => updateState({ signatureBgOpacity: val }),
+    signatureLayout: currentState.signatureLayout, onSignatureLayoutChange: (val: "horizontal" | "vertical") => updateState({ signatureLayout: val }),
     // Logo
     showLogo: currentState.showLogo, onShowLogoChange: (val: boolean) => updateState({ showLogo: val }),
     logoPositionX: currentState.logoPositionX, onLogoPositionXChange: (val: number) => updateState({ logoPositionX: val }),
@@ -282,6 +284,7 @@ export default function EditorClient() {
     showSignatureBackground: currentState.showSignatureBackground,
     signatureBgColor: currentState.signatureBgColor,
     signatureBgOpacity: currentState.signatureBgOpacity,
+    signatureLayout: currentState.signatureLayout,
     showLogo: currentState.showLogo,
     logoPositionX: currentState.logoPositionX,
     logoPositionY: currentState.logoPositionY,

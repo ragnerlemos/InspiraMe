@@ -14,18 +14,19 @@ interface AssinaturaPerfilProps {
   showBackground: boolean;
   bgColor: string;
   bgOpacity: number;
+  layout?: "horizontal" | "vertical";
 }
 
 // Função para converter cor hexadecimal para RGB
 function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result
-        ? {
-            r: parseInt(result[1], 16),
-            g: parseInt(result[2], 16),
-            b: parseInt(result[3], 16),
-        }
-        : null;
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16),
+      }
+    : null;
 }
 
 export function AssinaturaPerfil({
@@ -36,50 +37,68 @@ export function AssinaturaPerfil({
   showBackground,
   bgColor,
   bgOpacity,
+  layout = "horizontal",
 }: AssinaturaPerfilProps) {
-  // Define se o ícone da rede social deve ser exibido.
-  const shouldShowIcon = profile.showIcon && (profile.iconUrl || profile.social.includes('twitter.com') || profile.social.includes('x.com'));
-  
+  const shouldShowIcon =
+    profile.showIcon &&
+    (profile.iconUrl ||
+      profile.social.includes("twitter.com") ||
+      profile.social.includes("x.com"));
+
   const bgRgb = hexToRgb(bgColor);
-  const backgroundColor = bgRgb ? `rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, ${bgOpacity / 100})` : `rgba(0, 0, 0, ${bgOpacity / 100})`;
+  const backgroundColor = bgRgb
+    ? `rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, ${bgOpacity / 100})`
+    : `rgba(0, 0, 0, ${bgOpacity / 100})`;
 
   return (
-    <div 
-        className="flex items-center gap-3 p-2 rounded-lg max-w-max"
-        style={{
-            backgroundColor: showBackground ? backgroundColor : 'transparent',
-        }}
+    <div
+      className={cn(
+        "flex p-3 rounded-lg max-w-max",
+        layout === "vertical"
+          ? "flex-col items-center gap-2"
+          : "flex-row items-center gap-3"
+      )}
+      style={{
+        backgroundColor: showBackground ? backgroundColor : "transparent",
+      }}
     >
       {showPhoto && (
-          <Avatar className="h-10 w-10 flex-shrink-0">
+        <Avatar className="h-12 w-12 flex-shrink-0">
           <AvatarImage src={profile.photo || ""} alt={profile.username} />
           <AvatarFallback>
-              <User className="text-white" />
+            <User className="text-white" />
           </AvatarFallback>
-          </Avatar>
+        </Avatar>
       )}
-      
-      <div className="flex flex-col justify-center">
+
+      {(showUsername || showSocial) && (
+        <div
+          className={cn(
+            "flex flex-col text-white",
+            layout === "vertical" ? "items-center text-center" : "items-start"
+          )}
+        >
           {showUsername && (
-          <p className="font-bold text-white text-sm leading-none m-0 p-0 whitespace-nowrap">
+            <span className="font-bold text-base leading-none whitespace-nowrap">
               {profile.username}
-          </p>
+            </span>
           )}
           {showSocial && (
-          <p className="text-gray-300 text-xs leading-tight m-0 p-0">
+            <span className="text-gray-300 text-sm leading-none whitespace-nowrap">
               {profile.social}
-          </p>
+            </span>
           )}
-      </div>
+        </div>
+      )}
 
-       {shouldShowIcon && (
-         <div className="pl-2 flex items-center justify-center">
-            {profile.iconUrl ? (
-                <img src={profile.iconUrl} alt="Ícone social" className="h-5 w-5" />
-            ) : (
-                <Twitter className="h-5 w-5 text-blue-400" />
-            )}
-         </div>
+      {shouldShowIcon && (
+        <div className="pl-2 flex items-center justify-center">
+          {profile.iconUrl ? (
+            <img src={profile.iconUrl} alt="Ícone social" className="h-5 w-5" />
+          ) : (
+            <Twitter className="h-5 w-5 text-blue-400" />
+          )}
+        </div>
       )}
     </div>
   );

@@ -27,6 +27,7 @@ export function ModeloPadrao({
   logoPositionY,
   logoScale,
   logoOpacity,
+  signatureLayout,
 }: ModeloPadraoProps) {
   return (
     <div className="relative w-full h-full">
@@ -96,6 +97,7 @@ export function ModeloPadrao({
               showBackground={showSignatureBackground}
               bgColor={signatureBgColor}
               bgOpacity={signatureBgOpacity}
+              layout={signatureLayout}
             />
           </div>
         </div>
