@@ -43,32 +43,19 @@ export function AssinaturaPerfil({
   const backgroundColor = bgRgb ? `rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, ${bgOpacity / 100})` : `rgba(0, 0, 0, ${bgOpacity / 100})`;
 
   const containerClasses = cn(
-    "flex items-center gap-3 p-2 text-white max-w-max",
+    "flex items-center gap-3 p-2 text-white max-w-max rounded-lg",
     {
       "flex-col text-center gap-2": layout === 'vertical',
       "flex-row": layout === 'horizontal'
     }
   );
   
-  const textContainerClasses = cn(
-    "flex flex-col",
-    {
-      "items-center": layout === 'vertical',
-      "items-start": layout === 'horizontal'
-    }
-  );
-
   return (
     <div 
         style={{ 
             backgroundColor: showBackground ? backgroundColor : 'transparent',
         }}
-        className={cn(
-            "inline-flex items-center gap-3 p-2 text-white rounded-lg",
-            {
-                "flex-col text-center gap-2": layout === 'vertical',
-            }
-        )}
+        className={containerClasses}
     >
         {/* Avatar */}
         {showPhoto && (
@@ -80,11 +67,18 @@ export function AssinaturaPerfil({
             </Avatar>
         )}
 
-        {/* Div que agrupa o nome e a rede social */}
+        {/* Nome e rede social centralizados */}
         {(showUsername || showSocial) && (
-             <div className={textContainerClasses}>
-                {showUsername && <span className="font-bold text-base leading-none whitespace-nowrap">{profile.username}</span>}
-                {showSocial && <span className="text-sm opacity-80 leading-none whitespace-nowrap">{profile.social}</span>}
+            <div className={cn(
+                "flex flex-col",
+                layout === 'horizontal' ? 'justify-center' : 'items-center'
+            )}>
+            {showUsername && (
+                <p className="font-bold text-base leading-none whitespace-nowrap">{profile.username}</p>
+            )}
+            {showSocial && (
+                <p className="text-sm opacity-80 leading-none whitespace-nowrap">{profile.social}</p>
+            )}
             </div>
         )}
         
