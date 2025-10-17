@@ -57,30 +57,29 @@ export function AssinaturaPerfil({
         }}
         className={containerClasses}
     >
-        {/* Avatar */}
-        {showPhoto && (
-            <Avatar className="h-10 w-10 flex-shrink-0">
-                <AvatarImage src={profile.photo || ""} alt={profile.username} />
-                <AvatarFallback>
-                    <User />
-                </AvatarFallback>
-            </Avatar>
-        )}
+      {/* Avatar */}
+      {showPhoto && (
+        <div className="flex items-center justify-center h-10 w-10 flex-shrink-0 rounded-full overflow-hidden">
+          <Avatar className="h-10 w-10">
+            <AvatarImage src={profile.photo || ""} alt={profile.username} />
+            <AvatarFallback>
+              <User />
+            </AvatarFallback>
+          </Avatar>
+        </div>
+      )}
 
-        {/* Nome e rede social centralizados */}
-        {(showUsername || showSocial) && (
-            <div className={cn(
-                "flex flex-col",
-                layout === 'horizontal' ? 'justify-center' : 'items-center'
-            )}>
-            {showUsername && (
-                <p className="font-bold text-base leading-none whitespace-nowrap">{profile.username}</p>
-            )}
-            {showSocial && (
-                <p className="text-sm opacity-80 leading-none whitespace-nowrap">{profile.social}</p>
-            )}
-            </div>
-        )}
+      {/* Nome e rede social perfeitamente alinhados */}
+      {(showUsername || showSocial) && (
+        <div className="flex flex-col justify-center ml-3 translate-y-[1px]">
+          {showUsername && (
+            <p className="font-bold text-base leading-none">{profile.username}</p>
+          )}
+          {showSocial && (
+            <p className="text-sm opacity-80 leading-none mt-[2px]">{profile.social}</p>
+          )}
+        </div>
+      )}
         
         {/* Ícone opcional */}
          {profile.showIcon && profile.iconUrl && (
