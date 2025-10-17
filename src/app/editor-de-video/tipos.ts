@@ -52,7 +52,6 @@ export interface EditorState {
     logoPositionY: number;
     logoScale: number;
     logoOpacity: number;
-    signatureLayout?: "horizontal" | "vertical";
 }
 
 export interface EditorControlState {
@@ -103,7 +102,6 @@ export interface VisualizacaoEditorProps {
     logoPositionY: number;
     logoScale: number;
     logoOpacity: number;
-    signatureLayout?: "horizontal" | "vertical";
 }
 
 // Define as propriedades para o componente que contém os painéis de controle.

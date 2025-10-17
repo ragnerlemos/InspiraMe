@@ -13,7 +13,6 @@ interface AssinaturaPerfilProps {
   showBackground?: boolean;
   bgColor?: string;
   bgOpacity?: number;
-  layout?: 'horizontal' | 'vertical';
 }
 
 export function AssinaturaPerfil({
@@ -23,44 +22,35 @@ export function AssinaturaPerfil({
   showSocial = true,
 }: AssinaturaPerfilProps) {
   return (
-    // 🔹 BLOCO PRINCIPAL - agrupa tudo
+    // 🔹 BLOCO PRINCIPAL
     <div className="flex items-center gap-3 p-2 text-white">
       
-      {/* 🔸 BLOCO DO AVATAR */}
+      {/* 🔸 BLOCO AVATAR */}
       {showPhoto && (
-        <Avatar className="h-10 w-10 flex-shrink-0">
-          <AvatarImage src={profile.photo || ""} alt={profile.username} />
-          <AvatarFallback>
-            <User />
-          </AvatarFallback>
-        </Avatar>
+        <div className="flex items-center justify-center">
+          <Avatar className="h-10 w-10 flex-shrink-0">
+            <AvatarImage src={profile.photo || ""} alt={profile.username} />
+            <AvatarFallback>
+              <User />
+            </AvatarFallback>
+          </Avatar>
+        </div>
       )}
 
-      {/* 🔸 BLOCO DE TEXTO (NOME + REDE SOCIAL) */}
+      {/* 🔸 BLOCO TEXTO (NOME + REDE SOCIAL) */}
       {(showUsername || showSocial) && (
-        <div className="flex flex-col justify-center">
-          {/* Nome */}
+        <div className="flex flex-col justify-center leading-none">
           {showUsername && (
-            <p className="font-bold text-base m-0 leading-none">
+            <p className="font-bold text-base leading-none m-0 p-0">
               {profile.username}
             </p>
           )}
-          {/* Rede social */}
           {showSocial && (
-            <p className="text-sm opacity-80 m-0 leading-none mt-[2px]">
+            <p className="text-sm opacity-80 leading-none mt-[2px] m-0 p-0">
               {profile.social}
             </p>
           )}
         </div>
-      )}
-
-      {/* 🔸 BLOCO DO ÍCONE (opcional) */}
-      {profile.showIcon && profile.iconUrl && (
-        <img
-          src={profile.iconUrl}
-          alt="Ícone"
-          className="h-5 w-5 ml-auto"
-        />
       )}
     </div>
   );
