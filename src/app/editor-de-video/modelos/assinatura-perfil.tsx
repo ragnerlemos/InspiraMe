@@ -45,7 +45,7 @@ export function AssinaturaPerfil({
 
   return (
     <div 
-        className="flex items-center gap-3 p-3 rounded-lg max-w-max"
+        className="flex items-start gap-3 p-3 rounded-lg max-w-max"
         style={{
             backgroundColor: showBackground ? backgroundColor : 'transparent',
         }}
@@ -59,23 +59,21 @@ export function AssinaturaPerfil({
         </Avatar>
       )}
       
-      {(showUsername || showSocial) && (
-        <div className="flex flex-col justify-center">
-          {showUsername && (
-            <p className="font-bold text-white text-sm leading-none m-0 p-0 whitespace-nowrap">
-              {profile.username}
-            </p>
-          )}
-          {showSocial && (
-            <p className="text-gray-300 text-xs leading-tight m-0 p-0 mt-[2px]">
-              {profile.social}
-            </p>
-          )}
-        </div>
-      )}
+      <div className="flex flex-col justify-start pt-1">
+        {showUsername && (
+          <p className="font-bold text-white text-sm leading-none m-0 p-0 whitespace-nowrap">
+            {profile.username}
+          </p>
+        )}
+        {showSocial && (
+          <p className="text-gray-300 text-xs leading-tight m-0 p-0 mt-[2px]">
+            {profile.social}
+          </p>
+        )}
+      </div>
 
        {shouldShowIcon && (
-         <div className="pl-2 flex items-center justify-center">
+         <div className="pl-2 flex items-center justify-center h-10">
             {profile.iconUrl ? (
                 <img src={profile.iconUrl} alt="Ícone social" className="h-5 w-5" />
             ) : (
