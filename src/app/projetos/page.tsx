@@ -15,7 +15,7 @@ export default function MyVideosPage() {
       <div className="container mx-auto py-8 px-4">
         <div className="text-center mb-8">
           <h1 className="font-headline text-4xl md:text-5xl font-bold text-primary">
-            Meus Vídeos
+            Projetos
           </h1>
           <p className="text-muted-foreground mt-2 text-lg">
             Sua galeria de criações prontas para compartilhar com o mundo.

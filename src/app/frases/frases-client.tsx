@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { Heart, Search, Copy, Film, Share2, LayoutGrid } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,6 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
-
 
 interface QuoteWithAuthor {
     id: string;
@@ -33,14 +32,13 @@ type FrasesClientPageProps = {
   initialSubCategories: CategoriesHierarchy;
 };
 
-// Página principal que exibe uma lista de frases e permite ao usuário filtrá-las.
 export function FrasesClientPage({
   initialQuotes,
   initialMainCategories,
   initialSubCategories,
 }: FrasesClientPageProps) {
-  const [allQuotes, setAllQuotes] = useState<QuoteWithAuthor[]>(initialQuotes);
-  const [isLoading, setIsLoading] = useState(false); // Já que os dados são iniciais, não precisamos mais de loading.
+  const [allQuotes] = useState<QuoteWithAuthor[]>(initialQuotes);
+  const [isLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMainCategory, setSelectedMainCategory] = useState<string>('Todos');
   const [selectedSubCategory, setSelectedSubCategory] = useState<string>('Todos');
@@ -74,7 +72,7 @@ export function FrasesClientPage({
 
 
   const handleCopy = (text: string, author?: string) => {
-    const textToCopy = author ? `"${text}" - ${author}` : text;
+    const textToCopy = author ? `${text} - ${author}` : text;
     navigator.clipboard.writeText(textToCopy);
     toast({
       title: 'Copiado!',
@@ -82,27 +80,23 @@ export function FrasesClientPage({
     });
   };
 
-  const handleShare = async (text: string, author?: string) => {
-    const shareText = author ? `"${text}" - ${author}` : text;
-    const shareData = {
-      title: 'InspireMe',
-      text: shareText,
-    };
-    
+ const handleShare = async (text: string, author?: string) => {
+    const shareText = author ? `${text} - ${author}` : text;
+
     if (navigator.share) {
-        try {
-            await navigator.share(shareData);
-        } catch (error) {
-             if (error instanceof DOMException && error.name === 'AbortError') {
-                // O usuário cancelou o compartilhamento, não faz nada.
-                return;
-            }
-            // Fallback para outros erros, como permissão negada ou API indisponível
-            console.error("Erro ao compartilhar, usando fallback de cópia:", error);
-            handleCopy(text, author);
+      try {
+        await navigator.share({
+          title: 'InspireMe',
+          text: shareText,
+        });
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') {
+          return;
         }
+        console.error("Erro ao compartilhar, usando fallback de cópia:", error);
+        handleCopy(text, author);
+      }
     } else {
-      // Fallback para desktops ou navegadores sem suporte
       handleCopy(text, author);
     }
   };

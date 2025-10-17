@@ -1,17 +1,16 @@
+'use client';
 
-"use client";
-
+import { useState, useEffect } from 'react';
 import { useFavorites } from "@/hooks/use-favorites";
 import Link from "next/link";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Film, Copy, Trash2, Share2, HeartCrack } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { getAllQuotes } from '@/lib/dados';
+import { Skeleton } from '@/components/ui/skeleton';
 
-// Definindo o tipo localmente para quebrar a cadeia de importação.
 interface QuoteWithAuthor {
     id: string;
     quote: string;
@@ -20,17 +19,36 @@ interface QuoteWithAuthor {
     subCategory?: string;
 }
 
-// Componente Cliente para a página de favoritos
 export function FavoritesClientPage() {
   const { favorites, removeFavorite } = useFavorites();
   const { toast } = useToast();
   
-  const favoriteQuotes = useMemo(() => {
-    const allQuotes = getAllQuotes();
-    if (!allQuotes) return [];
-    return allQuotes.filter(quote => favorites.includes(quote.id));
-  }, [favorites]);
+  const [favoriteQuotes, setFavoriteQuotes] = useState<QuoteWithAuthor[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
+  useEffect(() => {
+    const fetchFavoriteQuotes = async () => {
+      setIsLoading(true);
+      try {
+        const allQuotes = await getAllQuotes();
+        if (allQuotes) {
+          const userFavorites = allQuotes.filter(quote => favorites.includes(quote.id));
+          setFavoriteQuotes(userFavorites);
+        }
+      } catch (error) {
+        console.error("Failed to fetch quotes:", error);
+        toast({
+            title: "Erro ao carregar favoritos",
+            description: "Não foi possível buscar suas frases favoritas. Tente novamente mais tarde.",
+            variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchFavoriteQuotes();
+  }, [favorites, toast]);
 
   const handleCopy = (text: string, author?: string) => {
     const textToCopy = author ? `${text} - ${author}` : text;
@@ -49,6 +67,36 @@ export function FavoritesClientPage() {
     });
   };
 
+  const handleShare = async (text: string, author?: string) => {
+    const shareText = author ? `${text} - ${author}` : text;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'InspireMe', text: shareText });
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') return;
+        console.error("Erro ao compartilhar, usando fallback de cópia:", error);
+        handleCopy(text, author);
+      }
+    } else {
+      handleCopy(text, author);
+    }
+  };
+
+  const renderSkeletons = () => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {Array.from({ length: 3 }).map((_, i) => (
+            <Card key={i}>
+                <CardContent className="p-4 pb-0">
+                    <Skeleton className="h-16 w-full" />
+                </CardContent>
+                <CardFooter className="p-4 pt-2 flex flex-col items-end gap-2">
+                    <Skeleton className="h-4 w-1/3" />
+                </CardFooter>
+            </Card>
+        ))}
+    </div>
+  );
+
   return (
     <main className="overflow-y-auto">
       <div className="container mx-auto py-8 px-4">
@@ -61,44 +109,44 @@ export function FavoritesClientPage() {
           </p>
         </div>
 
-        {favoriteQuotes.length > 0 ? (
+        {isLoading ? renderSkeletons() : favoriteQuotes.length > 0 ? (
            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {favoriteQuotes.map((quote) => {
-                  return (
-                      <Card key={quote.id} className="group flex flex-col justify-between hover:shadow-lg transition-shadow duration-300">
-                          <CardContent className="p-4 pb-0 flex-1">
-                              <p className="text-base font-body italic">{quote.quote}</p>
-                          </CardContent>
-                          <CardFooter className="p-4 pt-2 flex flex-col items-end gap-2">
-                              {quote.author && (
-                                  <p className="text-sm font-medium text-muted-foreground">
-                                      - {quote.author}
-                                  </p>
-                              )}
-                              <div className="flex justify-between items-center w-full pt-1">
-                                  {quote.subCategory && quote.subCategory !== 'Todos' ? (
-                                      <span className="bg-primary/10 px-2 py-0.5 text-xs rounded-full text-primary truncate max-w-[120px]">
-                                          {quote.subCategory}
-                                      </span>
-                                  ) : <div />}
+              {favoriteQuotes.map((quote) => (
+                  <Card key={quote.id} className="group flex flex-col justify-between hover:shadow-lg transition-shadow duration-300">
+                      <CardContent className="p-4 pb-0 flex-1">
+                          <p className="text-base font-body">{quote.quote}</p>
+                      </CardContent>
+                      <CardFooter className="p-4 pt-2 flex flex-col items-end gap-2">
+                          {quote.author && (
+                              <p className="text-sm font-medium text-muted-foreground">
+                                  - {quote.author}
+                              </p>
+                          )}
+                          <div className="flex justify-between items-center w-full pt-1">
+                              {quote.subCategory && quote.subCategory !== 'Todos' ? (
+                                  <span className="bg-primary/10 px-2 py-0.5 text-xs rounded-full text-primary truncate max-w-[120px]">
+                                      {quote.subCategory}
+                                  </span>
+                              ) : <div />}
 
-                                  <div className="flex items-center">
-                                      <Link href={`/editor-de-video?quote=${encodeURIComponent(quote.quote)}`} passHref>
-                                          <Button variant="ghost" size="icon"><Film className="h-4 w-4" /></Button>
-                                      </Link>
-                                      <Button variant="ghost" size="icon" onClick={() => handleCopy(quote.quote, quote.author)}>
-                                          <Copy className="h-4 w-4" />
-                                      </Button>
-                                      <Button variant="ghost" size="icon" onClick={() => handleRemove(quote.id)}>
-                                          <Trash2 className={cn("h-4 w-4 text-destructive")} />
-                                      </Button>
-                                      <Button variant="ghost" size="icon"><Share2 className="h-4 w-4" /></Button>
-                                  </div>
+                              <div className="flex items-center">
+                                  <Link href={`/editor-de-video?quote=${encodeURIComponent(quote.quote)}`} passHref>
+                                      <Button variant="ghost" size="icon"><Film className="h-4 w-4" /></Button>
+                                  </Link>
+                                  <Button variant="ghost" size="icon" onClick={() => handleCopy(quote.quote, quote.author)}>
+                                      <Copy className="h-4 w-4" />
+                                  </Button>
+                                  <Button variant="ghost" size="icon" onClick={() => handleRemove(quote.id)}>
+                                      <Trash2 className={cn("h-4 w-4 text-destructive")} />
+                                  </Button>
+                                  <Button variant="ghost" size="icon" onClick={() => handleShare(quote.quote, quote.author)}>
+                                    <Share2 className="h-4 w-4" />
+                                  </Button>
                               </div>
-                          </CardFooter>
-                      </Card>
-                  );
-              })}
+                          </div>
+                      </CardFooter>
+                  </Card>
+              ))}
           </div>
         ) : (
           <div className="text-center py-20 bg-card border rounded-lg flex flex-col items-center">

@@ -23,7 +23,7 @@ const navItems = [
   { href: "/favoritos", label: "Favoritos", icon: Star },
   { href: "/modelos", label: "Modelos", icon: GalleryVertical },
   { href: "/galeria", label: "Galeria", icon: GalleryHorizontal },
-  { href: "/meus-videos", label: "Meus Vídeos", icon: Clapperboard },
+  { href: "/projetos", label: "Projetos", icon: Clapperboard },
   { href: "/editor-de-video", label: "Editor", icon: Film },
   { href: "/perfil", label: "Perfil", icon: User },
   { href: "/configuracoes", label: "Configurações", icon: Settings },
