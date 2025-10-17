@@ -59,7 +59,7 @@ export function AssinaturaPerfil({
     >
       {/* Avatar */}
       {showPhoto && (
-        <div className="flex items-center justify-center h-10 w-10 flex-shrink-0 rounded-full overflow-hidden">
+        <div className="flex-shrink-0">
           <Avatar className="h-10 w-10">
             <AvatarImage src={profile.photo || ""} alt={profile.username} />
             <AvatarFallback>
@@ -71,12 +71,12 @@ export function AssinaturaPerfil({
 
       {/* Nome e rede social perfeitamente alinhados */}
       {(showUsername || showSocial) && (
-        <div className="flex flex-col justify-center ml-3 translate-y-[1px]">
+        <div className="flex flex-col justify-center">
           {showUsername && (
-            <p className="font-bold text-base leading-none">{profile.username}</p>
+            <p className="font-bold text-base leading-tight">{profile.username}</p>
           )}
           {showSocial && (
-            <p className="text-sm opacity-80 leading-none mt-[2px]">{profile.social}</p>
+            <p className="text-sm opacity-80 leading-tight">{profile.social}</p>
           )}
         </div>
       )}
