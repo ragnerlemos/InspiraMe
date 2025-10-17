@@ -1,4 +1,3 @@
-
 // Componente que exibe a assinatura do perfil do usuário na tela de visualização.
 // Inclui avatar, nome de usuário e rede social, com alinhamento otimizado para exportação.
 
