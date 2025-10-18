@@ -146,9 +146,9 @@ export default function Editor() {
     
     const createMainShadow = (blur: number): string => {
         if (blur === 0) return "none";
-        // Convertendo o desfoque para pixels relativos ao tamanho da fonte
+        const baseOffset = (blur / 100) * calculatedFontSize * 0.2;
         const shadowBlurPx = (blur / 100) * calculatedFontSize;
-        return `0 0 ${shadowBlurPx}px rgba(0,0,0,0.5)`;
+        return `${baseOffset.toFixed(2)}px ${baseOffset.toFixed(2)}px ${shadowBlurPx.toFixed(2)}px rgba(0,0,0,0.75)`;
     };
     const textStrokeShadow = createTextStrokeShadow(currentState.textStrokeWidth || 0, currentState.textStrokeColor || '#000');
     const mainTextShadow = createMainShadow(currentState.textShadowBlur || 0);
