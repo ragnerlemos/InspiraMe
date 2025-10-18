@@ -128,34 +128,24 @@ export default function Editor() {
     const containerWidth = previewContainerRef.current.offsetWidth;
     const calculatedFontSize = (currentState.fontSize / 100) * containerWidth;
 
-    const createTextStrokeShadow = (strokeWidth: number, color: string): string => {
-        if (strokeWidth <= 0) return 'none';
-        const w = (strokeWidth / 10) * 2.5; // Ajuste para força
-        return `
-            -${w}px -${w}px 0 ${color},
-            ${w}px -${w}px 0 ${color},
-            -${w}px ${w}px 0 ${color},
-            ${w}px ${w}px 0 ${color},
-            0 -${w}px 0 ${color},
-            0 ${w}px 0 ${color},
-            -${w}px 0 0 ${color},
-            ${w}px 0 0 ${color}
-        `;
+    const createTextStroke = (strokeWidth: number, color: string) => {
+        const strokePx = (strokeWidth / 100) * (calculatedFontSize / 4);
+        if (strokePx <= 0) return {};
+        return {
+            WebkitTextStroke: `${strokePx}px ${color}`,
+            textStroke: `${strokePx}px ${color}`,
+            paintOrder: 'stroke fill',
+        };
     };
 
     const createMainShadow = (blur: number, opacity: number): string => {
         if (opacity <= 0) return 'none';
         const shadowOpacity = opacity / 100;
-        const blurAmount = blur * 2; // Aumenta o efeito do desfoque
-        const offsetY = blurAmount * 0.5; // Sombra mais para baixo
-        const offsetX = blurAmount * 0.2;
+        const blurAmount = (blur / 100) * (calculatedFontSize * 0.5);
+        const offsetY = blurAmount * 0.4;
+        const offsetX = 0;
         return `${offsetX.toFixed(2)}px ${offsetY.toFixed(2)}px ${blurAmount.toFixed(2)}px rgba(0,0,0,${shadowOpacity})`;
     };
-
-    const textStrokeShadow = createTextStrokeShadow(currentState.textStrokeWidth, currentState.textStrokeColor);
-    const mainTextShadow = createMainShadow(currentState.textShadowBlur, currentState.textShadowOpacity);
-
-    const combinedShadows = [textStrokeShadow, mainTextShadow].filter(s => s !== 'none').join(', ');
     
     return {
         fontFamily: currentState.fontFamily,
@@ -167,7 +157,8 @@ export default function Editor() {
         lineHeight: currentState.lineHeight,
         letterSpacing: `${(currentState.letterSpacing || 0) / 100}em`,
         wordSpacing: `${(currentState.wordSpacing || 0) / 100}em`,
-        textShadow: combinedShadows || 'none',
+        textShadow: createMainShadow(currentState.textShadowBlur, currentState.textShadowOpacity),
+        ...createTextStroke(currentState.textStrokeWidth, currentState.textStrokeColor),
     }
   }, [
     currentState,
@@ -254,3 +245,5 @@ export default function Editor() {
     </div>
   );
 }
+
+    

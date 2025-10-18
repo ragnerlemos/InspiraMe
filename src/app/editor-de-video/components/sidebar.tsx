@@ -558,7 +558,7 @@ function renderEstiloControl(subControl: string | null, props: EstiloControlProp
                             <Label htmlFor="stroke-width" className="text-xs text-muted-foreground">Espessura</Label>
                             <span className="text-xs text-muted-foreground">{props.textStrokeWidth.toFixed(1)} pt</span>
                         </div>
-                        <Slider id="stroke-width" min={0} max={10} step={0.1} value={[props.textStrokeWidth]} onValueChange={(v) => props.onTextStrokeWidthChange(v[0])} />
+                        <Slider id="stroke-width" min={0} max={20} step={0.1} value={[props.textStrokeWidth]} onValueChange={(v) => props.onTextStrokeWidthChange(v[0])} />
                     </div>
                 </div>
             );
@@ -812,3 +812,5 @@ export function Sidebar({
         </aside>
     );
 }
+
+    
