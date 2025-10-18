@@ -214,5 +214,3 @@ export function useEditor() {
   }
   return context;
 }
-
-    
