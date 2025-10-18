@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useRef } from 'react';
@@ -38,13 +39,38 @@ function AssinaturaPreview({ profile, showPhoto, showUsername, showSocial }: {
 export default function AssinaturaPage() {
   const { profile, isLoaded } = useProfile();
   const { toast } = useToast();
-  const previewRef = useRef<HTMLDivElement>(null);
   
   const [showPhoto, setShowPhoto] = useState(true);
   const [showUsername, setShowUsername] = useState(true);
   const [showSocial, setShowSocial] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
 
+  const copyStylesToInline = (source: HTMLElement, target: HTMLElement) => {
+    const sourceStyle = window.getComputedStyle(source);
+    let cssText = "";
+    for (let i = 0; i < sourceStyle.length; i++) {
+      const prop = sourceStyle.item(i);
+      cssText += `${prop}: ${sourceStyle.getPropertyValue(prop)};`;
+    }
+    (target.style as CSSStyleDeclaration).cssText = cssText;
+  };
+  
+  const cloneWithInlineStyles = (node: HTMLElement): HTMLElement => {
+    const clone = node.cloneNode(true) as HTMLElement;
+  
+    const srcNodes = Array.from(node.querySelectorAll<HTMLElement>('*'));
+    const cloneNodes = Array.from(clone.querySelectorAll<HTMLElement>('*'));
+  
+    copyStylesToInline(node, clone);
+    for (let i = 0; i < srcNodes.length; i++) {
+      const s = srcNodes[i];
+      const c = cloneNodes[i];
+      if (c && s) copyStylesToInline(s, c);
+    }
+  
+    return clone;
+  };
+  
   const handleExport = async () => {
     const element = document.getElementById('signature-export-preview');
     if (!element) {
@@ -55,33 +81,52 @@ export default function AssinaturaPage() {
         });
         return;
     }
-
+  
     setIsExporting(true);
-    
+  
     try {
-        const canvas = await html2canvas(element, { 
-            backgroundColor: null, // Fundo transparente
-            useCORS: true,
-            scale: 2 // Maior resolução
-        });
-        const dataUrl = canvas.toDataURL('image/png');
-        const link = document.createElement('a');
-        link.download = 'minha-assinatura.png';
-        link.href = dataUrl;
-        link.click();
-        toast({
-            title: "Assinatura Exportada!",
-            description: "Sua assinatura foi salva como uma imagem PNG."
-        });
+      const clone = cloneWithInlineStyles(element);
+      clone.style.position = 'fixed';
+      clone.style.left = '-9999px';
+      clone.style.top = '0';
+      clone.style.zIndex = '99999';
+      clone.id = 'signature-export-clone';
+  
+      const rect = element.getBoundingClientRect();
+      clone.style.width = rect.width + 'px';
+      clone.style.height = rect.height + 'px';
+      clone.style.boxSizing = 'border-box';
+  
+      document.body.appendChild(clone);
+  
+      const canvas = await html2canvas(clone as HTMLElement, {
+        backgroundColor: null, 
+        useCORS: true,
+        scale: 2,
+      });
+  
+      document.body.removeChild(clone);
+  
+      const dataUrl = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = 'minha-assinatura.png';
+      link.href = dataUrl;
+      link.click();
+  
+      toast({
+        title: "Assinatura Exportada!",
+        description: "Sua assinatura foi salva como uma imagem PNG."
+      });
+  
     } catch (error) {
-        console.error("Erro ao exportar assinatura:", error);
-        toast({
-            variant: "destructive",
-            title: "Erro",
-            description: "Ocorreu um problema ao gerar a imagem da assinatura."
-        });
+      console.error("Erro ao exportar assinatura:", error);
+      toast({
+          variant: "destructive",
+          title: "Erro",
+          description: "Ocorreu um problema ao gerar a imagem da assinatura."
+      });
     } finally {
-        setIsExporting(false);
+      setIsExporting(false);
     }
   };
 
