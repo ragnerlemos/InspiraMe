@@ -127,35 +127,32 @@ export default function Editor() {
 
     const containerWidth = previewContainerRef.current.offsetWidth;
     const calculatedFontSize = (currentState.fontSize / 100) * containerWidth;
-    
+
     const createTextStrokeShadow = (width: number, color: string): string => {
-        if (width <= 0) return "none";
-        const strokeWidthPx = (width / 1000) * calculatedFontSize;
-        if (strokeWidthPx <= 0) return "none";
-
-        const shadows = [];
-        const numPoints = 12;
-        for (let i = 0; i < numPoints; i++) {
-            const angle = (i / numPoints) * 2 * Math.PI;
-            const x = Math.cos(angle) * strokeWidthPx;
-            const y = Math.sin(angle) * strokeWidthPx;
-            shadows.push(`${x.toFixed(2)}px ${y.toFixed(2)}px 0 ${color}`);
-        }
-        return shadows.join(', ');
+        if (width <= 0) return 'none';
+        const w = (width / 1000) * calculatedFontSize;
+        // Técnica de text-stroke usando text-shadow
+        return `
+            -${w}px -${w}px 0 ${color},
+             ${w}px -${w}px 0 ${color},
+            -${w}px  ${w}px 0 ${color},
+             ${w}px  ${w}px 0 ${color}
+        `;
     };
-    
+
     const createMainShadow = (blur: number, opacity: number): string => {
-        if (opacity === 0) return "none";
-        const shadowOpacity = opacity / 100;
-        const blurAmount = (blur / 100) * (calculatedFontSize * 0.4);
-        const offsetY = blurAmount * 0.4;
-        const offsetX = 0;
-        return `${offsetX.toFixed(2)}px ${offsetY.toFixed(2)}px ${blurAmount.toFixed(2)}px rgba(0,0,0,${shadowOpacity * 1.5})`;
+        if (opacity <= 0) return 'none';
+        const b = blur * 2; // Ajusta o blur para ser mais visível
+        const offset = b * 0.5;
+        const alpha = opacity / 100;
+        return `${offset}px ${offset}px ${b}px rgba(0,0,0,${alpha})`;
     };
 
-    const textStrokeShadow = createTextStrokeShadow(currentState.textStrokeWidth || 0, currentState.textStrokeColor || '#000');
-    const mainTextShadow = createMainShadow(currentState.textShadowBlur || 0, currentState.textShadowOpacity || 0);
+    const textStrokeShadow = createTextStrokeShadow(currentState.textStrokeWidth, currentState.textStrokeColor);
+    const mainTextShadow = createMainShadow(currentState.textShadowBlur, currentState.textShadowOpacity);
 
+    const combinedShadows = [textStrokeShadow, mainTextShadow].filter(s => s !== 'none').join(', ');
+    
     return {
         fontFamily: currentState.fontFamily,
         fontSize: `${calculatedFontSize}px`,
@@ -166,12 +163,12 @@ export default function Editor() {
         lineHeight: currentState.lineHeight,
         letterSpacing: `${(currentState.letterSpacing || 0) / 100}em`,
         wordSpacing: `${(currentState.wordSpacing || 0) / 100}em`,
-        textShadow: textStrokeShadow !== "none" && mainTextShadow !== "none" ? `${textStrokeShadow}, ${mainTextShadow}` : textStrokeShadow !== "none" ? textStrokeShadow : mainTextShadow,
+        textShadow: combinedShadows || 'none',
     }
   }, [
     currentState,
-    previewContainerRef.current, // Adiciona a ref como dependência
-    width // Recalcula com a largura da janela para responsividade
+    previewContainerRef.current,
+    width
   ]);
 
 
