@@ -26,7 +26,7 @@ const getInitialState = (): Omit<EditorState, 'activeTemplateId' | 'text'> => ({
     textShadowOpacity: 75,
     textVerticalPosition: 50,
     textStrokeColor: "#000000",
-    textStrokeWidth: 0.2,
+    textStrokeWidth: 0,
     letterSpacing: 0,
     lineHeight: 1.3,
     wordSpacing: 0,
@@ -129,7 +129,7 @@ export default function Editor() {
     const calculatedFontSize = (currentState.fontSize / 100) * containerWidth;
     
     const createTextStrokeShadow = (width: number, color: string): string => {
-        if (width === 0) return "none";
+        if (width <= 0) return "none";
         const strokeWidthPx = (width / 1000) * calculatedFontSize;
         if (strokeWidthPx <= 0) return "none";
 
@@ -148,12 +148,13 @@ export default function Editor() {
         if (opacity === 0) return "none";
         const shadowOpacity = opacity / 100;
         
-        // Ajuste a força do desfoque e do deslocamento com base no tamanho da fonte
-        const blurAmount = (blur / 100) * (calculatedFontSize * 0.2);
-        const offsetY = blurAmount * 0.5; // Deslocamento vertical mais pronunciado
-        const offsetX = blurAmount * 0.2; // Deslocamento horizontal sutil
+        // Sombra forte, projetada para baixo.
+        const blurAmount = (blur / 100) * (calculatedFontSize * 0.4); // Desfoque mais expansivo
+        const offsetY = blurAmount * 0.4; // Deslocamento vertical mais pronunciado
+        const offsetX = 0; // Sem deslocamento horizontal para um efeito 'drop'
         
-        return `${offsetX.toFixed(2)}px ${offsetY.toFixed(2)}px ${blurAmount.toFixed(2)}px rgba(0,0,0,${shadowOpacity})`;
+        // Cor preta sólida com a opacidade controlada
+        return `${offsetX.toFixed(2)}px ${offsetY.toFixed(2)}px ${blurAmount.toFixed(2)}px rgba(0,0,0,${shadowOpacity * 1.5})`;
     };
 
     const textStrokeShadow = createTextStrokeShadow(currentState.textStrokeWidth || 0, currentState.textStrokeColor || '#000');
