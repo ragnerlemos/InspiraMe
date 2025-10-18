@@ -20,7 +20,7 @@ function AssinaturaPreview({ profile, showPhoto, showUsername, showSocial }: {
   showSocial: boolean;
 }) {
   return (
-    <div id="signature-export-preview" className="bg-gray-800 p-4 inline-block rounded-lg">
+    <div id="signature-export-preview" className="bg-gray-800 p-4 flex items-center rounded-lg">
       <AssinaturaPerfil 
         profile={profile}
         showPhoto={showPhoto}
