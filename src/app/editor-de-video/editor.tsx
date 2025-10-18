@@ -130,27 +130,24 @@ export default function Editor() {
 
     const createTextStrokeShadow = (strokeWidth: number, color: string): string => {
         if (strokeWidth <= 0) return 'none';
-        // Ajustamos o `w` para ser mais sensível
-        const w = (strokeWidth / 1000) * calculatedFontSize;
-        const shadows = [];
-        // Aumentamos o número de pontos para um contorno mais denso
-        const numPoints = 12;
-        for (let i = 0; i < numPoints; i++) {
-            const angle = (i / numPoints) * 2 * Math.PI;
-            const x = Math.cos(angle) * w;
-            const y = Math.sin(angle) * w;
-            shadows.push(`${x.toFixed(2)}px ${y.toFixed(2)}px 0 ${color}`);
-        }
-        return shadows.join(', ');
+        const w = (strokeWidth / 10) * 2.5; // Ajuste para força
+        return `
+            -${w}px -${w}px 0 ${color},
+            ${w}px -${w}px 0 ${color},
+            -${w}px ${w}px 0 ${color},
+            ${w}px ${w}px 0 ${color},
+            0 -${w}px 0 ${color},
+            0 ${w}px 0 ${color},
+            -${w}px 0 0 ${color},
+            ${w}px 0 0 ${color}
+        `;
     };
 
     const createMainShadow = (blur: number, opacity: number): string => {
         if (opacity <= 0) return 'none';
         const shadowOpacity = opacity / 100;
-        // O desfoque agora é mais pronunciado
-        const blurAmount = (blur / 100) * (calculatedFontSize * 0.5);
-        // O deslocamento também é mais forte
-        const offsetY = blurAmount * 0.5;
+        const blurAmount = blur * 2; // Aumenta o efeito do desfoque
+        const offsetY = blurAmount * 0.5; // Sombra mais para baixo
         const offsetX = blurAmount * 0.2;
         return `${offsetX.toFixed(2)}px ${offsetY.toFixed(2)}px ${blurAmount.toFixed(2)}px rgba(0,0,0,${shadowOpacity})`;
     };
