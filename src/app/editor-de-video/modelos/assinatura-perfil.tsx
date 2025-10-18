@@ -37,9 +37,6 @@ export function AssinaturaPerfil({
   bgColor,
   bgOpacity,
 }: AssinaturaPerfilProps) {
-  // Define se o ícone da rede social deve ser exibido.
-  const shouldShowIcon = profile.showIcon && (profile.iconUrl || profile.social.includes('twitter.com') || profile.social.includes('x.com'));
-  
   const bgRgb = hexToRgb(bgColor);
   const backgroundColor = bgRgb ? `rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, ${bgOpacity / 100})` : `rgba(0, 0, 0, ${bgOpacity / 100})`;
 
@@ -70,16 +67,6 @@ export function AssinaturaPerfil({
             <p className="text-gray-300 text-xs">
               {profile.social}
             </p>
-          )}
-        </div>
-      )}
-
-      {shouldShowIcon && (
-        <div className="pl-2 flex items-center justify-center">
-          {profile.iconUrl ? (
-            <img src={profile.iconUrl} alt="Ícone social" className="h-5 w-5" />
-          ) : (
-            <Twitter className="h-5 w-5 text-blue-400" />
           )}
         </div>
       )}

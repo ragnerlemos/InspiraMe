@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Download, User, AtSign, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { Download, User, AtSign, Image as ImageIcon, Loader2, Twitter } from 'lucide-react';
 import { AssinaturaPerfil } from '../editor-de-video/modelos/assinatura-perfil';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -21,7 +21,7 @@ function AssinaturaPreview({ profile, showPhoto, showUsername, showSocial }: {
   showSocial: boolean;
 }) {
   return (
-    <div id="signature-export-preview" className="bg-gray-800 p-4 flex items-center rounded-lg">
+    <div id="signature-export-preview" className="bg-gray-800 p-4 flex items-center justify-center rounded-lg">
       <AssinaturaPerfil 
         profile={profile}
         showPhoto={showPhoto}
@@ -43,6 +43,7 @@ export default function AssinaturaPage() {
   const [showPhoto, setShowPhoto] = useState(true);
   const [showUsername, setShowUsername] = useState(true);
   const [showSocial, setShowSocial] = useState(true);
+  const [showIcon, setShowIcon] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
 
   const handleExport = async () => {
@@ -133,7 +134,13 @@ export default function AssinaturaPage() {
   
       // icon: use SVG inline (Twitter) ou imagem embutida se tiver iconUrl
       const twitterSvg = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="${socialFontSize}" height="${socialFontSize}" role="img"><path fill="#1DA1F2" d="M22.46 6c-.77.35-1.6.59-2.46.7a4.27 4.27 0 0 0 1.87-2.36 8.47 8.47 0 0 1-2.7 1.03 4.24 4.24 0 0 0-7.23 3.87A12.03 12.03 0 0 1 3.15 4.6a4.24 4.24 0 0 0 1.31 5.66c-.64-.02-1.24-.2-1.76-.48v.05c0 2.04 1.45 3.74 3.37 4.12a4.27 4.27 0 0 1-1.75.07 4.26 4.26 0 0 0 3.97 2.96A8.52 8.52 0 0 1 2 19.54a12.03 12.03 0 0 0 6.5 1.9c7.8 0 12.08-6.46 12.08-12.07v-.55A8.6 8.6 0 0 0 22.46 6z"/></svg>`;
-  
+      
+      const iconGroup = showIcon ? `
+        <g transform="translate(${svgWidth - padding - socialFontSize}, ${centerY - socialFontSize/2})">
+            ${twitterSvg}
+        </g>
+      ` : '';
+
       // cria o XML do SVG
       const svg = `
         <svg xmlns="http://www.w3.org/2000/svg" width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}">
@@ -145,7 +152,6 @@ export default function AssinaturaPage() {
   
           ${avatarDataUrl ? `<image href="${avatarDataUrl}" x="${avatarX}" y="${avatarY}" width="${avatarSize}" height="${avatarSize}" preserveAspectRatio="xMidYMid slice" />` : `
             <rect x="${avatarX}" y="${avatarY}" width="${avatarSize}" height="${avatarSize}" rx="${avatarSize/6}" fill="#374151" />
-            <text x="${avatarX + avatarSize/2}" y="${avatarY + avatarSize/2}" font-size="${Math.round(avatarSize/2)}" text-anchor="middle" fill="#ffffff" dominant-baseline="middle">?</text>
           `}
   
           <!-- nome e rede -->
@@ -153,9 +159,7 @@ export default function AssinaturaPage() {
           <text x="${textBlockX}" y="${socialY}" class="social">${esc(social)}</text>
   
           <!-- ícone à direita (opcional) -->
-          <g transform="translate(${svgWidth - padding - socialFontSize}, ${centerY - socialFontSize/2})">
-            ${twitterSvg}
-          </g>
+          ${iconGroup}
         </svg>
       `;
   
@@ -284,6 +288,17 @@ export default function AssinaturaPage() {
                                 onCheckedChange={setShowSocial}
                             />
                         </div>
+                        <div className="flex items-center justify-between p-3 rounded-lg border">
+                            <Label htmlFor="show-icon" className="flex items-center gap-2 cursor-pointer">
+                                <Twitter className="h-5 w-5 text-muted-foreground" />
+                                Mostrar Ícone (na exportação)
+                            </Label>
+                            <Switch
+                                id="show-icon"
+                                checked={showIcon}
+                                onCheckedChange={setShowIcon}
+                            />
+                        </div>
                     </CardContent>
                 </Card>
             </div>
@@ -302,5 +317,3 @@ export default function AssinaturaPage() {
     </main>
   );
 }
-
-    
