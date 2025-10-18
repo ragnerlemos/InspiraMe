@@ -87,6 +87,7 @@ export default function ProfilePage() {
             quality: 1,
             pixelRatio: 2,
             cacheBust: true,
+            backgroundColor: '#FFFFFF', // Garante um fundo sólido
         });
 
         const link = document.createElement('a');
