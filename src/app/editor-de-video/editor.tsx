@@ -72,6 +72,7 @@ export default function Editor() {
 
   // Efeito de inicialização
   useEffect(() => {
+    // Evita re-inicialização
     if (isReady || !isProfileLoaded || !areTemplatesLoaded) return;
 
     const initialize = () => {

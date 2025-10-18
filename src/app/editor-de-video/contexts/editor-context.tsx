@@ -28,8 +28,10 @@ export interface EditorContextType {
 
 const EditorContext = createContext<EditorContextType | undefined>(undefined);
 
+// O estado padrão agora tem valores mais seguros para o primeiro render.
+// O texto inicial é nulo para que possamos mostrar o loading até a frase real ser carregada.
 const defaultState: EditorState = {
-    text: "A inspiração está a caminho...",
+    text: "",
     fontFamily: "Poppins",
     fontSize: 5,
     fontWeight: "bold",
@@ -69,15 +71,15 @@ const defaultState: EditorState = {
 
 // Editor Provider Component
 export function EditorProvider({ children }: { children: ReactNode }) {
-  const [history, setHistory] = useState<EditorState[]>([defaultState]);
-  const [currentStateIndex, setCurrentStateIndex] = useState(0);
+  const [history, setHistory] = useState<EditorState[]>([]);
+  const [currentStateIndex, setCurrentStateIndex] = useState(-1);
   const [isReady, setIsReady] = useState(false);
   const { toast } = useToast();
   const { addTemplate } = useTemplates();
   const { profile } = useProfile();
   const { width: windowWidth } = useWindowSize();
 
-  const currentState = history[currentStateIndex] || null;
+  const currentState = isReady ? history[currentStateIndex] : null;
   const canUndo = currentStateIndex > 0;
   const canRedo = currentStateIndex < history.length - 1;
 
