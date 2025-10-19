@@ -43,49 +43,6 @@ export function FerramentasEditor() {
   const updateState = (newState: Partial<ToolEditorState>) => {
     setState((prev) => ({ ...prev, ...newState }));
   };
-
-  const createDropShadow = () => {
-    if (state.shadowOpacity <= 0) return 'none';
-  
-    const opacityValue = Math.min(state.shadowOpacity / 100, 1);
-    const shadowColor = `rgba(0, 0, 0, ${opacityValue})`;
-    
-    // A "propagação" da sombra (spread) começa a agir quando a intensidade passa de 100%.
-    const spreadValue = state.shadowOpacity > 100 ? ((state.shadowOpacity - 100) / 100) * state.shadowBlur * 0.5 : 0;
-
-    const shadowOffsetX = 2;
-    const shadowOffsetY = 4;
-    
-    return `${shadowOffsetX}px ${shadowOffsetY}px ${state.shadowBlur}px ${spreadValue}px ${shadowColor}`;
-  };
-  
-  const createStrokeShadows = () => {
-    if (state.strokeWidth <= 0) return [];
-    
-    const w = state.strokeWidth;
-    const c = state.strokeColor;
-    const shadows: string[] = [];
-
-    if (state.strokeCornerStyle === 'rounded') {
-       const numSteps = 12;
-       const blur = w * 0.5; // Um pequeno desfoque para criar o arredondamento
-      for (let i = 0; i < numSteps; i++) {
-        const angle = (i / numSteps) * 2 * Math.PI;
-        const x = Math.cos(angle) * w;
-        const y = Math.sin(angle) * w;
-        shadows.push(`${x}px ${y}px ${blur}px ${c}`);
-      }
-    } else { // 'square'
-      for (let x = -w; x <= w; x++) {
-        for (let y = -w; y <= w; y++) {
-          if (Math.abs(x) >= w || Math.abs(y) >= w) {
-            shadows.push(`${x}px ${y}px 0 ${c}`);
-          }
-        }
-      }
-    }
-    return shadows;
-  };
   
   // Função para renderizar texto e emojis separadamente
   const renderTextWithEmojis = () => {
@@ -95,15 +52,39 @@ export function FerramentasEditor() {
       if (!part) return null; // Ignora partes vazias
       const isEmoji = part.match(emojiRegex);
       
-      const dropShadow = createDropShadow();
-      const strokeShadows = createStrokeShadows();
+      const allShadows: string[] = [];
+
+      // 1. Lógica do Contorno
+      if (state.strokeWidth > 0) {
+        if (state.strokeCornerStyle === 'rounded') {
+           const numSteps = 12;
+           const blur = state.strokeWidth * 0.5; // Desfoque para arredondar
+          for (let i = 0; i < numSteps; i++) {
+            const angle = (i / numSteps) * 2 * Math.PI;
+            const x = Math.cos(angle) * state.strokeWidth;
+            const y = Math.sin(angle) * state.strokeWidth;
+            allShadows.push(`${x}px ${y}px ${blur}px ${state.strokeColor}`);
+          }
+        } else { // 'square'
+            const w = state.strokeWidth;
+            for (let x = -w; x <= w; x += 1) {
+                for (let y = -w; y <= w; y += 1) {
+                    allShadows.push(`${x}px ${y}px 0 ${state.strokeColor}`);
+                }
+            }
+        }
+      }
       
-      // Filtra para remover valores 'none' ou arrays vazios antes de juntar
-      const allShadows = [
-          (dropShadow !== 'none' ? dropShadow : null),
-          ...strokeShadows
-      ].filter(Boolean); // 'Boolean' remove valores nulos/undefined da lista
-      
+      // 2. Lógica da Sombra Projetada
+      if (state.shadowOpacity > 0) {
+        const opacityValue = Math.min(state.shadowOpacity / 100, 1);
+        const shadowColor = `rgba(0, 0, 0, ${opacityValue})`;
+        const spreadValue = state.shadowOpacity > 100 ? ((state.shadowOpacity - 100) / 100) * state.shadowBlur * 0.5 : 0;
+        const shadowOffsetX = 2;
+        const shadowOffsetY = 4;
+        allShadows.push(`${shadowOffsetX}px ${shadowOffsetY}px ${state.shadowBlur}px ${spreadValue}px ${shadowColor}`);
+      }
+
       const partStyle: React.CSSProperties = {
         fontWeight: state.fontWeight,
         fontStyle: state.fontStyle,
@@ -113,8 +94,8 @@ export function FerramentasEditor() {
         whiteSpace: 'pre-wrap', // Mantém as quebras de linha
       };
       
+      // Aplica os estilos de sombra e contorno se necessário
       if (allShadows.length > 0) {
-        // Aplica o efeito se não for um emoji, ou se a opção de aplicar em emojis estiver ativa
         if (!isEmoji || state.applyEffectsToEmojis) {
           partStyle.textShadow = allShadows.join(', ');
         }
