@@ -45,14 +45,19 @@ export function FerramentasEditor() {
   };
 
   const createDropShadow = () => {
-    if (state.shadowOpacity > 0 && state.shadowBlur > 0) {
-      const shadowColor = `rgba(0, 0, 0, ${state.shadowOpacity / 100})`;
-      // Offset maior para um efeito de profundidade mais forte
-      const shadowOffsetX = 2;
-      const shadowOffsetY = 4;
-      return `${shadowOffsetX}px ${shadowOffsetY}px ${state.shadowBlur}px ${shadowColor}`;
-    }
-    return 'none';
+    if (state.shadowOpacity <= 0 || state.shadowBlur <= 0) return 'none';
+
+    // A opacidade vai de 0 a 1 (correspondendo a 0-100% no slider).
+    const opacityValue = Math.min(state.shadowOpacity / 100, 1);
+    const shadowColor = `rgba(0, 0, 0, ${opacityValue})`;
+    
+    // O "spread" começa a agir quando a opacidade passa de 100%.
+    // Isso torna a sombra mais densa e forte.
+    const spreadValue = state.shadowOpacity > 100 ? (state.shadowOpacity - 100) / 100 * state.shadowBlur * 0.5 : 0;
+
+    const shadowOffsetX = 2;
+    const shadowOffsetY = 4;
+    return `${shadowOffsetX}px ${shadowOffsetY}px ${state.shadowBlur}px ${spreadValue}px ${shadowColor}`;
   };
   
   const createStrokeShadows = () => {
@@ -63,9 +68,8 @@ export function FerramentasEditor() {
     const shadows = [];
 
     if (state.strokeCornerStyle === 'rounded') {
-       // Aumenta o número de sombras e adiciona um leve desfoque para suavizar
-      const numSteps = 8; // Mais passos para um contorno mais suave
-      const blur = w * 0.4; // Desfoque para arredondar os cantos
+       const numSteps = 8;
+       const blur = w * 0.4;
       for (let i = 0; i < numSteps; i++) {
         const angle = (i / numSteps) * 2 * Math.PI;
         const x = Math.cos(angle) * w;
@@ -73,7 +77,6 @@ export function FerramentasEditor() {
         shadows.push(`${x}px ${y}px ${blur}px ${c}`);
       }
     } else { // 'square'
-      // Múltiplas sombras sem desfoque para um canto vivo
       for (let x = -w; x <= w; x++) {
         for (let y = -w; y <= w; y++) {
           if (x !== 0 || y !== 0) {
@@ -85,37 +88,33 @@ export function FerramentasEditor() {
     return shadows;
   };
   
-  const textStyle: React.CSSProperties = {
-    fontWeight: state.fontWeight,
-    fontStyle: state.fontStyle,
-    fontSize: '60px',
-    color: 'white',
-    fontFamily: 'Poppins, sans-serif',
-  };
-
-  const dropShadow = createDropShadow();
-  const strokeShadows = createStrokeShadows();
-  const allShadows = [dropShadow, ...strokeShadows].filter(s => s && s !== 'none');
-  
-  if (allShadows.length > 0) {
-    textStyle.textShadow = allShadows.join(', ');
-  }
-
   // Função para renderizar texto e emojis separadamente
   const renderTextWithEmojis = () => {
     const parts = state.text.split(emojiRegex);
+    
     return parts.map((part, index) => {
-      if (part.match(emojiRegex)) {
-        // É um emoji
-        return (
-          <span key={index} style={state.applyEffectsToEmojis ? textStyle : { ...textStyle, textShadow: 'none' }}>
-            {part}
-          </span>
-        );
+      const isEmoji = part.match(emojiRegex);
+      
+      const dropShadow = createDropShadow();
+      const strokeShadows = createStrokeShadows();
+      const allShadows = [dropShadow, ...strokeShadows].filter(s => s && s !== 'none');
+      
+      const partStyle: React.CSSProperties = {
+        fontWeight: state.fontWeight,
+        fontStyle: state.fontStyle,
+        fontSize: '60px',
+        color: 'white',
+        fontFamily: 'Poppins, sans-serif',
+      };
+      
+      if (allShadows.length > 0) {
+        if (!isEmoji || (isEmoji && state.applyEffectsToEmojis)) {
+          partStyle.textShadow = allShadows.join(', ');
+        }
       }
-      // É texto normal
+
       return (
-        <span key={index} style={textStyle}>
+        <span key={index} style={partStyle}>
           {part}
         </span>
       );
@@ -188,11 +187,11 @@ export function FerramentasEditor() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="shadow-opacity">Opacidade da Sombra: {state.shadowOpacity}%</Label>
+            <Label htmlFor="shadow-opacity">Intensidade da Sombra: {state.shadowOpacity}%</Label>
             <Slider
               id="shadow-opacity"
               min={0}
-              max={100}
+              max={200}
               step={5}
               value={[state.shadowOpacity]}
               onValueChange={(v) => updateState({ shadowOpacity: v[0] })}
@@ -250,12 +249,6 @@ export function FerramentasEditor() {
       <div className="flex-1 flex items-center justify-center bg-muted/40 p-4">
         <div
           className="text-center break-words"
-          style={{ 
-            fontSize: textStyle.fontSize, 
-            fontFamily: textStyle.fontFamily, 
-            fontWeight: textStyle.fontWeight, 
-            fontStyle: textStyle.fontStyle 
-          }}
         >
           {renderTextWithEmojis()}
         </div>
