@@ -63,34 +63,43 @@ export function FerramentasEditor() {
     return 'none';
   };
   
-  // Lógica de Estilo Condicional
-  const shadows: string[] = [];
+  const createStrokeShadows = () => {
+      if(state.strokeWidth <= 0) return [];
+      
+      const w = state.strokeWidth;
+      const c = state.strokeColor;
+      const shadows = [];
+
+      if (state.strokeCornerStyle === 'rounded') {
+          // Para cantos arredondados, usamos um blur sutil em múltiplas sombras.
+          // O blur "preenche" as quinas, criando o efeito arredondado.
+          const blur = w * 0.5;
+          for (let i = -w; i <= w; i++) {
+              for (let j = -w; j <= w; j++) {
+                  shadows.push(`${i}px ${j}px ${blur}px ${c}`);
+              }
+          }
+      } else { // 'square'
+          // Para cantos quadrados, geramos sombras sem blur em uma grade ao redor do texto.
+          for (let i = -w; i <= w; i++) {
+              for (let j = -w; j <= w; j++) {
+                  if(i !== 0 || j !== 0) { // Evita cobrir o texto
+                      shadows.push(`${i}px ${j}px 0 ${c}`);
+                  }
+              }
+          }
+      }
+      return shadows;
+  }
+
   const dropShadow = createDropShadow();
-  if (dropShadow !== 'none') {
-    shadows.push(dropShadow);
-  }
+  const strokeShadows = createStrokeShadows();
 
-  if (state.strokeWidth > 0 && state.strokeCornerStyle === 'square') {
-    const w = state.strokeWidth;
-    const c = state.strokeColor;
-    for (let i = -Math.ceil(w); i <= Math.ceil(w); i++) {
-        for (let j = -Math.ceil(w); j <= Math.ceil(w); j++) {
-            if (Math.abs(i) <= w && Math.abs(j) <= w) {
-                // Previne adicionar o 0 0 para não cobrir o texto
-                if(i !== 0 || j !== 0) {
-                  shadows.push(`${i}px ${j}px 0 ${c}`);
-                }
-            }
-        }
-    }
-    textStyle.WebkitTextStroke = '0'; // Reseta o stroke do webkit
-  } else if (state.strokeWidth > 0 && state.strokeCornerStyle === 'rounded') {
-      textStyle.WebkitTextStroke = `${state.strokeWidth}px ${state.strokeColor}`;
-      textStyle.paintOrder = 'stroke fill';
-  }
+  // Combina a sombra projetada com o contorno (que também é feito de sombras)
+  const allShadows = [dropShadow, ...strokeShadows].filter(s => s && s !== 'none');
 
-  if (shadows.length > 0) {
-    textStyle.textShadow = shadows.join(', ');
+  if (allShadows.length > 0) {
+      textStyle.textShadow = allShadows.join(', ');
   }
 
 
