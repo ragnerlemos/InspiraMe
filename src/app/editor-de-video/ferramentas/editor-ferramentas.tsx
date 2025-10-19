@@ -25,7 +25,6 @@ interface ToolEditorState {
   shadowOpacity: number;
   strokeWidth: number;
   strokeColor: string;
-  strokeType: 'square' | 'rounded';
 }
 
 export function FerramentasEditor() {
@@ -37,66 +36,35 @@ export function FerramentasEditor() {
     shadowOpacity: 50,
     strokeWidth: 2,
     strokeColor: '#000000',
-    strokeType: 'rounded',
   });
 
   const updateState = (newState: Partial<ToolEditorState>) => {
     setState((prev) => ({ ...prev, ...newState }));
   };
 
+  // Estilos base do texto
   const textStyle: React.CSSProperties = {
     fontWeight: state.fontWeight,
     fontStyle: state.fontStyle,
     fontSize: '60px',
     color: 'white',
     fontFamily: 'Poppins, sans-serif',
+    WebkitTextStroke: `${state.strokeWidth}px ${state.strokeColor}`,
+    paintOrder: 'stroke fill',
   };
-
-  // Lógica para criar os efeitos de sombra e contorno
-  const createTextEffect = () => {
-    let textShadows: string[] = [];
-
-    // 1. Sombra
+  
+  // Lógica para criar o efeito de sombra
+  const createDropShadow = () => {
     if (state.shadowOpacity > 0 && state.shadowBlur > 0) {
       const shadowColor = `rgba(0, 0, 0, ${state.shadowOpacity / 100})`;
-      // Sombra projetada (drop shadow)
-      textShadows.push(`4px 4px ${state.shadowBlur}px ${shadowColor}`);
+      const shadowOffsetX = state.strokeWidth > 0 ? state.strokeWidth * 0.5 : 4;
+      const shadowOffsetY = state.strokeWidth > 0 ? state.strokeWidth * 0.5 : 4;
+      return `${shadowOffsetX}px ${shadowOffsetY}px ${state.shadowBlur}px ${shadowColor}`;
     }
-
-    // 2. Contorno
-    if (state.strokeWidth > 0) {
-      const { strokeWidth, strokeColor, strokeType } = state;
-      const numSteps = 8; // Mais passos para um contorno mais denso
-
-      if (strokeType === 'rounded') {
-        // Contorno arredondado e suave
-        for (let i = 0; i < numSteps; i++) {
-          const angle = (i * 360) / numSteps;
-          const x = Math.cos((angle * Math.PI) / 180) * strokeWidth;
-          const y = Math.sin((angle * Math.PI) / 180) * strokeWidth;
-          textShadows.push(`${x}px ${y}px 0 ${strokeColor}`);
-        }
-      } else {
-        // Contorno quadrado (sharp)
-        for (let x = -strokeWidth; x <= strokeWidth; x++) {
-          for (let y = -strokeWidth; y <= strokeWidth; y++) {
-            if (x !== 0 || y !== 0) {
-              textShadows.push(`${x}px ${y}px 0 ${strokeColor}`);
-            }
-          }
-        }
-      }
-    }
-    
-    // Ignora o text-shadow para emojis usando um seletor CSS que não temos aqui,
-    // então a abordagem de contorno pode afetar emojis. 
-    // A melhor solução seria usar `-webkit-text-stroke` se fosse garantido.
-    // Para este exemplo, a simplicidade do text-shadow é mantida.
-
-    return textShadows.join(', ');
+    return 'none';
   };
-
-  textStyle.textShadow = createTextEffect();
+  
+  textStyle.textShadow = createDropShadow();
 
   return (
     <div className="flex flex-col md:flex-row h-full w-full">
@@ -167,27 +135,12 @@ export function FerramentasEditor() {
         <div className="space-y-4 border-t pt-4">
           <h3 className="font-semibold">Contorno</h3>
           <div className="space-y-2">
-            <Label htmlFor="stroke-type">Tipo de Canto</Label>
-            <Select
-              value={state.strokeType}
-              onValueChange={(v) => updateState({ strokeType: v as 'square' | 'rounded' })}
-            >
-              <SelectTrigger id="stroke-type">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="rounded">Arredondado</SelectItem>
-                <SelectItem value="square">Quadrado</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
             <Label htmlFor="stroke-width">Espessura do Contorno: {state.strokeWidth}px</Label>
             <Slider
               id="stroke-width"
               min={0}
               max={20}
-              step={1}
+              step={0.5}
               value={[state.strokeWidth]}
               onValueChange={(v) => updateState({ strokeWidth: v[0] })}
             />
