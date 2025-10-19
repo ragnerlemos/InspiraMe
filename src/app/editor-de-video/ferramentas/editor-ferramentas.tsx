@@ -47,8 +47,9 @@ export function FerramentasEditor() {
   const createDropShadow = () => {
     if (state.shadowOpacity > 0 && state.shadowBlur > 0) {
       const shadowColor = `rgba(0, 0, 0, ${state.shadowOpacity / 100})`;
-      const shadowOffsetX = 2;
-      const shadowOffsetY = 2;
+      // Aumenta o deslocamento com base no desfoque para um efeito mais forte
+      const shadowOffsetX = state.shadowBlur * 0.2;
+      const shadowOffsetY = state.shadowBlur * 0.4;
       return `${shadowOffsetX}px ${shadowOffsetY}px ${state.shadowBlur}px ${shadowColor}`;
     }
     return 'none';
@@ -62,7 +63,7 @@ export function FerramentasEditor() {
     const shadows = [];
 
     if (state.strokeCornerStyle === 'rounded') {
-      const blur = w * 0.5; // O blur cria o efeito arredondado
+      const blur = w * 0.5; 
       for (let x = -w; x <= w; x += w/2) {
         for (let y = -w; y <= w; y += w/2) {
            if (x !== 0 || y !== 0) {
