@@ -65,22 +65,27 @@ export function FerramentasEditor() {
   };
   
   // Lógica para o Contorno
-  let textShadows = [createDropShadow()];
+  let textShadows: string[] = [];
+
   if (state.strokeWidth > 0) {
     if (state.strokeCornerStyle === 'rounded') {
-      // Contorno arredondado ignora text-shadow e usa -webkit-text-stroke
+      // Contorno arredondado usa -webkit-text-stroke e adiciona a sombra projetada
       textStyle.WebkitTextStroke = `${state.strokeWidth}px ${state.strokeColor}`;
       textStyle.paintOrder = 'stroke fill';
+      textShadows.push(createDropShadow());
     } else {
-      // Contorno quadrado usa text-shadow
+      // Contorno quadrado usa text-shadow e também adiciona a sombra projetada
       const w = state.strokeWidth;
       const c = state.strokeColor;
       const squareShadows = [
         `${-w}px ${-w}px 0 ${c}`, `${w}px ${-w}px 0 ${c}`,
         `${-w}px ${w}px 0 ${c}`, `${w}px ${w}px 0 ${c}`
       ];
-      textShadows = [...squareShadows, ...textShadows];
+      textShadows = [...squareShadows, createDropShadow()];
     }
+  } else {
+    // Se não houver contorno, apenas a sombra projetada é aplicada
+    textShadows.push(createDropShadow());
   }
 
   textStyle.textShadow = textShadows.filter(s => s !== 'none').join(', ');
