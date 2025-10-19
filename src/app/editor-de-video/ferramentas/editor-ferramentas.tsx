@@ -8,13 +8,11 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Textarea } from '@/components/ui/textarea';
 import { Bold, Italic } from 'lucide-react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+
+// Regex para identificar a maioria dos emojis comuns
+const emojiRegex = /(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/g;
+
 
 // Tipos para o estado do nosso novo editor
 interface ToolEditorState {
@@ -26,6 +24,7 @@ interface ToolEditorState {
   strokeWidth: number;
   strokeColor: string;
   strokeCornerStyle: 'rounded' | 'square';
+  applyEffectsToEmojis: boolean;
 }
 
 export function FerramentasEditor() {
@@ -38,21 +37,13 @@ export function FerramentasEditor() {
     strokeWidth: 2,
     strokeColor: '#000000',
     strokeCornerStyle: 'rounded',
+    applyEffectsToEmojis: true,
   });
 
   const updateState = (newState: Partial<ToolEditorState>) => {
     setState((prev) => ({ ...prev, ...newState }));
   };
 
-  // Estilos do texto dinamicamente
-  const textStyle: React.CSSProperties = {
-    fontWeight: state.fontWeight,
-    fontStyle: state.fontStyle,
-    fontSize: '60px',
-    color: 'white',
-    fontFamily: 'Poppins, sans-serif',
-  };
-  
   const createDropShadow = () => {
     if (state.shadowOpacity > 0 && state.shadowBlur > 0) {
       const shadowColor = `rgba(0, 0, 0, ${state.shadowOpacity / 100})`;
@@ -62,45 +53,71 @@ export function FerramentasEditor() {
     }
     return 'none';
   };
-  
-  const createStrokeShadows = () => {
-      if(state.strokeWidth <= 0) return [];
-      
-      const w = state.strokeWidth;
-      const c = state.strokeColor;
-      const shadows = [];
 
-      if (state.strokeCornerStyle === 'rounded') {
-          // Para cantos arredondados, usamos um blur sutil em múltiplas sombras.
-          // O blur "preenche" as quinas, criando o efeito arredondado.
-          const blur = w * 0.5;
-          for (let i = -w; i <= w; i++) {
-              for (let j = -w; j <= w; j++) {
-                  shadows.push(`${i}px ${j}px ${blur}px ${c}`);
-              }
-          }
-      } else { // 'square'
-          // Para cantos quadrados, geramos sombras sem blur em uma grade ao redor do texto.
-          for (let i = -w; i <= w; i++) {
-              for (let j = -w; j <= w; j++) {
-                  if(i !== 0 || j !== 0) { // Evita cobrir o texto
-                      shadows.push(`${i}px ${j}px 0 ${c}`);
-                  }
-              }
-          }
+  const createStrokeShadows = () => {
+    if (state.strokeWidth <= 0) return [];
+    
+    const w = state.strokeWidth;
+    const c = state.strokeColor;
+    const shadows = [];
+
+    if (state.strokeCornerStyle === 'rounded') {
+      const blur = w * 0.5; // O blur cria o efeito arredondado
+      for (let x = -w; x <= w; x += w/2) {
+        for (let y = -w; y <= w; y += w/2) {
+           if (x !== 0 || y !== 0) {
+             shadows.push(`${x}px ${y}px ${blur}px ${c}`);
+           }
+        }
       }
-      return shadows;
-  }
+    } else { // 'square'
+      for (let x = -w; x <= w; x++) {
+        for (let y = -w; y <= w; y++) {
+          if (x !== 0 || y !== 0) {
+            shadows.push(`${x}px ${y}px 0 ${c}`);
+          }
+        }
+      }
+    }
+    return shadows;
+  };
+  
+  const textStyle: React.CSSProperties = {
+    fontWeight: state.fontWeight,
+    fontStyle: state.fontStyle,
+    fontSize: '60px',
+    color: 'white',
+    fontFamily: 'Poppins, sans-serif',
+  };
 
   const dropShadow = createDropShadow();
   const strokeShadows = createStrokeShadows();
-
-  // Combina a sombra projetada com o contorno (que também é feito de sombras)
   const allShadows = [dropShadow, ...strokeShadows].filter(s => s && s !== 'none');
-
+  
   if (allShadows.length > 0) {
-      textStyle.textShadow = allShadows.join(', ');
+    textStyle.textShadow = allShadows.join(', ');
   }
+
+  // Função para renderizar texto e emojis separadamente
+  const renderTextWithEmojis = () => {
+    const parts = state.text.split(emojiRegex);
+    return parts.map((part, index) => {
+      if (emojiRegex.test(part)) {
+        // É um emoji
+        return (
+          <span key={index} style={state.applyEffectsToEmojis ? textStyle : { ...textStyle, textShadow: 'none' }}>
+            {part}
+          </span>
+        );
+      }
+      // É texto normal
+      return (
+        <span key={index} style={textStyle}>
+          {part}
+        </span>
+      );
+    });
+  };
 
 
   return (
@@ -139,6 +156,18 @@ export function FerramentasEditor() {
               Itálico
             </Button>
           </div>
+        </div>
+        
+        {/* Efeitos em Emojis */}
+        <div className="space-y-2 border-t pt-4">
+            <div className="flex items-center justify-between">
+                <Label htmlFor="apply-to-emojis">Aplicar efeitos em Emojis</Label>
+                 <Switch
+                    id="apply-to-emojis"
+                    checked={state.applyEffectsToEmojis}
+                    onCheckedChange={(checked) => updateState({ applyEffectsToEmojis: checked })}
+                />
+            </div>
         </div>
 
         {/* Controles da Sombra */}
@@ -218,9 +247,14 @@ export function FerramentasEditor() {
       <div className="flex-1 flex items-center justify-center bg-muted/40 p-4">
         <div
           className="text-center break-words"
-          style={textStyle}
+          style={{ 
+            fontSize: textStyle.fontSize, 
+            fontFamily: textStyle.fontFamily, 
+            fontWeight: textStyle.fontWeight, 
+            fontStyle: textStyle.fontStyle 
+          }}
         >
-          {state.text}
+          {renderTextWithEmojis()}
         </div>
       </div>
     </div>
