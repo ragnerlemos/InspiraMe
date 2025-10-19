@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Film, GalleryVertical, Menu, Star, Settings, User, Clapperboard, GalleryHorizontal, Quote, Undo, Save, FileImage, Video, Redo, Feather } from "lucide-react";
+import { Film, GalleryVertical, Menu, Star, Settings, User, Clapperboard, GalleryHorizontal, Quote, Undo, Save, FileImage, Video, Redo, Feather, Wrench } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -26,6 +26,7 @@ const navItems = [
   { href: "/galeria", label: "Galeria", icon: GalleryHorizontal },
   { href: "/projetos", label: "Projetos", icon: Clapperboard },
   { href: "/editor-de-video", label: "Editor", icon: Film },
+  { href: "/editor-de-video/ferramentas", label: "Ferramentas", icon: Wrench },
   { href: "/perfil", label: "Perfil", icon: User },
   { href: "/configuracoes", label: "Configurações", icon: Settings },
 ];
@@ -140,13 +141,18 @@ export function AppHeader() {
   }
 
   // Renderiza o cabeçalho do editor apenas na página /editor-de-video
-  if (isEditorPage) {
+  if (isEditorPage && pathname !== '/editor-de-video/ferramentas') {
     return null;
   }
   
   if (pathname.startsWith('/boas-vindas')) {
     return null;
   }
+  
+  if (pathname.startsWith('/editor-de-video/ferramentas')) {
+    return null;
+  }
+
 
   return (
     <header className="w-full border-b bg-background/95 backdrop-blur-sm">
