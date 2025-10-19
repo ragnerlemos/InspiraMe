@@ -56,22 +56,22 @@ export function FerramentasEditor() {
 
       // 1. Lógica do Contorno
       if (state.strokeWidth > 0) {
+        const w = state.strokeWidth;
         if (state.strokeCornerStyle === 'rounded') {
-           const numSteps = 12;
-           const blur = state.strokeWidth * 0.5; // Desfoque para arredondar
+          const blur = state.strokeWidth * 0.5;
+          const numSteps = 12;
           for (let i = 0; i < numSteps; i++) {
             const angle = (i / numSteps) * 2 * Math.PI;
-            const x = Math.cos(angle) * state.strokeWidth;
-            const y = Math.sin(angle) * state.strokeWidth;
-            allShadows.push(`${x}px ${y}px ${blur}px ${state.strokeColor}`);
+            const x = Math.cos(angle) * w;
+            const y = Math.sin(angle) * w;
+            allShadows.push(`${x.toFixed(2)}px ${y.toFixed(2)}px ${blur.toFixed(2)}px ${state.strokeColor}`);
           }
         } else { // 'square'
-            const w = state.strokeWidth;
-            for (let x = -w; x <= w; x += 1) {
-                for (let y = -w; y <= w; y += 1) {
-                    allShadows.push(`${x}px ${y}px 0 ${state.strokeColor}`);
-                }
+          for (let x = -w; x <= w; x += 1) {
+            for (let y = -w; y <= w; y += 1) {
+              allShadows.push(`${x}px ${y}px 0 ${state.strokeColor}`);
             }
+          }
         }
       }
       
