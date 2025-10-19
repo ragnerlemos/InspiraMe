@@ -10,10 +10,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Bold, Italic } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 
-// Regex para identificar a maioria dos emojis comuns
-const emojiRegex = /(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/g;
-
-
 // Tipos para o estado do nosso novo editor
 interface ToolEditorState {
   text: string;
@@ -23,92 +19,32 @@ interface ToolEditorState {
   shadowOpacity: number;
   strokeWidth: number;
   strokeColor: string;
-  strokeCornerStyle: 'rounded' | 'square';
-  applyEffectsToEmojis: boolean;
 }
 
 export function FerramentasEditor() {
   const [state, setState] = useState<ToolEditorState>({
-    text: 'Texto de Exemplo\nCom emojis ✨',
+    text: 'Texto de Exemplo',
     fontWeight: 'bold',
     fontStyle: 'normal',
     shadowBlur: 4,
-    shadowOpacity: 75,
-    strokeWidth: 0,
+    shadowOpacity: 50,
+    strokeWidth: 2,
     strokeColor: '#000000',
-    strokeCornerStyle: 'rounded',
-    applyEffectsToEmojis: true,
   });
 
   const updateState = (newState: Partial<ToolEditorState>) => {
     setState((prev) => ({ ...prev, ...newState }));
   };
-  
-  // Função para renderizar texto e emojis separadamente
-  const renderTextWithEmojis = () => {
-    const parts = state.text.split(emojiRegex);
-    
-    return parts.map((part, index) => {
-      if (!part) return null; // Ignora partes vazias
-      const isEmoji = part.match(emojiRegex);
-      
-      const allShadows: string[] = [];
 
-      // 1. Lógica do Contorno
-      if (state.strokeWidth > 0) {
-        const w = state.strokeWidth;
-        if (state.strokeCornerStyle === 'rounded') {
-          const blur = state.strokeWidth * 0.5;
-          const numSteps = 12;
-          for (let i = 0; i < numSteps; i++) {
-            const angle = (i / numSteps) * 2 * Math.PI;
-            const x = Math.cos(angle) * w;
-            const y = Math.sin(angle) * w;
-            allShadows.push(`${x.toFixed(2)}px ${y.toFixed(2)}px ${blur.toFixed(2)}px ${state.strokeColor}`);
-          }
-        } else { // 'square'
-          for (let x = -w; x <= w; x += 1) {
-            for (let y = -w; y <= w; y += 1) {
-              allShadows.push(`${x}px ${y}px 0 ${state.strokeColor}`);
-            }
-          }
-        }
-      }
-      
-      // 2. Lógica da Sombra Projetada
-      if (state.shadowOpacity > 0 && state.shadowBlur > 0) {
-        const opacityValue = Math.min(state.shadowOpacity / 100, 1);
-        const shadowColor = `rgba(0, 0, 0, ${opacityValue})`;
-        const spreadValue = state.shadowOpacity > 100 ? ((state.shadowOpacity - 100) / 100) * state.shadowBlur * 0.5 : 0;
-        const shadowOffsetX = 2;
-        const shadowOffsetY = 4;
-        allShadows.push(`${shadowOffsetX}px ${shadowOffsetY}px ${state.shadowBlur}px ${spreadValue}px ${shadowColor}`);
-      }
-
-      const partStyle: React.CSSProperties = {
-        fontWeight: state.fontWeight,
-        fontStyle: state.fontStyle,
-        fontSize: '60px',
-        color: 'white',
-        fontFamily: 'Poppins, sans-serif',
-        whiteSpace: 'pre-wrap', // Mantém as quebras de linha
-      };
-      
-      // Aplica os estilos de sombra e contorno se necessário
-      if (allShadows.length > 0) {
-        if (!isEmoji || state.applyEffectsToEmojis) {
-          partStyle.textShadow = allShadows.join(', ');
-        }
-      }
-
-      return (
-        <span key={index} style={partStyle}>
-          {part}
-        </span>
-      );
-    });
+  const textStyle: React.CSSProperties = {
+    fontWeight: state.fontWeight,
+    fontStyle: state.fontStyle,
+    fontSize: '60px',
+    color: 'white',
+    fontFamily: 'Poppins, sans-serif',
+    WebkitTextStroke: `${state.strokeWidth}px ${state.strokeColor}`,
+    textShadow: `2px 2px ${state.shadowBlur}px rgba(0, 0, 0, ${state.shadowOpacity / 100})`,
   };
-
 
   return (
     <div className="flex flex-col md:flex-row h-full w-full">
@@ -147,22 +83,10 @@ export function FerramentasEditor() {
             </Button>
           </div>
         </div>
-        
-        {/* Efeitos em Emojis */}
-        <div className="space-y-2 border-t pt-4">
-            <div className="flex items-center justify-between">
-                <Label htmlFor="apply-to-emojis">Aplicar efeitos em Emojis</Label>
-                 <Switch
-                    id="apply-to-emojis"
-                    checked={state.applyEffectsToEmojis}
-                    onCheckedChange={(checked) => updateState({ applyEffectsToEmojis: checked })}
-                />
-            </div>
-        </div>
 
         {/* Controles da Sombra */}
         <div className="space-y-4 border-t pt-4">
-          <h3 className="font-semibold">Sombra Projetada</h3>
+          <h3 className="font-semibold">Sombra</h3>
           <div className="space-y-2">
             <Label htmlFor="shadow-blur">Desfoque da Sombra: {state.shadowBlur}px</Label>
             <Slider
@@ -175,11 +99,11 @@ export function FerramentasEditor() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="shadow-opacity">Intensidade da Sombra: {state.shadowOpacity}%</Label>
+            <Label htmlFor="shadow-opacity">Opacidade da Sombra: {state.shadowOpacity}%</Label>
             <Slider
               id="shadow-opacity"
               min={0}
-              max={200}
+              max={100}
               step={5}
               value={[state.shadowOpacity]}
               onValueChange={(v) => updateState({ shadowOpacity: v[0] })}
@@ -190,25 +114,6 @@ export function FerramentasEditor() {
         {/* Controles do Contorno */}
         <div className="space-y-4 border-t pt-4">
           <h3 className="font-semibold">Contorno</h3>
-           <div className="space-y-2">
-             <Label>Tipo de Canto do Contorno</Label>
-             <div className="flex gap-2">
-                <Button
-                    variant={state.strokeCornerStyle === 'rounded' ? 'secondary' : 'outline'}
-                    onClick={() => updateState({ strokeCornerStyle: 'rounded' })}
-                    className="flex-1"
-                >
-                    Arredondado
-                </Button>
-                 <Button
-                    variant={state.strokeCornerStyle === 'square' ? 'secondary' : 'outline'}
-                    onClick={() => updateState({ strokeCornerStyle: 'square' })}
-                    className="flex-1"
-                >
-                    Quadrado
-                </Button>
-             </div>
-          </div>
           <div className="space-y-2">
             <Label htmlFor="stroke-width">Espessura do Contorno: {state.strokeWidth}px</Label>
             <Slider
@@ -236,9 +141,10 @@ export function FerramentasEditor() {
       {/* Área de Pré-visualização */}
       <div className="flex-1 flex items-center justify-center bg-muted/40 p-4">
         <div
+          style={textStyle}
           className="text-center break-words"
         >
-          {renderTextWithEmojis()}
+          {state.text}
         </div>
       </div>
     </div>
