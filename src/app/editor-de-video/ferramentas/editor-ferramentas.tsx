@@ -67,6 +67,9 @@ export function FerramentasEditor() {
   // Lógica para o Contorno
   let textShadows: string[] = [];
 
+  // Garante que a propriedade -webkit-text-stroke seja resetada se não for usada.
+  textStyle.WebkitTextStroke = '0'; 
+
   if (state.strokeWidth > 0) {
     if (state.strokeCornerStyle === 'rounded') {
       // Contorno arredondado usa -webkit-text-stroke e adiciona a sombra projetada
@@ -77,10 +80,15 @@ export function FerramentasEditor() {
       // Contorno quadrado usa text-shadow e também adiciona a sombra projetada
       const w = state.strokeWidth;
       const c = state.strokeColor;
-      const squareShadows = [
-        `${-w}px ${-w}px 0 ${c}`, `${w}px ${-w}px 0 ${c}`,
-        `${-w}px ${w}px 0 ${c}`, `${w}px ${w}px 0 ${c}`
-      ];
+      const squareShadows: string[] = [];
+       // Cria uma borda sólida com múltiplas sombras
+      for (let i = -Math.ceil(w); i <= Math.ceil(w); i++) {
+        for (let j = -Math.ceil(w); j <= Math.ceil(w); j++) {
+            if (Math.max(Math.abs(i), Math.abs(j)) <= w) {
+                squareShadows.push(`${i}px ${j}px 0 ${c}`);
+            }
+        }
+      }
       textShadows = [...squareShadows, createDropShadow()];
     }
   } else {
