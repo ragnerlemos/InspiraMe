@@ -46,17 +46,16 @@ export function FerramentasEditor() {
 
   const createDropShadow = () => {
     if (state.shadowOpacity <= 0) return 'none';
-
-    // A opacidade vai de 0 a 1 (correspondendo a 0-100% no slider).
+  
     const opacityValue = Math.min(state.shadowOpacity / 100, 1);
     const shadowColor = `rgba(0, 0, 0, ${opacityValue})`;
     
-    // O "spread" começa a agir quando a opacidade passa de 100%.
-    // Isso torna a sombra mais densa e forte.
+    // A "propagação" da sombra (spread) começa a agir quando a intensidade passa de 100%.
     const spreadValue = state.shadowOpacity > 100 ? ((state.shadowOpacity - 100) / 100) * state.shadowBlur * 0.5 : 0;
 
     const shadowOffsetX = 2;
     const shadowOffsetY = 4;
+    
     return `${shadowOffsetX}px ${shadowOffsetY}px ${state.shadowBlur}px ${spreadValue}px ${shadowColor}`;
   };
   
@@ -65,11 +64,11 @@ export function FerramentasEditor() {
     
     const w = state.strokeWidth;
     const c = state.strokeColor;
-    const shadows = [];
+    const shadows: string[] = [];
 
     if (state.strokeCornerStyle === 'rounded') {
-       const numSteps = 8;
-       const blur = w * 0.4;
+       const numSteps = 12;
+       const blur = w * 0.5; // Um pequeno desfoque para criar o arredondamento
       for (let i = 0; i < numSteps; i++) {
         const angle = (i / numSteps) * 2 * Math.PI;
         const x = Math.cos(angle) * w;
@@ -79,7 +78,7 @@ export function FerramentasEditor() {
     } else { // 'square'
       for (let x = -w; x <= w; x++) {
         for (let y = -w; y <= w; y++) {
-          if (Math.abs(x) === w || Math.abs(y) === w) {
+          if (Math.abs(x) >= w || Math.abs(y) >= w) {
             shadows.push(`${x}px ${y}px 0 ${c}`);
           }
         }
@@ -98,7 +97,12 @@ export function FerramentasEditor() {
       
       const dropShadow = createDropShadow();
       const strokeShadows = createStrokeShadows();
-      const allShadows = [dropShadow, ...strokeShadows].filter(s => s && s !== 'none');
+      
+      // Filtra para remover valores 'none' ou arrays vazios antes de juntar
+      const allShadows = [
+          (dropShadow !== 'none' ? dropShadow : null),
+          ...strokeShadows
+      ].filter(Boolean); // 'Boolean' remove valores nulos/undefined da lista
       
       const partStyle: React.CSSProperties = {
         fontWeight: state.fontWeight,
@@ -106,10 +110,12 @@ export function FerramentasEditor() {
         fontSize: '60px',
         color: 'white',
         fontFamily: 'Poppins, sans-serif',
+        whiteSpace: 'pre-wrap', // Mantém as quebras de linha
       };
       
       if (allShadows.length > 0) {
-        if (!isEmoji || (isEmoji && state.applyEffectsToEmojis)) {
+        // Aplica o efeito se não for um emoji, ou se a opção de aplicar em emojis estiver ativa
+        if (!isEmoji || state.applyEffectsToEmojis) {
           partStyle.textShadow = allShadows.join(', ');
         }
       }
