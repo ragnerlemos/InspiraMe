@@ -47,9 +47,9 @@ export function FerramentasEditor() {
   const createDropShadow = () => {
     if (state.shadowOpacity > 0 && state.shadowBlur > 0) {
       const shadowColor = `rgba(0, 0, 0, ${state.shadowOpacity / 100})`;
-      // Aumenta o deslocamento com base no desfoque para um efeito mais forte
-      const shadowOffsetX = state.shadowBlur * 0.2;
-      const shadowOffsetY = state.shadowBlur * 0.4;
+      // Offset fixo para um efeito de profundidade consistente
+      const shadowOffsetX = 2;
+      const shadowOffsetY = 2;
       return `${shadowOffsetX}px ${shadowOffsetY}px ${state.shadowBlur}px ${shadowColor}`;
     }
     return 'none';
@@ -74,8 +74,8 @@ export function FerramentasEditor() {
     } else { // 'square'
       for (let x = -w; x <= w; x++) {
         for (let y = -w; y <= w; y++) {
-          if (x !== 0 || y !== 0) {
-            shadows.push(`${x}px ${y}px 0 ${c}`);
+          if (Math.abs(x) <= w && Math.abs(y) <= w && (Math.abs(x) + Math.abs(y) > 0)) {
+             shadows.push(`${x}px ${y}px 0 ${c}`);
           }
         }
       }
