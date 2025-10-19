@@ -53,51 +53,43 @@ export function FerramentasEditor() {
     fontFamily: 'Poppins, sans-serif',
   };
   
-  // Lógica para a Sombra Projetada (Drop Shadow)
   const createDropShadow = () => {
     if (state.shadowOpacity > 0 && state.shadowBlur > 0) {
       const shadowColor = `rgba(0, 0, 0, ${state.shadowOpacity / 100})`;
-      const shadowOffsetX = state.strokeWidth > 0 ? state.strokeWidth * 0.5 : 4;
-      const shadowOffsetY = state.strokeWidth > 0 ? state.strokeWidth * 0.5 : 4;
+      // O deslocamento da sombra deve ser sutil e não depender do contorno
+      const shadowOffsetX = 2;
+      const shadowOffsetY = 2;
       return `${shadowOffsetX}px ${shadowOffsetY}px ${state.shadowBlur}px ${shadowColor}`;
     }
     return 'none';
   };
   
-  // Lógica para o Contorno
-  let textShadows: string[] = [];
-
-  // Garante que a propriedade -webkit-text-stroke seja resetada se não for usada.
-  textStyle.WebkitTextStroke = '0'; 
-
-  if (state.strokeWidth > 0) {
-    if (state.strokeCornerStyle === 'rounded') {
-      // Contorno arredondado usa -webkit-text-stroke e adiciona a sombra projetada
+  // Lógica de Estilo Condicional
+  if (state.strokeWidth > 0 && state.strokeCornerStyle === 'rounded') {
       textStyle.WebkitTextStroke = `${state.strokeWidth}px ${state.strokeColor}`;
       textStyle.paintOrder = 'stroke fill';
-      textShadows.push(createDropShadow());
-    } else {
-      // Contorno quadrado usa text-shadow e também adiciona a sombra projetada
+      textStyle.textShadow = createDropShadow();
+  } else if (state.strokeWidth > 0 && state.strokeCornerStyle === 'square') {
       const w = state.strokeWidth;
       const c = state.strokeColor;
       const squareShadows: string[] = [];
-       // Cria uma borda sólida com múltiplas sombras
       for (let i = -Math.ceil(w); i <= Math.ceil(w); i++) {
         for (let j = -Math.ceil(w); j <= Math.ceil(w); j++) {
-            if (Math.max(Math.abs(i), Math.abs(j)) <= w) {
+            // Desenha um quadrado de sombras ao redor
+            if (Math.abs(i) <= w && Math.abs(j) <= w) {
                 squareShadows.push(`${i}px ${j}px 0 ${c}`);
             }
         }
       }
-      textShadows = [...squareShadows, createDropShadow()];
-    }
+      const dropShadow = createDropShadow();
+      textStyle.textShadow = [...squareShadows, dropShadow].filter(s => s !== 'none').join(', ');
+      // Garante que o webkit-text-stroke seja resetado
+      textStyle.WebkitTextStroke = '0';
   } else {
-    // Se não houver contorno, apenas a sombra projetada é aplicada
-    textShadows.push(createDropShadow());
+      // Se não houver contorno, apenas a sombra projetada é aplicada
+      textStyle.textShadow = createDropShadow();
+      textStyle.WebkitTextStroke = '0';
   }
-
-  textStyle.textShadow = textShadows.filter(s => s !== 'none').join(', ');
-
 
   return (
     <div className="flex flex-col md:flex-row h-full w-full">
