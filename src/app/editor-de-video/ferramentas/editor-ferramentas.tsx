@@ -54,28 +54,17 @@ export function FerramentasEditor() {
   };
 
   const textEffectsStyle = useMemo(() => {
-    const shadows: string[] = [];
+    const allShadows: string[] = [];
     const styles: React.CSSProperties = {};
 
-    // 1. Lógica da Sombra Projetada (Drop Shadow)
-    if (state.shadowOpacity > 0 && state.shadowBlur > 0) {
-      const effectiveOpacity = state.shadowOpacity / 100;
-      const offsetX = state.shadowBlur * 0.15;
-      const offsetY = state.shadowBlur * 0.3;
-      const blurRadius = state.shadowBlur;
-      const spread = state.shadowOpacity > 100 ? (state.shadowOpacity - 100) / 10 : 0;
-      const color = `rgba(0, 0, 0, ${effectiveOpacity > 1 ? 1 : effectiveOpacity})`;
-      shadows.push(`${offsetX}px ${offsetY}px ${blurRadius}px ${spread}px ${color}`);
-    }
-
-    // 2. Lógica do Contorno (Stroke)
+    // 1. Lógica do Contorno (Stroke)
     if (state.strokeWidth > 0) {
       if (state.strokeCornerStyle === 'square') {
-        // Usa -webkit-text-stroke para um contorno nítido e profissional
+        // Usa -webkit-text-stroke para um contorno nítido.
         styles.WebkitTextStroke = `${state.strokeWidth}px ${state.strokeColor}`;
         styles.textStroke = `${state.strokeWidth}px ${state.strokeColor}`;
       } else { // 'rounded'
-        // Usa a técnica de múltiplas sombras com desfoque para simular cantos arredondados
+        // Usa a técnica de múltiplas sombras para simular cantos arredondados.
         const width = state.strokeWidth;
         const color = state.strokeColor;
         const numSteps = 8;
@@ -83,13 +72,24 @@ export function FerramentasEditor() {
           const angle = (i / numSteps) * 2 * Math.PI;
           const x = Math.cos(angle) * width;
           const y = Math.sin(angle) * width;
-          shadows.push(`${x}px ${y}px 0 ${color}`);
+          allShadows.push(`${x}px ${y}px 0 ${color}`);
         }
       }
     }
 
-    if (shadows.length > 0) {
-      styles.textShadow = shadows.join(', ');
+    // 2. Lógica da Sombra Projetada (Drop Shadow)
+    if (state.shadowOpacity > 0 && state.shadowBlur > 0) {
+      const effectiveOpacity = state.shadowOpacity / 100;
+      const offsetX = state.shadowBlur * 0.15;
+      const offsetY = state.shadowBlur * 0.3;
+      const blurRadius = state.shadowBlur;
+      const spread = state.shadowOpacity > 100 ? (state.shadowOpacity - 100) / 10 : 0;
+      const color = `rgba(0, 0, 0, ${effectiveOpacity > 1 ? 1 : effectiveOpacity})`;
+      allShadows.push(`${offsetX}px ${offsetY}px ${blurRadius}px ${spread}px ${color}`);
+    }
+    
+    if (allShadows.length > 0) {
+      styles.textShadow = allShadows.join(', ');
     }
 
     return styles;
@@ -100,36 +100,30 @@ export function FerramentasEditor() {
     state.strokeColor,
     state.strokeCornerStyle,
   ]);
+  
 
   // --- Renderização ---
-
   const renderTextWithEmojis = () => {
     const parts = state.text.split(EMOJI_REGEX);
-    
-    // O estilo base e os efeitos são combinados aqui
     const combinedStyle = { ...textBaseStyle, ...textEffectsStyle };
 
     return (
-        <div style={combinedStyle}>
-            {parts.map((part, index) => {
-                // Se o segmento é um emoji (índice ímpar)
-                if (index % 2 !== 0) {
-                    // Se a aplicação de efeitos em emojis estiver DESATIVADA
-                    if (!state.applyEffectsToEmojis) {
-                        // Renderiza o emoji sem nenhum efeito
-                        return (
-                            <span key={index} style={{ textShadow: 'none', WebkitTextStroke: '0' }}>
-                                {part}
-                            </span>
-                        );
-                    }
-                }
-                // Renderiza o texto ou o emoji com os efeitos padrão
-                return <span key={index}>{part}</span>;
-            })}
-        </div>
+      <div style={combinedStyle}>
+        {parts.map((part, index) => {
+          if (index % 2 !== 0) { // É um emoji
+            if (!state.applyEffectsToEmojis) {
+              return (
+                <span key={index} style={{ textShadow: 'none', WebkitTextStroke: 'transparent' }}>
+                  {part}
+                </span>
+              );
+            }
+          }
+          return <span key={index}>{part}</span>;
+        })}
+      </div>
     );
-};
+  };
 
 
   return (
