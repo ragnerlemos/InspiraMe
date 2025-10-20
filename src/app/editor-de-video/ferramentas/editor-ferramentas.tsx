@@ -33,7 +33,7 @@ export function FerramentasEditor() {
     fontStyle: 'normal',
     shadowBlur: 5,
     shadowOpacity: 75,
-    strokeWidth: 2,
+    strokeWidth: 0,
     strokeColor: '#000000',
     strokeCornerStyle: 'rounded',
     applyEffectsToEmojis: true,
@@ -43,31 +43,6 @@ export function FerramentasEditor() {
     setState((prev) => ({ ...prev, ...newState }));
   };
 
-  const createDropShadow = (blur: number, opacity: number) => {
-    if (opacity === 0) return 'none';
-    const effectiveOpacity = opacity / 100;
-    const offsetX = blur * 0.15;
-    const offsetY = blur * 0.3;
-    const blurRadius = blur;
-    return `${offsetX}px ${offsetY}px ${blurRadius}px rgba(0, 0, 0, ${effectiveOpacity})`;
-  };
-
-  const createStrokeShadows = (width: number, color: string, cornerStyle: 'rounded' | 'square') => {
-    if (width <= 0) return 'none';
-
-    const shadows = [];
-    const blur = cornerStyle === 'rounded' ? width * 0.5 : 0;
-    const numSteps = 8; // Number of shadows to create the outline
-
-    for (let i = 0; i < numSteps; i++) {
-        const angle = (i / numSteps) * 2 * Math.PI;
-        const x = Math.cos(angle) * width;
-        const y = Math.sin(angle) * width;
-        shadows.push(`${x}px ${y}px ${blur}px ${color}`);
-    }
-    return shadows.join(', ');
-  };
-  
   const textStyle: React.CSSProperties = {
     fontWeight: state.fontWeight,
     fontStyle: state.fontStyle,
@@ -77,28 +52,56 @@ export function FerramentasEditor() {
   };
 
   const combinedShadow = useMemo(() => {
-    const stroke = createStrokeShadows(state.strokeWidth, state.strokeColor, state.strokeCornerStyle);
-    const drop = createDropShadow(state.shadowBlur, state.shadowOpacity);
-    
-    if (stroke !== 'none' && drop !== 'none') {
-        return `${stroke}, ${drop}`;
+    const shadows: string[] = [];
+
+    // Lógica do Contorno
+    if (state.strokeWidth > 0) {
+      if (state.strokeCornerStyle === 'rounded') {
+        // Canto arredondado usa várias sombras com blur
+        const numSteps = 8;
+        const blur = state.strokeWidth * 0.5;
+        for (let i = 0; i < numSteps; i++) {
+          const angle = (i / numSteps) * 2 * Math.PI;
+          const x = Math.cos(angle) * state.strokeWidth;
+          const y = Math.sin(angle) * state.strokeWidth;
+          shadows.push(`${x}px ${y}px ${blur}px ${state.strokeColor}`);
+        }
+      } else {
+        // Canto quadrado usa 4 sombras diagonais sem blur para uma borda nítida
+        shadows.push(`${state.strokeWidth}px ${state.strokeWidth}px 0 ${state.strokeColor}`);
+        shadows.push(`-${state.strokeWidth}px -${state.strokeWidth}px 0 ${state.strokeColor}`);
+        shadows.push(`${state.strokeWidth}px -${state.strokeWidth}px 0 ${state.strokeColor}`);
+        shadows.push(`-${state.strokeWidth}px ${state.strokeWidth}px 0 ${state.strokeColor}`);
+      }
     }
-    return stroke !== 'none' ? stroke : drop;
+
+    // Lógica da Sombra Projetada
+    if (state.shadowOpacity > 0 && state.shadowBlur > 0) {
+      const effectiveOpacity = state.shadowOpacity / 100;
+      const offsetX = state.shadowBlur * 0.15;
+      const offsetY = state.shadowBlur * 0.3;
+      const blurRadius = state.shadowBlur;
+      const spread = state.shadowOpacity > 100 ? (state.shadowOpacity - 100) / 10 : 0;
+      const color = `rgba(0, 0, 0, ${effectiveOpacity > 1 ? 1 : effectiveOpacity})`;
+      shadows.push(`${offsetX}px ${offsetY}px ${blurRadius}px ${spread}px ${color}`);
+    }
+    
+    return shadows.join(', ');
   }, [state.strokeWidth, state.strokeColor, state.strokeCornerStyle, state.shadowBlur, state.shadowOpacity]);
 
   const renderTextWithEmojis = () => {
     const parts = state.text.split(EMOJI_REGEX);
     return parts.map((part, index) => {
-      // Se for um emoji (sempre ímpar no array resultante do split)
-      if (index % 2 === 1) { 
-        return (
-          <span key={index} style={{ textShadow: state.applyEffectsToEmojis ? 'inherit' : 'none' }}>
-            {part}
-          </span>
-        );
+      // Se for texto normal (sempre par ou zero)
+      if (index % 2 === 0) { 
+        return <span key={index}>{part}</span>;
       }
-      // Se for texto normal
-      return <span key={index}>{part}</span>;
+      // Se for um emoji (sempre ímpar)
+      return (
+        <span key={index} style={{ textShadow: state.applyEffectsToEmojis ? 'inherit' : 'none' }}>
+          {part}
+        </span>
+      );
     });
   };
 
@@ -152,11 +155,11 @@ export function FerramentasEditor() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="shadow-opacity">Opacidade da Sombra: {state.shadowOpacity}%</Label>
+            <Label htmlFor="shadow-opacity">Intensidade da Sombra: {state.shadowOpacity}%</Label>
             <Slider
               id="shadow-opacity"
               min={0}
-              max={100}
+              max={200}
               step={5}
               value={[state.shadowOpacity]}
               onValueChange={(v) => updateState({ shadowOpacity: v[0] })}
@@ -174,7 +177,7 @@ export function FerramentasEditor() {
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="stroke-width">Espessura do Contorno: {state.strokeWidth}px</Label>
+            <Label htmlFor="stroke-width">Espessura do Contorno: {state.strokeWidth.toFixed(1)}px</Label>
             <Slider
               id="stroke-width"
               min={0}
