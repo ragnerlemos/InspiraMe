@@ -57,14 +57,14 @@ export function AssinaturaPerfil({
       )}
 
       {(showUsername || showSocial) && (
-        <div className="flex flex-col justify-center text-white leading-tight relative top-[1px]">
+        <div className="flex flex-col justify-center text-white space-y-0">
           {showUsername && (
-            <p className="font-bold text-sm">
+            <p className="font-bold text-sm leading-none">
               {profile.username}
             </p>
           )}
           {showSocial && (
-            <p className="text-gray-300 text-xs">
+            <p className="text-gray-300 text-xs leading-tight pt-0.5">
               {profile.social}
             </p>
           )}
