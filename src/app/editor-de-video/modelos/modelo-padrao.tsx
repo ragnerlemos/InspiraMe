@@ -1,7 +1,7 @@
 
 import type { EditorState, EstiloTexto } from '../tipos';
 import { AssinaturaPerfil } from './assinatura-perfil';
-import { EMOJI_REGEX } from '../utils/text-style-utils'; // Importando a REGEX
+import { EMOJI_REGEX } from '../utils/text-style-utils';
 
 interface ModeloPadraoProps {
     editorState: EditorState;
@@ -16,9 +16,8 @@ export function ModeloPadrao({
     textEffectsStyle,
     profile
 }: ModeloPadraoProps) {
-
-    const { 
-        text, 
+    const {
+        text,
         textVerticalPosition,
         applyEffectsToEmojis,
         showProfileSignature,
@@ -38,8 +37,7 @@ export function ModeloPadrao({
         logoOpacity,
     } = editorState;
 
-    // Nova função para renderizar o texto com a lógica de emoji
-    const renderTextWithEmojis = () => {
+    const renderTextWithEmojis = (isStroke: boolean) => {
         if (!text) return null;
         const parts = text.split(EMOJI_REGEX);
 
@@ -47,46 +45,77 @@ export function ModeloPadrao({
             <>
                 {parts.map((part, index) => {
                     const isEmoji = EMOJI_REGEX.test(part);
-                    // Se for um emoji e os efeitos estiverem desativados, renderiza sem eles
                     if (isEmoji && !applyEffectsToEmojis) {
                         return <span key={index} style={{ textShadow: 'none', filter: 'none' }}>{part}</span>;
                     }
-                    // Caso contrário, renderiza a parte do texto (ou emoji com efeitos)
+                    if (isStroke && editorState.textStrokeCornerStyle === 'square') {
+                       return <span key={index} style={{ color: editorState.textStrokeColor }}>{part}</span>;
+                    }
                     return <span key={index}>{part}</span>;
                 })}
             </>
         );
     };
 
+    const strokeStyle = editorState.textStrokeCornerStyle === 'square' ? {
+      ...baseTextStyle,
+      WebkitTextStroke: `${editorState.textStrokeWidth * 0.1}cqw ${editorState.textStrokeColor}`,
+      color: 'transparent',
+      textShadow: 'none',
+      filter: 'none',
+    } : {
+      ...baseTextStyle,
+      color: 'transparent',
+      textShadow: textEffectsStyle.textShadow,
+      filter: 'none',
+    }
+
+    const mainTextStyle = {
+      ...baseTextStyle,
+      textShadow: 'none',
+      filter: textEffectsStyle.filter,
+    }
+
     return (
         <div className="relative w-full h-full">
-            {/* Main Text Container */}
             <div
                 className="absolute w-full px-8"
                 style={{
                     top: `${textVerticalPosition}%`,
                     left: '50%',
                     transform: 'translate(-50%, -50%)',
+                    zIndex: 1
                 }}
             >
+                {/* Camada para o Contorno */}
+                {editorState.textStrokeWidth > 0 && (
+                  <div
+                      style={strokeStyle}
+                      className="break-words absolute inset-0"
+                      aria-hidden="true"
+                  >
+                      {renderTextWithEmojis(true)}
+                  </div>
+                )}
+
+                {/* Camada para o Texto Principal e Sombra */}
                 <div
-                    style={{ ...baseTextStyle, ...textEffectsStyle }} // Combina os estilos base com os de efeito
-                    className="break-words"
+                    style={mainTextStyle}
+                    className="break-words relative"
                 >
-                    {renderTextWithEmojis()} 
+                    {renderTextWithEmojis(false)}
                 </div>
             </div>
 
-            {/* Logo e Assinatura (código existente permanece o mesmo) */}
             {showLogo && profile.logo && (
-                <div className="absolute" style={{ top: `${logoPositionY}%`, left: `${logoPositionX}%`, transform: 'translate(-50%, -50%)' }}>
+                <div className="absolute" style={{ zIndex: 2, top: `${logoPositionY}%`, left: `${logoPositionX}%`, transform: 'translate(-50%, -50%)' }}>
                     <div style={{ transform: `scale(${logoScale / 100})`, opacity: logoOpacity / 100 }}>
                         <img src={profile.logo} alt="Logomarca" className="max-w-[150px] max-h-[150px]" />
                     </div>
                 </div>
             )}
             {showProfileSignature && (
-                <div className="absolute" style={{ top: `${signaturePositionY}%`, left: `${signaturePositionX}%`, transform: `translate(-50%, -50%) scale(${signatureScale / 100})`, transformOrigin: 'center center' }}>
+                <div className="absolute" style={{ zIndex: 2, top: `${signaturePositionY}%`, left: `${signaturePositionX}%`, transform: `translate(-50%, -50%) scale(${signatureScale / 100})`, transformOrigin: 'center center' }}>
                     <AssinaturaPerfil profile={profile} showPhoto={showSignaturePhoto} showUsername={showSignatureUsername} showSocial={showSignatureSocial} showBackground={showSignatureBackground} bgColor={signatureBgColor} bgOpacity={signatureBgOpacity} />
                 </div>
             )}

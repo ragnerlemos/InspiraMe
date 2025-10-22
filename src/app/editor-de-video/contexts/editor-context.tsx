@@ -85,7 +85,6 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   const canUndo = currentStateIndex > 0;
   const canRedo = currentStateIndex < history.length - 1;
 
-  // Lógica de estilo REFEITA para usar as novas funções
   const { baseTextStyle, textEffectsStyle } = useMemo(() => {
       if (!currentState) return { baseTextStyle: {}, textEffectsStyle: {} };
 
@@ -101,21 +100,21 @@ export function EditorProvider({ children }: { children: ReactNode }) {
           wordSpacing: `${(currentState.wordSpacing || 0) / 100}em`,
       };
 
-      // Stroke agora usa a nova função, com cantos configuráveis
       const strokeStyle = createStrokeStyle(
           currentState.textStrokeWidth,
           currentState.textStrokeColor,
           currentState.textStrokeCornerStyle
       );
       
-      // Shadow agora usa o algoritmo de drop-shadow com intensidade
       const shadowStyle = createDropShadowStyle(
           currentState.textShadowBlur,
           currentState.textShadowOpacity
       );
-
-      // Combina os estilos de efeito (contorno e sombra) em um único objeto.
-      const effectsStyle = { ...strokeStyle, ...shadowStyle };
+      
+      const effectsStyle = {
+        ...strokeStyle,
+        ...shadowStyle,
+      };
 
       return { baseTextStyle: baseStyle, textEffectsStyle: effectsStyle };
   }, [currentState]);
@@ -138,7 +137,6 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   const redo = useCallback(() => { if (canRedo) setCurrentStateIndex(currentStateIndex + 1); }, [canRedo, currentStateIndex]);
 
   const onSaveAsTemplate = useCallback(async () => {
-    // A função de exportação agora precisa dos dois objetos de estilo
     if (!currentState || !profile) return;
     const templateName = prompt("Digite um nome para o novo modelo:");
     if (!templateName) return;
@@ -170,8 +168,8 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     canUndo,
     canRedo,
     currentState,
-    baseTextStyle, // Exportando o estilo base
-    textEffectsStyle, // Exportando os efeitos
+    baseTextStyle,
+    textEffectsStyle,
     undo,
     redo,
     updateState,
