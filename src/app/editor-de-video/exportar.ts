@@ -5,7 +5,6 @@ import * as htmlToImage from 'html-to-image';
 import type { EditorState, EstiloTexto } from './tipos';
 import type { ProfileData } from '@/hooks/use-profile';
 
-// Tipos importados diretamente, pois este arquivo não é um componente React
 interface ToastProps {
     variant?: "default" | "destructive" | null | undefined,
     title: string;
@@ -16,7 +15,7 @@ type ToastFn = (props: ToastProps) => void;
 /**
  * Captura a imagem do preview e inicia o download.
  */
-export const captureAndDownload = async (format: 'jpeg' | 'png', toast: ToastFn, state: EditorState, profile: ProfileData, baseTextStyle: EstiloTexto, textEffectsStyle: EstiloTexto) => {
+export const captureAndDownload = async (format: 'jpeg' | 'png', toast: ToastFn, state: EditorState, profile: ProfileData, baseTextStyle: EstiloTexto, textEffectsStyle: EstiloTexto, dropShadowStyle: EstiloTexto) => {
     const previewElement = document.getElementById('editor-preview-content');
 
     if (!previewElement) {
@@ -30,7 +29,6 @@ export const captureAndDownload = async (format: 'jpeg' | 'png', toast: ToastFn,
 
     toast({ title: 'Exportando...', description: `Gerando imagem ${format.toUpperCase()}, por favor aguarde.` });
     
-    // Espera fontes e imagens carregarem
     await document.fonts.ready;
     await new Promise(r => setTimeout(r, 150));
 
@@ -60,7 +58,7 @@ export const captureAndDownload = async (format: 'jpeg' | 'png', toast: ToastFn,
 /**
  * Captura o estado atual do canvas como uma thumbnail.
  */
-export const captureThumbnail = async (toast: ToastFn, state: EditorState, profile: ProfileData, baseTextStyle: EstiloTexto, textEffectsStyle: EstiloTexto): Promise<string | null> => {
+export const captureThumbnail = async (toast: ToastFn, state: EditorState, profile: ProfileData, baseTextStyle: EstiloTexto, textEffectsStyle: EstiloTexto, dropShadowStyle: EstiloTexto): Promise<string | null> => {
   const previewElement = document.getElementById('editor-preview-content');
 
   if (!previewElement) {

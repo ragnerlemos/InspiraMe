@@ -7,6 +7,7 @@ interface ModeloPadraoProps {
     editorState: EditorState;
     baseTextStyle: EstiloTexto;
     textEffectsStyle: EstiloTexto;
+    dropShadowStyle: EstiloTexto; // Adicionado
     profile: any;
 }
 
@@ -14,6 +15,7 @@ export function ModeloPadrao({
     editorState,
     baseTextStyle,
     textEffectsStyle,
+    dropShadowStyle, // Adicionado
     profile
 }: ModeloPadraoProps) {
     const {
@@ -37,7 +39,8 @@ export function ModeloPadrao({
         logoOpacity,
     } = editorState;
 
-    const renderTextWithEmojis = (isStroke: boolean) => {
+    // Função para renderizar texto com ou sem efeitos de emoji
+    const renderTextWithEmojis = () => {
         if (!text) return null;
         const parts = text.split(EMOJI_REGEX);
 
@@ -46,10 +49,8 @@ export function ModeloPadrao({
                 {parts.map((part, index) => {
                     const isEmoji = EMOJI_REGEX.test(part);
                     if (isEmoji && !applyEffectsToEmojis) {
+                        // Renderiza emoji sem nenhum efeito
                         return <span key={index} style={{ textShadow: 'none', filter: 'none' }}>{part}</span>;
-                    }
-                    if (isStroke && editorState.textStrokeCornerStyle === 'square') {
-                       return <span key={index} style={{ color: editorState.textStrokeColor }}>{part}</span>;
                     }
                     return <span key={index}>{part}</span>;
                 })}
@@ -57,25 +58,12 @@ export function ModeloPadrao({
         );
     };
 
-    const strokeStyle = editorState.textStrokeCornerStyle === 'square' ? {
+    // Combina estilo base com o contorno (text-shadow)
+    const combinedTextStyle: EstiloTexto = {
       ...baseTextStyle,
-      WebkitTextStroke: `${editorState.textStrokeWidth * 0.1}cqw ${editorState.textStrokeColor}`,
-      color: 'transparent',
-      textShadow: 'none',
-      filter: 'none',
-    } : {
-      ...baseTextStyle,
-      color: 'transparent',
-      textShadow: textEffectsStyle.textShadow,
-      filter: 'none',
-    }
-
-    const mainTextStyle = {
-      ...baseTextStyle,
-      textShadow: 'none',
-      filter: textEffectsStyle.filter,
-    }
-
+      ...textEffectsStyle,
+    };
+    
     return (
         <div className="relative w-full h-full">
             <div
@@ -84,26 +72,15 @@ export function ModeloPadrao({
                     top: `${textVerticalPosition}%`,
                     left: '50%',
                     transform: 'translate(-50%, -50%)',
-                    zIndex: 1
+                    zIndex: 1,
+                    ...dropShadowStyle, // Aplica a sombra (`filter`) aqui
                 }}
             >
-                {/* Camada para o Contorno */}
-                {editorState.textStrokeWidth > 0 && (
-                  <div
-                      style={strokeStyle}
-                      className="break-words absolute inset-0"
-                      aria-hidden="true"
-                  >
-                      {renderTextWithEmojis(true)}
-                  </div>
-                )}
-
-                {/* Camada para o Texto Principal e Sombra */}
                 <div
-                    style={mainTextStyle}
+                    style={combinedTextStyle}
                     className="break-words relative"
                 >
-                    {renderTextWithEmojis(false)}
+                    {renderTextWithEmojis()}
                 </div>
             </div>
 

@@ -14,8 +14,6 @@ import { useTemplates } from "@/hooks/use-templates";
 import { useEditor } from "./contexts/editor-context";
 import Loading from './loading';
 import { getAllQuotes } from '@/lib/dados';
-import { createStrokeStyle } from "./ferramentas/Ferramenta-Contorno";
-import { createDropShadowStyle } from "./ferramentas/Ferramenta-Sombra";
 
 const getInitialState = (): Omit<EditorState, 'activeTemplateId' | 'text'> => ({
     fontFamily: "Poppins",
@@ -30,7 +28,7 @@ const getInitialState = (): Omit<EditorState, 'activeTemplateId' | 'text'> => ({
     textStrokeColor: "#000000",
     textStrokeWidth: 0,
     textStrokeCornerStyle: 'rounded',
-    applyEffectsToEmojis: false,
+    applyEffectsToEmojis: true,
     letterSpacing: 0,
     lineHeight: 1.3,
     wordSpacing: 0,
@@ -72,6 +70,7 @@ export default function Editor() {
     setInitialState,
     baseTextStyle,
     textEffectsStyle,
+    dropShadowStyle, // Adicionado
   } = useEditor();
 
   const [activeControl, setActiveControl] = useState<string | null>('texto');
@@ -183,9 +182,11 @@ export default function Editor() {
   };
 
   const previewProps = {
-    ...currentState,
+    editorState: currentState,
     profile,
-    textStyle: baseTextStyle, // Passa o estilo base
+    baseTextStyle: baseTextStyle,
+    textEffectsStyle: textEffectsStyle,
+    dropShadowStyle: dropShadowStyle,
     scale,
     containerRef: previewContainerRef,
   };

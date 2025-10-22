@@ -10,9 +10,12 @@ import { ModeloPadrao } from '../modelos/modelo-padrao';
 import type { EditorState, EstiloTexto } from '../tipos';
 import React from 'react';
 
-interface PreviewCanvaProps extends EditorState {
+interface PreviewCanvaProps {
+    editorState: EditorState;
     profile: ProfileData;
-    textStyle: EstiloTexto;
+    baseTextStyle: EstiloTexto;
+    textEffectsStyle: EstiloTexto;
+    dropShadowStyle: EstiloTexto; // Adicionado
     scale: number;
     containerRef: React.RefObject<HTMLDivElement>;
 }
@@ -47,13 +50,11 @@ const getMediaType = (src: string): "image" | "video" | "unknown" => {
 
 export function PreviewCanva(props: PreviewCanvaProps) {
     const { 
-        aspectRatio, 
-        backgroundStyle, 
-        filmColor, 
-        filmOpacity, 
+        editorState,
         scale,
         containerRef
     } = props;
+    const { aspectRatio, backgroundStyle, filmColor, filmOpacity } = editorState;
   
   const filmRgb = hexToRgb(filmColor);
   const filmBackgroundColor = filmRgb ? `rgba(${filmRgb.r}, ${filmRgb.g}, ${filmRgb.b}, ${filmOpacity / 100})` : `rgba(0, 0, 0, ${filmOpacity / 100})`;
@@ -79,19 +80,17 @@ export function PreviewCanva(props: PreviewCanvaProps) {
   };
 
   const renderContent = () => {
-    // FIX: Destructure the props to separate the editorState from other props.
-    // The rest of the props are collected into the 'editorState' object.
-    const { profile, textStyle, scale, containerRef, ...editorState } = props;
+    const { profile, baseTextStyle, textEffectsStyle, dropShadowStyle } = props;
     
-    // Create the props object for the model components.
     const modeloProps = {
       editorState,
-      baseTextStyle: textStyle,
-      textEffectsStyle: {}, // Pass an empty object for now
+      baseTextStyle,
+      textEffectsStyle,
+      dropShadowStyle,
       profile,
     };
 
-    if (props.activeTemplateId === 'template-twitter') {
+    if (editorState.activeTemplateId === 'template-twitter') {
       return <ModeloTwitter {...modeloProps} />;
     }
     return <ModeloPadrao {...modeloProps} />;

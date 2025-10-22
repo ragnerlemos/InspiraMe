@@ -8,7 +8,6 @@ import type { EditorState, EstiloTexto } from '../tipos';
 import { captureAndDownload, captureThumbnail } from '../exportar';
 import { useProfile } from '@/hooks/use-profile';
 import { useWindowSize } from 'react-use';
-// Importando as novas funções de estilo
 import { createStrokeStyle, createDropShadowStyle } from '../utils/text-style-utils';
 
 export interface EditorContextType {
@@ -16,9 +15,9 @@ export interface EditorContextType {
   canUndo: boolean;
   canRedo: boolean;
   currentState: EditorState | null;
-  // Novo: Passando os estilos base e de efeitos separadamente
   baseTextStyle: EstiloTexto;
   textEffectsStyle: EstiloTexto;
+  dropShadowStyle: EstiloTexto; // Novo estilo para a sombra
   undo: () => void;
   redo: () => void;
   updateState: (newState: Partial<EditorState>) => void;
@@ -31,7 +30,6 @@ export interface EditorContextType {
 
 const EditorContext = createContext<EditorContextType | undefined>(undefined);
 
-// Estado padrão atualizado com as novas propriedades
 const defaultState: EditorState = {
     text: "",
     fontFamily: "Poppins",
@@ -40,13 +38,13 @@ const defaultState: EditorState = {
     fontStyle: "normal",
     textColor: "#FFFFFF",
     textAlign: "center",
-    textShadowBlur: 1, // Desfoque
-    textShadowOpacity: 75, // Intensidade
+    textShadowBlur: 1, 
+    textShadowOpacity: 75,
     textVerticalPosition: 50,
     textStrokeColor: "#000000",
     textStrokeWidth: 0,
-    textStrokeCornerStyle: 'rounded', // Novo
-    applyEffectsToEmojis: true, // Novo
+    textStrokeCornerStyle: 'rounded',
+    applyEffectsToEmojis: true,
     letterSpacing: 0,
     lineHeight: 1.3,
     wordSpacing: 0,
@@ -85,8 +83,8 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   const canUndo = currentStateIndex > 0;
   const canRedo = currentStateIndex < history.length - 1;
 
-  const { baseTextStyle, textEffectsStyle } = useMemo(() => {
-      if (!currentState) return { baseTextStyle: {}, textEffectsStyle: {} };
+  const { baseTextStyle, textEffectsStyle, dropShadowStyle } = useMemo(() => {
+      if (!currentState) return { baseTextStyle: {}, textEffectsStyle: {}, dropShadowStyle: {} };
 
       const baseStyle: EstiloTexto = {
           fontFamily: currentState.fontFamily,
@@ -106,17 +104,18 @@ export function EditorProvider({ children }: { children: ReactNode }) {
           currentState.textStrokeCornerStyle
       );
       
+      // A sombra agora usa 'filter' e é separada
       const shadowStyle = createDropShadowStyle(
           currentState.textShadowBlur,
           currentState.textShadowOpacity
       );
-      
+
+      // textEffectsStyle conterá apenas o contorno
       const effectsStyle = {
         ...strokeStyle,
-        ...shadowStyle,
       };
 
-      return { baseTextStyle: baseStyle, textEffectsStyle: effectsStyle };
+      return { baseTextStyle: baseStyle, textEffectsStyle: effectsStyle, dropShadowStyle: shadowStyle };
   }, [currentState]);
 
   const setInitialState = useCallback((initialState: EditorState) => {
@@ -141,23 +140,23 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     const templateName = prompt("Digite um nome para o novo modelo:");
     if (!templateName) return;
 
-    const thumbnail = await captureThumbnail(toast, currentState, profile, baseTextStyle, textEffectsStyle);
+    const thumbnail = await captureThumbnail(toast, currentState, profile, baseTextStyle, textEffectsStyle, dropShadowStyle);
     if (!thumbnail) return;
     
     addTemplate(templateName, currentState, thumbnail);
     toast({ title: "Modelo Salvo!", description: `O modelo "${templateName}" foi adicionado.` });
 
-  }, [addTemplate, currentState, toast, profile, baseTextStyle, textEffectsStyle]);
+  }, [addTemplate, currentState, toast, profile, baseTextStyle, textEffectsStyle, dropShadowStyle]);
 
   const onExportJPG = useCallback(() => {
       if(!currentState || !profile) return;
-      captureAndDownload('jpeg', toast, currentState, profile, baseTextStyle, textEffectsStyle);
-  }, [toast, currentState, profile, baseTextStyle, textEffectsStyle]);
+      captureAndDownload('jpeg', toast, currentState, profile, baseTextStyle, textEffectsStyle, dropShadowStyle);
+  }, [toast, currentState, profile, baseTextStyle, textEffectsStyle, dropShadowStyle]);
   
   const onExportPNG = useCallback(() => {
       if(!currentState || !profile) return;
-      captureAndDownload('png', toast, currentState, profile, baseTextStyle, textEffectsStyle);
-  }, [toast, currentState, profile, baseTextStyle, textEffectsStyle]);
+      captureAndDownload('png', toast, currentState, profile, baseTextStyle, textEffectsStyle, dropShadowStyle);
+  }, [toast, currentState, profile, baseTextStyle, textEffectsStyle, dropShadowStyle]);
 
   const onExportMP4 = useCallback(() => {
     toast({ title: 'Em breve!', description: 'A exportação de vídeo MP4 estará disponível em futuras atualizações.' });
@@ -170,6 +169,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     currentState,
     baseTextStyle,
     textEffectsStyle,
+    dropShadowStyle,
     undo,
     redo,
     updateState,
@@ -178,7 +178,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     onExportJPG,
     onExportPNG,
     onExportMP4,
-  }), [isReady, canUndo, canRedo, currentState, baseTextStyle, textEffectsStyle, undo, redo, updateState, setInitialState, onSaveAsTemplate, onExportJPG, onExportPNG, onExportMP4]);
+  }), [isReady, canUndo, canRedo, currentState, baseTextStyle, textEffectsStyle, dropShadowStyle, undo, redo, updateState, setInitialState, onSaveAsTemplate, onExportJPG, onExportPNG, onExportMP4]);
 
   return (
     <EditorContext.Provider value={value}>
