@@ -2,10 +2,19 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import type { ProfileData } from "@/app/editor-de-video/tipos";
 
 const PROFILE_KEY = "quotevid_profile";
 
+// Definição de tipo movida para dentro do hook para evitar importações circulares
+export interface ProfileData {
+  username: string;
+  social: string;
+  photo: string | null;
+  logo: string | null;
+  showIcon: boolean;
+  showDate: boolean;
+  iconUrl?: string; // Adicionado para consistência
+}
 
 // Hook para gerenciar os dados do perfil do usuário usando o localStorage.
 export const useProfile = () => {
