@@ -70,7 +70,7 @@ export function FerramentaSombra({
           max={200}
           step={1}
           value={[shadowOpacity]}
-          onValueChange={(v) => updateState({ shadowOpacity: v[0] })} // Corrigido: onValue-change -> onValueChange
+          onValueChange={(v) => updateState({ shadowOpacity: v[0] })}
         />
       </div>
     </div>

@@ -13,7 +13,6 @@ import { useSearchParams } from "next/navigation";
 import { useTemplates } from "@/hooks/use-templates";
 import { useEditor } from "./contexts/editor-context";
 import Loading from './loading';
-import { getAllQuotes } from '@/lib/dados';
 
 const getInitialState = (): Omit<EditorState, 'activeTemplateId' | 'text'> => ({
     fontFamily: "Poppins",
@@ -79,20 +78,32 @@ export default function Editor() {
   useEffect(() => {
     if (isReady || !isProfileLoaded || !areTemplatesLoaded) return;
 
-    const initialize = () => {
+    const initialize = async () => {
         const quoteParam = searchParams.get("quote");
         const templateIdParam = searchParams.get("templateId");
         
         let initialState: EditorState;
         const baseState = getInitialState();
 
-        const allQuotes = getAllQuotes();
+        let text = "A inspiração está a caminho...";
 
-        const text = quoteParam 
-            ? decodeURIComponent(quoteParam) 
-            : allQuotes.length > 0 
-                ? allQuotes[Math.floor(Math.random() * allQuotes.length)].quote
-                : "A inspiração está a caminho...";
+        if (quoteParam) {
+            text = decodeURIComponent(quoteParam);
+        } else {
+            try {
+                const response = await fetch('/api/quotes');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch quotes');
+                }
+                const allQuotes = await response.json();
+
+                if (allQuotes.length > 0) {
+                    text = allQuotes[Math.floor(Math.random() * allQuotes.length)].quote;
+                }
+            } catch (error) {
+                console.error("Failed to fetch quotes from API:", error);
+            }
+        }
         
         if (templateIdParam) {
           const template = allTemplates.find(t => t.id === templateIdParam);
