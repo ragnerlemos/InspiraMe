@@ -49,13 +49,8 @@ export default function FerramentasEditorPage() {
     // 2. Gera a sombra projetada.
     const dropShadow = createDropShadowStyle(state.shadowBlur, state.shadowOpacity);
     
-    // 3. Combina os dois efeitos em uma única propriedade text-shadow.
-    const combinedShadows = [stroke.textShadow, (dropShadow as any).textShadow]
-      .filter(Boolean)
-      .join(', ');
-
-    // 4. Retorna o objeto de estilo final. Simples e unificado.
-    return { textShadow: combinedShadows, filter: dropShadow.filter };
+    // 3. Retorna o objeto de estilo final. Simples e unificado.
+    return { textShadow: stroke.textShadow, filter: dropShadow.filter };
 
   }, [state.shadowBlur, state.shadowOpacity, state.strokeWidth, state.strokeColor, state.strokeCornerStyle]);
 
@@ -82,7 +77,7 @@ export default function FerramentasEditorPage() {
           if (index % 2 !== 0 && !state.applyEffectsToEmojis) {
             // Renderiza o emoji sem NENHUM efeito de sombra.
             return (
-              <span key={index} style={{ textShadow: 'none' }}>
+              <span key={index} style={{ textShadow: 'none', filter: 'none' }}>
                 {part}
               </span>
             );
