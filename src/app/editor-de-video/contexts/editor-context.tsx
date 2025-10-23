@@ -73,22 +73,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
       };
 
       return { baseTextStyle: baseStyle, textEffectsStyle: effectsStyle, dropShadowStyle: shadowStyle };
-  }, [
-    currentState?.fontFamily,
-    currentState?.fontSize,
-    currentState?.fontWeight,
-    currentState?.fontStyle,
-    currentState?.textColor,
-    currentState?.textAlign,
-    currentState?.lineHeight,
-    currentState?.letterSpacing,
-    currentState?.wordSpacing,
-    currentState?.textStrokeWidth,
-    currentState?.textStrokeColor,
-    currentState?.textStrokeCornerStyle,
-    currentState?.textShadowBlur,
-    currentState?.textShadowOpacity,
-  ]);
+  }, [currentState]);
 
   const setInitialState = useCallback((initialState: EditorState) => {
     setHistory([initialState]);
