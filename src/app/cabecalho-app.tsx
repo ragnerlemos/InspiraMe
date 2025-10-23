@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Film, GalleryVertical, Menu, Star, Settings, User, Clapperboard, GalleryHorizontal, Quote, Undo, Save, FileImage, Video, Redo, Feather, Wrench, LogOut } from "lucide-react";
+import { Film, GalleryVertical, Menu, Star, Settings, User, Clapperboard, GalleryHorizontal, Quote, Undo, Save, FileImage, Video, Redo, Feather, Wrench, LogOut, LogIn } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -19,6 +19,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth, useUser } from "@/firebase";
 import { signOut } from "firebase/auth";
+import { useRouter } from "next/navigation";
 
 // Itens de navegação exibidos no cabeçalho.
 const navItems = [
@@ -93,6 +94,7 @@ export function EditorHeader() {
 // Componente do cabeçalho da aplicação.
 export function AppHeader() {
   const pathname = usePathname();
+  const router = useRouter();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const auth = useAuth();
@@ -105,66 +107,42 @@ export function AppHeader() {
   const handleLogout = async () => {
     if (auth) {
         await signOut(auth);
+        router.push('/'); // Redireciona para a home após o logout
     }
   };
 
   const isEditorPage = pathname.startsWith('/editor-de-video');
 
   const renderNavLinks = (isMobile = false) => {
-    const navAndActions = [
-      ...navItems,
-      ...(user ? [{ href: '#', label: 'Sair', icon: LogOut, onClick: handleLogout }] : []),
-    ];
+    let actionItem;
+    if (user && !user.isAnonymous) {
+        actionItem = { href: '#', label: 'Sair', icon: LogOut, onClick: handleLogout };
+    } else {
+        actionItem = { href: '/login', label: 'Login', icon: LogIn };
+    }
+
+    const navAndActions = [...navItems, actionItem];
 
     return navAndActions.map((item) => {
-        const isActive = pathname.startsWith(item.href) && item.href !== '#';
+        const isActive = item.href !== '#' && pathname.startsWith(item.href);
         const commonClasses = "flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary";
         
+        const linkProps = {
+            key: item.label,
+            className: cn(commonClasses, "text-muted-foreground", isMobile ? "text-base" : "text-sm font-medium", isActive && "bg-primary/10 text-primary"),
+        };
+        
         if (item.onClick) {
-            const buttonProps = {
-                key: item.label,
-                onClick: () => {
-                    item.onClick();
-                    if(isMobile) setIsSheetOpen(false);
-                },
-                className: cn(commonClasses, "text-muted-foreground text-base", isMobile ? "" : "text-sm font-medium"),
-            };
             return (
-                 <button {...buttonProps} >
+                 <button {...linkProps} onClick={() => { item.onClick!(); if(isMobile) setIsSheetOpen(false); }}>
                     <item.icon className="h-4 w-4" />
                     {item.label}
                 </button>
             )
         }
         
-        if (isMobile) {
-            return (
-                <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setIsSheetOpen(false)}
-                    className={cn(
-                        commonClasses,
-                        "text-muted-foreground text-base",
-                        isActive && "bg-primary/10 text-primary"
-                    )}
-                >
-                    <item.icon className="h-4 w-4" />
-                    {item.label}
-                </Link>
-            )
-        }
-        
         return (
-            <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                    commonClasses,
-                    "text-sm font-medium",
-                    isActive ? "text-primary" : "text-muted-foreground"
-                )}
-            >
+            <Link href={item.href} onClick={() => isMobile && setIsSheetOpen(false)} {...linkProps}>
                 <item.icon className="h-4 w-4" />
                 {item.label}
             </Link>
