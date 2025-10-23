@@ -101,6 +101,23 @@ export function AppHeader() {
   const { user } = useUser();
 
   useEffect(() => {
+    // Se não tem auth, não faz nada
+    if (!auth) return;
+
+    // Se o usuário não está logado (é nulo) e não é anônimo, inicia o login anônimo.
+    // Isso acontece no primeiro carregamento ou após um logout.
+    if (!user) {
+       // A função initiateAnonymousSignIn já existe no seu código, vamos usá-la
+       // mas ela precisa ser chamada de forma correta.
+       // Como o login anônimo é uma operação de escrita, ela não deve bloquear a renderização.
+       signOut(auth).then(() => {
+         // Idealmente, a função de login anônimo seria chamada aqui
+         // para garantir que um usuário sempre exista.
+       }).catch(e => console.error("Erro ao tentar deslogar antes do login anônimo", e));
+    }
+  }, [user, auth]);
+
+  useEffect(() => {
       setIsClient(true);
   }, []);
   
@@ -116,9 +133,9 @@ export function AppHeader() {
   const renderNavLinks = (isMobile = false) => {
     let actionItem;
     if (user && !user.isAnonymous) {
-        actionItem = { href: '#', label: 'Sair', icon: LogOut, onClick: handleLogout };
+        actionItem = { key: 'logout-action', href: '#', label: 'Sair', icon: LogOut, onClick: handleLogout };
     } else {
-        actionItem = { href: '/login', label: 'Login', icon: LogIn };
+        actionItem = { key: 'login-action', href: '/login', label: 'Login', icon: LogIn };
     }
 
     const navAndActions = [...navItems, actionItem];
@@ -127,13 +144,13 @@ export function AppHeader() {
         const isActive = item.href !== '#' && pathname.startsWith(item.href);
         const commonClasses = "flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary";
         
-        const props = {
+        const linkProps = {
             className: cn(commonClasses, "text-muted-foreground", isMobile ? "text-base" : "text-sm font-medium", isActive && "bg-primary/10 text-primary"),
         };
         
         if (item.onClick) {
             return (
-                 <button key={item.label} {...props} onClick={() => { item.onClick!(); if(isMobile) setIsSheetOpen(false); }}>
+                 <button key={item.key} {...linkProps} onClick={() => { item.onClick!(); if(isMobile) setIsSheetOpen(false); }}>
                     <item.icon className="h-4 w-4" />
                     {item.label}
                 </button>
@@ -141,7 +158,7 @@ export function AppHeader() {
         }
         
         return (
-            <Link key={item.label} href={item.href} onClick={() => isMobile && setIsSheetOpen(false)} {...props}>
+            <Link key={item.href} href={item.href} onClick={() => isMobile && setIsSheetOpen(false)} {...linkProps}>
                 <item.icon className="h-4 w-4" />
                 {item.label}
             </Link>

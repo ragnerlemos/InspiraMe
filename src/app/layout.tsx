@@ -1,10 +1,10 @@
+
 "use client";
 
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from '@/components/theme-provider';
 import './globals.css';
 import { AppLayout } from './app-layout';
-import { FirebaseClientProvider } from "@/firebase";
 
 // Layout raiz da aplicação que envolve todas as páginas.
 export default function RootLayout({
@@ -24,13 +24,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <FirebaseClientProvider>
             {/* O Toaster é usado para exibir notificações no aplicativo. */}
             <Toaster />
             <AppLayout>
                 {children}
             </AppLayout>
-          </FirebaseClientProvider>
         </ThemeProvider>
       </body>
     </html>
