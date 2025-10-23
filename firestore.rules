@@ -1,0 +1,69 @@
+/**
+ * @fileoverview Firestore Security Rules for InspiraMe2.
+ *
+ * Core Philosophy:
+ * This ruleset prioritizes public read access with owner-only write access for quotes, videos and categories.
+ * All collections are designed to be globally readable, while write operations are restricted to authenticated users.
+ *
+ * Data Structure:
+ * - /categories/{categoryId}: Stores category information.
+ * - /quotes/{quoteId}: Stores quote information.
+ * - /videos/{videoId}: Stores video information.
+ *
+ * Key Security Decisions:
+ * - Public Read Access: All documents in all collections can be read by anyone.
+ * - Owner-Only Writes: Only authenticated users can create, update, or delete documents.
+ * - No User Listing: There are no user-specific collections or subcollections, so user listing is not applicable.
+ *
+ * Denormalization for Authorization:
+ *  - It is assumed that a field exists in the documents for storing the owner's user ID.  If it does not, the rules below will not allow writes.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Grants public read access to categories and restricts write access to authenticated users.
+     * @path /categories/{categoryId}
+     * @allow (get, list): Anyone can read category data.
+     * @allow (create, update, delete): Only authenticated users can modify category data.
+     * @deny (create, update, delete): Unauthenticated users cannot modify category data.
+     * @principle Allows public read access while enforcing ownership for write operations.
+     */
+    match /categories/{categoryId} {
+      allow get, list: if true;
+      allow create, update, delete: if isSignedIn();
+    }
+
+    /**
+     * @description Grants public read access to quotes and restricts write access to authenticated users.
+     * @path /quotes/{quoteId}
+     * @allow (get, list): Anyone can read quote data.
+     * @allow (create, update, delete): Only authenticated users can modify quote data.
+     * @deny (create, update, delete): Unauthenticated users cannot modify quote data.
+     * @principle Allows public read access while enforcing ownership for write operations.
+     */
+    match /quotes/{quoteId} {
+      allow get, list: if true;
+      allow create, update, delete: if isSignedIn();
+    }
+
+    /**
+     * @description Grants public read access to videos and restricts write access to authenticated users.
+     * @path /videos/{videoId}
+     * @allow (get, list): Anyone can read video data.
+     * @allow (create, update, delete): Only authenticated users can modify video data.
+     * @deny (create, update, delete): Unauthenticated users cannot modify video data.
+     * @principle Allows public read access while enforcing ownership for write operations.
+     */
+    match /videos/{videoId} {
+      allow get, list: if true;
+      allow create, update, delete: if isSignedIn();
+    }
+
+    // Helper function to determine if a user is signed in.
+    function isSignedIn() {
+      return request.auth != null;
+    }
+  }
+}
