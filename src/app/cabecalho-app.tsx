@@ -127,14 +127,13 @@ export function AppHeader() {
         const isActive = item.href !== '#' && pathname.startsWith(item.href);
         const commonClasses = "flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary";
         
-        const linkProps = {
-            key: item.label,
+        const props = {
             className: cn(commonClasses, "text-muted-foreground", isMobile ? "text-base" : "text-sm font-medium", isActive && "bg-primary/10 text-primary"),
         };
         
         if (item.onClick) {
             return (
-                 <button {...linkProps} onClick={() => { item.onClick!(); if(isMobile) setIsSheetOpen(false); }}>
+                 <button key={item.label} {...props} onClick={() => { item.onClick!(); if(isMobile) setIsSheetOpen(false); }}>
                     <item.icon className="h-4 w-4" />
                     {item.label}
                 </button>
@@ -142,7 +141,7 @@ export function AppHeader() {
         }
         
         return (
-            <Link href={item.href} onClick={() => isMobile && setIsSheetOpen(false)} {...linkProps}>
+            <Link key={item.label} href={item.href} onClick={() => isMobile && setIsSheetOpen(false)} {...props}>
                 <item.icon className="h-4 w-4" />
                 {item.label}
             </Link>
