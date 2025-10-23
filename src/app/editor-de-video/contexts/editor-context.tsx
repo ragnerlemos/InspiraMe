@@ -17,7 +17,7 @@ export interface EditorContextType {
   currentState: EditorState | null;
   baseTextStyle: EstiloTexto;
   textEffectsStyle: EstiloTexto;
-  dropShadowStyle: EstiloTexto; // Novo estilo para a sombra
+  dropShadowStyle: EstiloTexto;
   undo: () => void;
   redo: () => void;
   updateState: (newState: Partial<EditorState>) => void;
@@ -29,47 +29,6 @@ export interface EditorContextType {
 }
 
 const EditorContext = createContext<EditorContextType | undefined>(undefined);
-
-const defaultState: EditorState = {
-    text: "",
-    fontFamily: "Poppins",
-    fontSize: 2.7,
-    fontWeight: "bold",
-    fontStyle: "normal",
-    textColor: "#FFFFFF",
-    textAlign: "center",
-    textShadowBlur: 1, 
-    textShadowOpacity: 75,
-    textVerticalPosition: 50,
-    textStrokeColor: "#000000",
-    textStrokeWidth: 0,
-    textStrokeCornerStyle: 'rounded',
-    applyEffectsToEmojis: true,
-    letterSpacing: 0,
-    lineHeight: 1.3,
-    wordSpacing: 0,
-    backgroundStyle: { type: 'solid', value: '#000000' },
-    filmColor: "#000000",
-    filmOpacity: 0,
-    aspectRatio: "9 / 16",
-    activeTemplateId: null,
-    showProfileSignature: false,
-    signaturePositionX: 50,
-    signaturePositionY: 90,
-    signatureScale: 63,
-    showSignaturePhoto: false,
-    showSignatureUsername: true,
-    showSignatureSocial: true,
-    showSignatureBackground: false,
-    signatureBgColor: "#000000",
-    signatureBgOpacity: 30,
-    profileVerticalPosition: 25,
-    showLogo: false,
-    logoPositionX: 50,
-    logoPositionY: 72,
-    logoScale: 40,
-    logoOpacity: 100,
-};
 
 export function EditorProvider({ children }: { children: ReactNode }) {
   const [history, setHistory] = useState<EditorState[]>([]);
@@ -104,19 +63,32 @@ export function EditorProvider({ children }: { children: ReactNode }) {
           currentState.textStrokeCornerStyle
       );
       
-      // A sombra agora usa 'filter' e é separada
       const shadowStyle = createDropShadowStyle(
           currentState.textShadowBlur,
           currentState.textShadowOpacity
       );
 
-      // textEffectsStyle conterá apenas o contorno
       const effectsStyle = {
         ...strokeStyle,
       };
 
       return { baseTextStyle: baseStyle, textEffectsStyle: effectsStyle, dropShadowStyle: shadowStyle };
-  }, [currentState]);
+  }, [
+    currentState?.fontFamily,
+    currentState?.fontSize,
+    currentState?.fontWeight,
+    currentState?.fontStyle,
+    currentState?.textColor,
+    currentState?.textAlign,
+    currentState?.lineHeight,
+    currentState?.letterSpacing,
+    currentState?.wordSpacing,
+    currentState?.textStrokeWidth,
+    currentState?.textStrokeColor,
+    currentState?.textStrokeCornerStyle,
+    currentState?.textShadowBlur,
+    currentState?.textShadowOpacity,
+  ]);
 
   const setInitialState = useCallback((initialState: EditorState) => {
     setHistory([initialState]);
