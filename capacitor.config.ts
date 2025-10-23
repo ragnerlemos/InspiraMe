@@ -6,9 +6,7 @@ const config: CapacitorConfig = {
   appName: 'InspireMe',
   webDir: '.next',
   server: {
-    // A URL será a do seu deploy no Vercel/Firebase
-    // Ex: 'https://inspireme-app.vercel.app'
-    url: 'http://localhost:3000', 
+    url: 'https://studio--quotevid2-57726828-e0133.us-central1.hosted.app/', 
     cleartext: true,
   },
 };
