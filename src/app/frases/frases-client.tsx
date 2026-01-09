@@ -107,8 +107,6 @@ function MemeGenerator({ quote, profile, editorState, onClose, shareDirectly = f
                     try {
                         await navigator.share({
                             files: [memeFile],
-                            title: `Meme da frase: "${quote.quote}"`,
-                            text: `Meme gerado com InspireMe`,
                         });
                         onClose(); // Fecha apenas se o compartilhamento for iniciado
                     } catch(error) {
