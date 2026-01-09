@@ -16,9 +16,6 @@ export default function MainAppLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  // As rotas que NÃO devem exibir o cabeçalho principal.
-  const noHeaderPaths = ['/editor-de-video'];
-  const hideHeader = noHeaderPaths.some(path => pathname.startsWith(path));
   
   // Carrega as fontes do Google para uso em toda a aplicação.
   useGoogleFonts();
@@ -29,7 +26,7 @@ export default function MainAppLayout({
     <FirebaseClientProvider>
       <EditorProvider>
         <div className="flex flex-col h-full bg-background">
-          {!hideHeader && <AppHeader />}
+          <AppHeader />
           <div className="flex-1 flex flex-col min-h-0">
             {children}
           </div>
