@@ -61,6 +61,7 @@ import { useToast } from "@/hooks/use-toast";
 import type { ProfileData } from "@/hooks/use-profile";
 import type { EstiloFundo } from "../tipos";
 import { Switch } from "@/components/ui/switch";
+import { useRouter } from "next/navigation";
 
 
 const aspectRatios = [
@@ -708,6 +709,7 @@ export function MobileToolbar({
   setText,
   ...props
 }: MobileToolbarProps) {
+  const router = useRouter();
   const [activePanel, setActivePanel] = useState<ActivePanel>(null);
   const [activeSubControl, setActiveSubControl] = useState<string | null>(null);
 
@@ -868,6 +870,7 @@ export function MobileToolbar({
             <BotaoRecurso icon={Paintbrush} label="Cores" onClick={() => handlePanelChange("cores")} isActive={activePanel === "cores"} />
             <BotaoRecurso icon={Film} label="Película" onClick={() => handlePanelChange("filtro")} isActive={activePanel === "filtro"} />
             <BotaoRecurso icon={Wand2} label="Estilo" onClick={() => handlePanelChange("estilo")} isActive={activePanel === "estilo"} />
+            <BotaoRecurso icon={LayoutTemplate} label="Modelos" onClick={() => router.push(`/modelos?quote=${encodeURIComponent(text)}`)} />
             <BotaoRecurso icon={LayoutTemplate} label="Fundo" onClick={() => handlePanelChange("fundo")} isActive={activePanel === "fundo"} />
             <BotaoRecurso icon={UserCheck} label="Assinatura" onClick={() => handlePanelChange("assinatura")} isActive={activePanel === "assinatura"} />
             <BotaoRecurso icon={ImageUp} label="Logo" onClick={() => handlePanelChange("logo")} isActive={activePanel === "logo"} />

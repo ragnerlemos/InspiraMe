@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useMemo, useState, useRef } from "react";
@@ -14,9 +15,10 @@ import { useEditor } from "./contexts/editor-context";
 import Loading from './loading';
 import { getAllQuotes } from '@/lib/dados';
 
-const getInitialState = (): Omit<EditorState, 'activeTemplateId' | 'text'> => ({
+const getInitialState = (): Omit<EditorState, 'text'> => ({
+    activeTemplateId: "template-twitter",
     fontFamily: "Poppins",
-    fontSize: 2.7,
+    fontSize: 1.3,
     fontWeight: "bold",
     fontStyle: "normal",
     textColor: "#FFFFFF",
@@ -98,10 +100,10 @@ export default function Editor() {
           if (template) {
             initialState = { ...baseState, ...template.editorState, text, activeTemplateId: template.id };
           } else {
-            initialState = { ...baseState, text, activeTemplateId: null };
+            initialState = { ...baseState, text };
           }
         } else {
-            initialState = { ...baseState, text, activeTemplateId: null };
+            initialState = { ...baseState, text };
         }
         
         setInitialState(initialState);
