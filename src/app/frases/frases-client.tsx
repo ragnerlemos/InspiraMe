@@ -547,6 +547,7 @@ export function FrasesClientPage({
     };
 
     const memeEditorState = quoteForMeme ? getMemeEditorState(quoteForMeme.quote) : null;
+    const breadcrumbSubCategories = initialSubCategories[selectedMainCategory] || [];
   
   return (
     <>
@@ -586,13 +587,27 @@ export function FrasesClientPage({
             
             {selectedMainCategory !== 'Todos' && (
               <div className="flex items-center text-sm mb-6">
-                <Button
-                  variant="link"
-                  onClick={() => handleMainCategorySelect(selectedMainCategory)}
-                  className="p-0 h-auto font-semibold text-muted-foreground hover:text-primary"
-                >
-                  {selectedMainCategory}
-                </Button>
+                 <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="link"
+                      className="p-0 h-auto font-semibold text-muted-foreground hover:text-primary"
+                    >
+                      {selectedMainCategory}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem onClick={() => handleSubCategorySelect(selectedMainCategory, 'Todos')}>
+                      Todos em {selectedMainCategory}
+                    </DropdownMenuItem>
+                    {breadcrumbSubCategories.map(subCat => (
+                      <DropdownMenuItem key={subCat} onClick={() => handleSubCategorySelect(selectedMainCategory, subCat)}>
+                        {subCat}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
                 {selectedSubCategory !== 'Todos' && (
                   <>
                     <ChevronRight className="h-4 w-4 mx-1 text-muted-foreground" />
@@ -692,5 +707,7 @@ export function FrasesClientPage({
     
 
 
+
+    
 
     
