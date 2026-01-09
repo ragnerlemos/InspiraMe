@@ -585,12 +585,18 @@ export function FrasesClientPage({
             </div>
             
             {selectedMainCategory !== 'Todos' && (
-              <div className="flex items-center text-sm text-muted-foreground mb-6">
-                <span className="font-semibold">{selectedMainCategory}</span>
+              <div className="flex items-center text-sm mb-6">
+                <Button
+                  variant="link"
+                  onClick={() => handleMainCategorySelect(selectedMainCategory)}
+                  className="p-0 h-auto font-semibold text-muted-foreground hover:text-primary"
+                >
+                  {selectedMainCategory}
+                </Button>
                 {selectedSubCategory !== 'Todos' && (
                   <>
-                    <ChevronRight className="h-4 w-4 mx-1" />
-                    <span>{selectedSubCategory}</span>
+                    <ChevronRight className="h-4 w-4 mx-1 text-muted-foreground" />
+                    <span className="font-semibold text-foreground">{selectedSubCategory}</span>
                   </>
                 )}
               </div>
