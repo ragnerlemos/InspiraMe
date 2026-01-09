@@ -9,6 +9,9 @@ import { EditorActions } from "./components/editor-actions";
 export default function EditorPage() {
   return (
     <div className="flex flex-col h-full">
+      <PageHeader title="Editor" showBack>
+        <EditorActions />
+      </PageHeader>
       <div className="flex-1 flex flex-col min-h-0">
         <Suspense fallback={<Loading />}>
           <Editor />

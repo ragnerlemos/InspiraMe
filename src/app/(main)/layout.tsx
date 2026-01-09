@@ -22,11 +22,15 @@ export default function MainAppLayout({
   // Ativa a lógica do botão de voltar nativo
   useBackButton();
 
+  // Rotas que não devem mostrar o cabeçalho principal
+  const noHeaderPaths = ['/editor-de-video'];
+  const hideHeader = noHeaderPaths.some(path => pathname.startsWith(path));
+
   return (
     <FirebaseClientProvider>
       <EditorProvider>
         <div className="flex flex-col h-full bg-background">
-          <AppHeader />
+          {!hideHeader && <AppHeader />}
           <div className="flex-1 flex flex-col min-h-0">
             {children}
           </div>
