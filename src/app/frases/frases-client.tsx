@@ -3,7 +3,7 @@
 
 import { useState, useMemo, useRef, useEffect, ComponentType } from 'react';
 import { useRouter } from 'next/navigation';
-import { Heart, Search, Copy, Film, Share2, LayoutGrid, Download, MoreVertical, Sun, Calendar, Moon, MessageSquare, Quote, CircleDollarSign, PartyPopper, Gift, Egg, HeartHandshake, TestTube, ImageUp, Edit, ZoomIn, BookOpen, Loader2 } from 'lucide-react';
+import { Heart, Search, Copy, Film, Share2, LayoutGrid, Download, MoreVertical, Sun, Calendar, Moon, MessageSquare, Quote, CircleDollarSign, PartyPopper, Gift, Egg, HeartHandshake, TestTube, ImageUp, Edit, ZoomIn, BookOpen, Loader2, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -584,6 +584,18 @@ export function FrasesClientPage({
               </div>
             </div>
             
+            {selectedMainCategory !== 'Todos' && (
+              <div className="flex items-center text-sm text-muted-foreground mb-6">
+                <span className="font-semibold">{selectedMainCategory}</span>
+                {selectedSubCategory !== 'Todos' && (
+                  <>
+                    <ChevronRight className="h-4 w-4 mx-1" />
+                    <span>{selectedSubCategory}</span>
+                  </>
+                )}
+              </div>
+            )}
+            
             {isLoading ? renderSkeletons() : filteredQuotes.length > 0 ? (
               <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredQuotes.map((quote) => {
@@ -673,3 +685,6 @@ export function FrasesClientPage({
 
     
 
+
+
+    
