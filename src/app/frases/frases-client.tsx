@@ -398,18 +398,23 @@ export function FrasesClientPage({
   };
 
   const renderFilters = (isMobile = false) => {
+    const searchInput = (
+      <div className="relative mb-4">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+        <Input
+          type="search"
+          placeholder="Buscar por frases ou autores..."
+          className="pl-10 w-full"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          autoFocus={!isMobile}
+        />
+      </div>
+    );
+  
     return (
       <div className="space-y-1">
-        <div className="relative mb-4">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Buscar por frases ou autores..."
-            className="pl-10 w-full"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
+        {searchInput}
         <Button
           variant="ghost"
           onClick={() => {
@@ -591,12 +596,12 @@ export function FrasesClientPage({
                     <Card key={quote.id} className="group flex flex-col justify-between hover:shadow-lg transition-shadow duration-300">
                       
                       <CardContent className="p-4 pb-0 flex-1">
-                        <p className="text-base font-body">{quote.quote}</p>
+                        <p className="text-sm font-body">{quote.quote}</p>
                       </CardContent>
                       <CardFooter className="p-4 pt-2 flex flex-col items-stretch gap-2">
-                          <div className="flex justify-between items-center text-sm w-full">
+                          <div className="flex justify-between items-center text-xs w-full">
                               {quote.subCategory && quote.subCategory !== 'Todos' ? (
-                                  <span className="bg-primary/10 px-2 py-0.5 text-xs rounded-full text-primary truncate max-w-[120px]">
+                                  <span className="bg-primary/10 px-2 py-0.5 rounded-full text-primary truncate max-w-[120px]">
                                       {quote.subCategory}
                                   </span>
                               ) : <div />}
@@ -667,5 +672,7 @@ export function FrasesClientPage({
     </>
   );
 }
+
+    
 
     
