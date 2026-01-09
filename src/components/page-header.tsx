@@ -25,7 +25,7 @@ export function PageHeader({ title, showBack = false, children }: PageHeaderProp
 
     return (
         <header className="px-4 pt-4">
-            <div className="flex items-center justify-between rounded-full bg-card p-2 shadow-sm h-14">
+            <div className="flex items-center justify-between rounded-full bg-background p-2 h-14">
                 {/* Slot da Esquerda: Para o menu ou ações específicas da página */}
                 <div className="flex items-center justify-start w-auto flex-shrink-0">
                     {children}
