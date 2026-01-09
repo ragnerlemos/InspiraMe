@@ -1,0 +1,13 @@
+.next/ 
+.next/-build
+.vscode
+android/
+node_modules/
+out/
+
+
+
+
+
+
+

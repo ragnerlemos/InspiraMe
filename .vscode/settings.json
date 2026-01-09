@@ -1,0 +1,11 @@
+{
+    "workbench.editorLargeFileConfirmation": 600,
+    "IDX.aI.showChatInEditorTab": false,
+    "IDX.agenticWorkspace": true,
+    "IDX.aI.enableCodebaseIndexing": true,
+    "IDX.aI.enableInlineCompletion": true,
+    "avdmanager.sdkPath": "/home/user/studio/.idx",
+    "avdmanager.sdkManager": "/home/user/studio/.idx/dev.nix",
+    "avdmanager.executable": "/home/user/studio/src/app/boas-vindas/page.tsx",
+    "java.configuration.updateBuildConfiguration": "automatic"
+}
