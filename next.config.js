@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'export',
   reactStrictMode: true,
   typescript: {
     ignoreBuildErrors: true,
@@ -24,6 +25,9 @@ const nextConfig = {
       },
     ],
   },
+  serverActions: {
+    enabled: false,
+  }
 };
 
 module.exports = nextConfig;
