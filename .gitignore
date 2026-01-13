@@ -26,7 +26,6 @@ yarn-error.log*
 
 # local env files
 .env*.local
-.env
 
 # vercel
 .vercel
@@ -34,3 +33,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# capacitor
+/android
+/ios
+/www
+capacitor.config.json
+capacitor.config.ts.timestamp-*
