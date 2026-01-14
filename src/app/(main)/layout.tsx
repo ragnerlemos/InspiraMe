@@ -1,7 +1,7 @@
+
 'use client';
 
 import { AppHeader } from '@/components/app-header';
-import { EditorProvider } from '@/components/editor-de-video/contexts/editor-context';
 import { FirebaseClientProvider } from '@/firebase';
 import { useBackButton } from '@/hooks/use-back-button';
 import { useGoogleFonts } from '@/hooks/use-google-fonts';
@@ -27,12 +27,10 @@ export default function MainAppLayout({
 
   return (
     <FirebaseClientProvider>
-      <EditorProvider>
         <div className="flex flex-col h-full bg-background">
           {!hideHeader && <AppHeader />}
           <div className="flex-1 flex flex-col min-h-0">{children}</div>
         </div>
-      </EditorProvider>
     </FirebaseClientProvider>
   );
 }

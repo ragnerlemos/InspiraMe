@@ -1,15 +1,15 @@
 
-"use client";
+'use client';
 
-import { Suspense } from "react";
-import Editor from "./editor";
-import Loading from "./loading";
-import { PageHeader } from "@/components/page-header";
-import { ClientOnly } from "@/components/client-only";
-import { EditorActions } from "@/components/editor-de-video/components/editor-actions";
-import { useEditor } from "@/components/editor-de-video/contexts/editor-context";
-import { Button } from "@/components/ui/button";
-import { Share2 } from "lucide-react";
+import { Suspense } from 'react';
+import Editor from './editor';
+import Loading from './loading';
+import { PageHeader } from '@/components/page-header';
+import { ClientOnly } from '@/components/client-only';
+import { EditorActions } from '@/components/editor-de-video/components/editor-actions';
+import { useEditor, EditorProvider } from '@/components/editor-de-video/contexts/editor-context';
+import { Button } from '@/components/ui/button';
+import { Share2 } from 'lucide-react';
 
 function EditorHeaderActions() {
   const { isReady, onExportPNG, currentState } = useEditor();
@@ -17,7 +17,7 @@ function EditorHeaderActions() {
   const handleShare = () => {
     if (!isReady || !currentState) return;
     // A função onExportPNG com `true` irá acionar o compartilhamento
-    onExportPNG(true); 
+    onExportPNG(true);
   };
 
   return (
@@ -30,7 +30,7 @@ function EditorHeaderActions() {
   );
 }
 
-export default function EditorPage() {
+function EditorPageContent() {
   return (
     <div className="flex flex-col h-full">
       <ClientOnly>
@@ -45,4 +45,13 @@ export default function EditorPage() {
       </div>
     </div>
   );
+}
+
+
+export default function EditorPage() {
+    return (
+        <EditorProvider>
+            <EditorPageContent />
+        </EditorProvider>
+    )
 }
