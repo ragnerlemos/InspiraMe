@@ -4,16 +4,15 @@
 import { useEffect, useMemo, useState, useRef } from "react";
 import { useWindowSize } from "react-use";
 import { useProfile } from "@/hooks/use-profile";
-import { Sidebar } from "@/app/editor-de-video/components/sidebar";
-import { PreviewCanva } from "@/app/editor-de-video/components/preview-canva";
-import { MobileToolbar } from "@/app/editor-de-video/components/mobile-toolbar";
+import { Sidebar } from "@/components/editor-de-video/components/sidebar";
+import { PreviewCanva } from "@/components/editor-de-video/components/preview-canva";
+import { MobileToolbar } from "@/components/editor-de-video/components/mobile-toolbar";
 import { Panel, PanelGroup, PanelResizeHandle } from "@/components/ui/resizable";
-import type { EditorState, EstiloFundo } from "@/app/editor-de-video/tipos";
+import type { EditorState, EstiloFundo } from "@/components/editor-de-video/tipos";
 import { useSearchParams } from "next/navigation";
 import { useTemplates } from "@/hooks/use-templates";
 import { useEditor } from "./contexts/editor-context";
 import Loading from './loading';
-import { getAllQuotes } from '@/lib/dados';
 
 const getInitialState = (): Omit<EditorState, 'text'> => ({
     activeTemplateId: "template-twitter",
@@ -81,7 +80,7 @@ export default function Editor() {
   useEffect(() => {
     if (isReady || !isProfileLoaded || !areTemplatesLoaded) return;
 
-    const initialize = async () => {
+    const initialize = () => {
         const quoteParam = searchParams.get("quote");
         const templateIdParam = searchParams.get("templateId");
         const categoryParam = searchParams.get("category");
@@ -90,13 +89,9 @@ export default function Editor() {
         let initialState: EditorState;
         const baseState = getInitialState();
 
-        const allQuotes = await getAllQuotes();
-
         const text = quoteParam 
             ? decodeURIComponent(quoteParam) 
-            : allQuotes.length > 0 
-                ? allQuotes[Math.floor(Math.random() * allQuotes.length)].quote
-                : "A inspiração está a caminho...";
+            : "A inspiração está a caminho...";
         
         if (templateIdParam) {
           const template = allTemplates.find(t => t.id === templateIdParam);
