@@ -45,6 +45,28 @@ type FrasesClientPageProps = {
   pageTitle?: string;
 };
 
+function generateFilename(quote: QuoteWithAuthor, format: 'png' | 'jpeg'): string {
+    const safeCategory = quote.category?.replace(/\s+/g, '-') || 'Geral';
+    const safeSubCategory = quote.subCategory?.replace(/\s+/g, '-');
+    
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const day = now.getDate().toString().padStart(2, '0');
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const seconds = now.getSeconds().toString().padStart(2, '0');
+    const timestamp = `${year}${month}${day}_${hours}${minutes}${seconds}`;
+
+    const parts = ['InspiraMe', safeCategory];
+    if (safeSubCategory && safeSubCategory !== 'Todos') {
+        parts.push(safeSubCategory);
+    }
+    parts.push(timestamp);
+    
+    return `${parts.join('_')}.${format}`;
+}
+
 // Componente para gerar e pré-visualizar o meme
 function MemeGenerator({ quote, profile, editorState, onClose, shareDirectly = false }: {
   quote: QuoteWithAuthor;
@@ -393,6 +415,14 @@ export function FrasesClientPage({
     }
   };
   
+  const handleCardSubCategoryClick = (subCategory: string) => {
+    setSelectedMainCategory('Todos');
+    setSelectedSubCategory(subCategory);
+    if (isCategorySheetOpen) {
+      setIsCategorySheetOpen(false);
+    }
+  };
+  
   const handleGoToEditor = (quote: QuoteWithAuthor) => {
     const params = new URLSearchParams();
     params.set('quote', encodeURIComponent(quote.quote));
@@ -644,9 +674,13 @@ export function FrasesClientPage({
                       <CardFooter className="px-4 pt-2 pb-2 flex flex-col items-stretch gap-2">
                           <div className="flex justify-between items-center w-full text-[10px]">
                               {quote.subCategory && quote.subCategory !== 'Todos' ? (
-                                  <span className="bg-primary/10 px-2 py-0.5 rounded-full text-primary truncate max-w-[120px]">
+                                  <Button 
+                                      variant="link" 
+                                      className="p-0 h-auto text-primary text-[10px] bg-primary/10 px-2 py-0.5 rounded-full truncate max-w-[120px] hover:no-underline hover:bg-primary/20"
+                                      onClick={() => handleCardSubCategoryClick(quote.subCategory!)}
+                                  >
                                       {quote.subCategory}
-                                  </span>
+                                  </Button>
                               ) : <div />}
                               {quote.author && (
                                   <p className="font-medium text-muted-foreground truncate">

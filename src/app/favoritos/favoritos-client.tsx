@@ -169,9 +169,13 @@ export function FavoritesClientPage({ allQuotes }: FavoritesClientPageProps) {
                                 )}
                                 <div className="flex justify-between items-center w-full pt-1">
                                     {quote.subCategory && quote.subCategory !== 'Todos' ? (
-                                         <span className="text-primary text-[10px] bg-primary/10 px-2 py-0.5 rounded-full truncate max-w-[120px]">
+                                         <Button 
+                                            variant="link"
+                                            className="p-0 h-auto text-primary text-[10px] bg-primary/10 px-2 py-0.5 rounded-full truncate max-w-[120px] hover:no-underline hover:bg-primary/20"
+                                            onClick={() => handleCardSubCategoryClick(quote.subCategory!)}
+                                        >
                                             {quote.subCategory}
-                                        </span>
+                                        </Button>
                                     ) : <div />}
 
                                     <div className="flex items-center -space-x-2 -mr-2">
