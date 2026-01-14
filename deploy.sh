@@ -17,9 +17,8 @@ git tag -a "$TAG_NAME" -m "Versão de $(date +'%Y-%m-%d %H:%M:%S')"
 
 echo "Enviando alterações e a nova etiqueta para o repositório no GitHub..."
 # Usa 'origin', que foi configurado pelo 'iniciar_git.sh'
-# A flag --force é usada para sobrescrever o histórico remoto, útil na configuração inicial.
 # O comando também envia todas as tags com --tags.
-if git push --force origin main --tags; then
+if git push origin main --tags; then
   echo "✅ Versão salva no GitHub com sucesso com a etiqueta '$TAG_NAME'!"
 else
   echo "❌ Falha ao enviar para o GitHub. Verifique suas credenciais de acesso (use o Personal Access Token como senha)."
