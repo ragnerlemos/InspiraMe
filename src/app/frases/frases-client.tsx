@@ -80,6 +80,8 @@ function MemeGenerator({ quote, profile, editorState, onClose, shareDirectly = f
             throw new Error("Falha ao gerar a imagem do meme.");
         }
         
+        const filename = generateFilename(quote, 'png');
+
         if (shareDirectly) {
             if (Capacitor.isNativePlatform()) {
                 // Lógica para App Nativo
@@ -90,9 +92,9 @@ function MemeGenerator({ quote, profile, editorState, onClose, shareDirectly = f
                     if (!base64Data) {
                          throw new Error("Não foi possível extrair os dados da imagem.");
                     }
-                    const fileName = `inspireme_meme_${new Date().getTime()}.png`;
+                    
                     const { uri } = await Filesystem.writeFile({
-                        path: fileName,
+                        path: filename,
                         data: base64Data,
                         directory: Directory.Cache,
                     });
@@ -102,7 +104,7 @@ function MemeGenerator({ quote, profile, editorState, onClose, shareDirectly = f
                 }
             } else {
                 // Lógica para Web
-                const memeFile = new File([blob], `inspireme_meme_${new Date().getTime()}.png`, { type: 'image/png' });
+                const memeFile = new File([blob], filename, { type: 'image/png' });
                 if (navigator.share && navigator.canShare && navigator.canShare({ files: [memeFile] })) {
                     try {
                         await navigator.share({
@@ -151,14 +153,12 @@ function MemeGenerator({ quote, profile, editorState, onClose, shareDirectly = f
             URL.revokeObjectURL(memeUrl);
         }
     }
-  }, [shareDirectly, quote, toast, onClose, profile, editorState]);
+  }, [shareDirectly]);
 
   const handleDownloadClick = () => {
     if (!memeUrl) return;
-
-    const category = quote.category?.replace(/\s+/g, '-') || 'Geral';
-    const dateTime = new Date().toISOString().replace(/[-:.]/g, '');
-    const filename = `InspiraMe_${category}_${dateTime}.png`;
+    
+    const filename = generateFilename(quote, 'png');
 
     const link = document.createElement('a');
     link.href = memeUrl;
@@ -389,14 +389,6 @@ export function FrasesClientPage({
     setSelectedMainCategory(mainCategory);
     setSelectedSubCategory(subCategory);
     if (window.innerWidth < 768) {
-      setIsCategorySheetOpen(false);
-    }
-  };
-  
-  const handleCardSubCategoryClick = (subCategory: string) => {
-    setSelectedMainCategory('Todos');
-    setSelectedSubCategory(subCategory);
-    if (isCategorySheetOpen) {
       setIsCategorySheetOpen(false);
     }
   };
@@ -652,13 +644,9 @@ export function FrasesClientPage({
                       <CardFooter className="px-4 pt-2 pb-2 flex flex-col items-stretch gap-2">
                           <div className="flex justify-between items-center w-full text-[10px]">
                               {quote.subCategory && quote.subCategory !== 'Todos' ? (
-                                  <Button 
-                                      variant="link" 
-                                      className="p-0 h-auto text-primary text-[10px] bg-primary/10 px-2 py-0.5 rounded-full truncate max-w-[120px] hover:no-underline hover:bg-primary/20"
-                                      onClick={() => handleCardSubCategoryClick(quote.subCategory!)}
-                                  >
+                                  <span className="bg-primary/10 px-2 py-0.5 rounded-full text-primary truncate max-w-[120px]">
                                       {quote.subCategory}
-                                  </Button>
+                                  </span>
                               ) : <div />}
                               {quote.author && (
                                   <p className="font-medium text-muted-foreground truncate">
