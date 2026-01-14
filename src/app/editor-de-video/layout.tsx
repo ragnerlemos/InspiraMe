@@ -1,7 +1,6 @@
 
 'use client'
 
-import { EditorProvider } from './contexts/editor-context';
 import { FirebaseClientProvider } from "@/firebase";
 import { useGoogleFonts } from '@/hooks/use-google-fonts';
 
@@ -14,9 +13,7 @@ export default function EditorLayout({
     useGoogleFonts();
     return (
         <FirebaseClientProvider>
-            <EditorProvider>
-                {children}
-            </EditorProvider>
+            {children}
         </FirebaseClientProvider>
     );
 }
