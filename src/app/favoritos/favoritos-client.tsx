@@ -126,6 +126,10 @@ export function FavoritesClientPage({ allQuotes }: FavoritesClientPageProps) {
     }
   };
 
+  const handleCardSubCategoryClick = (subCategory: string) => {
+    router.push(`/frases?subCategory=${encodeURIComponent(subCategory)}`);
+  };
+
   const renderSkeletons = () => (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {Array.from({ length: 3 }).map((_, i) => (
@@ -165,9 +169,13 @@ export function FavoritesClientPage({ allQuotes }: FavoritesClientPageProps) {
                                 )}
                                 <div className="flex justify-between items-center w-full pt-1">
                                     {quote.subCategory && quote.subCategory !== 'Todos' ? (
-                                        <span className="bg-primary/10 px-2 py-0.5 text-xs rounded-full text-primary truncate max-w-[120px]">
+                                         <Button 
+                                            variant="link" 
+                                            className="p-0 h-auto text-primary text-[10px] bg-primary/10 px-2 py-0.5 rounded-full truncate max-w-[120px] hover:no-underline hover:bg-primary/20"
+                                            onClick={() => handleCardSubCategoryClick(quote.subCategory!)}
+                                        >
                                             {quote.subCategory}
-                                        </span>
+                                        </Button>
                                     ) : <div />}
 
                                     <div className="flex items-center -space-x-2 -mr-2">

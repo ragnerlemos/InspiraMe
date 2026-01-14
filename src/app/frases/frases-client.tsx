@@ -151,7 +151,7 @@ function MemeGenerator({ quote, profile, editorState, onClose, shareDirectly = f
             URL.revokeObjectURL(memeUrl);
         }
     }
-  }, [shareDirectly]);
+  }, [shareDirectly, quote, toast, onClose, profile, editorState]);
 
   const handleDownloadClick = () => {
     if (!memeUrl) return;
@@ -392,6 +392,26 @@ export function FrasesClientPage({
       setIsCategorySheetOpen(false);
     }
   };
+  
+  const handleCardSubCategoryClick = (subCategory: string) => {
+    setSelectedMainCategory('Todos');
+    setSelectedSubCategory(subCategory);
+    if (isCategorySheetOpen) {
+      setIsCategorySheetOpen(false);
+    }
+  };
+  
+  const handleGoToEditor = (quote: QuoteWithAuthor) => {
+    const params = new URLSearchParams();
+    params.set('quote', encodeURIComponent(quote.quote));
+    if (quote.category) {
+      params.set('category', quote.category);
+    }
+    if (quote.subCategory) {
+      params.set('subCategory', quote.subCategory);
+    }
+    router.push(`/editor-de-video?${params.toString()}`);
+  }
 
   const renderFilters = (isMobile = false) => {
     const searchInput = (
@@ -403,7 +423,6 @@ export function FrasesClientPage({
           className="pl-10 w-full"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          autoFocus={!isMobile}
         />
       </div>
     );
@@ -506,6 +525,8 @@ export function FrasesClientPage({
     const getMemeEditorState = (quote: QuoteWithAuthor): EditorState => {
         return {
             text: quote.quote,
+            category: quote.category,
+            subCategory: quote.subCategory,
             fontFamily: "Poppins",
             fontSize: profile.memeFontSize,
             fontWeight: "bold",
@@ -519,6 +540,7 @@ export function FrasesClientPage({
             textStrokeWidth: 0,
             textStrokeCornerStyle: 'rounded',
             applyEffectsToEmojis: true,
+            applyTextColorToSignature: false,
             letterSpacing: 0,
             lineHeight: 1.4,
             wordSpacing: 0,
@@ -627,12 +649,16 @@ export function FrasesClientPage({
                       <CardContent className="p-4 pb-0 flex-1">
                         <p className="text-sm font-body">{quote.quote}</p>
                       </CardContent>
-                      <CardFooter className="p-4 pt-2 flex flex-col items-stretch gap-2">
-                          <div className="flex justify-between items-center text-xs w-full">
+                      <CardFooter className="px-4 pt-2 pb-2 flex flex-col items-stretch gap-2">
+                          <div className="flex justify-between items-center w-full text-[10px]">
                               {quote.subCategory && quote.subCategory !== 'Todos' ? (
-                                  <span className="bg-primary/10 px-2 py-0.5 rounded-full text-primary truncate max-w-[120px]">
+                                  <Button 
+                                      variant="link" 
+                                      className="p-0 h-auto text-primary text-[10px] bg-primary/10 px-2 py-0.5 rounded-full truncate max-w-[120px] hover:no-underline hover:bg-primary/20"
+                                      onClick={() => handleCardSubCategoryClick(quote.subCategory!)}
+                                  >
                                       {quote.subCategory}
-                                  </span>
+                                  </Button>
                               ) : <div />}
                               {quote.author && (
                                   <p className="font-medium text-muted-foreground truncate">
@@ -660,7 +686,7 @@ export function FrasesClientPage({
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent>
-                                    <DropdownMenuItem onClick={() => router.push(`/editor-de-video?quote=${encodeURIComponent(quote.quote)}`)}>
+                                    <DropdownMenuItem onClick={() => handleGoToEditor(quote)}>
                                         <Edit className="mr-2 h-4 w-4" />
                                         Edição Avançada
                                     </DropdownMenuItem>
@@ -701,13 +727,3 @@ export function FrasesClientPage({
     </>
   );
 }
-
-    
-
-    
-
-
-
-    
-
-    
