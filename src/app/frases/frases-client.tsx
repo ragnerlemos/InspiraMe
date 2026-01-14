@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useMemo, useRef, useEffect, ComponentType } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Heart, Search, Copy, Film, Share2, LayoutGrid, Download, MoreVertical, Sun, Calendar, Moon, MessageSquare, Quote, CircleDollarSign, PartyPopper, Gift, Egg, HeartHandshake, TestTube, ImageUp, Edit, ZoomIn, BookOpen, Loader2, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -284,6 +284,7 @@ export function FrasesClientPage({
 }: FrasesClientPageProps) {
   const [allQuotes] = useState<QuoteWithAuthor[]>(initialQuotes);
   const [isLoading] = useState(false);
+  const searchParams = useSearchParams();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMainCategory, setSelectedMainCategory] = useState<string>('Todos');
   const [selectedSubCategory, setSelectedSubCategory] = useState<string>('Todos');
@@ -295,6 +296,17 @@ export function FrasesClientPage({
   const { toast } = useToast();
   const router = useRouter();
   const { profile } = useProfile();
+
+  useEffect(() => {
+    const mainCatFromUrl = searchParams.get('mainCategory');
+    const subCatFromUrl = searchParams.get('subCategory');
+    if (mainCatFromUrl) {
+      setSelectedMainCategory(mainCatFromUrl);
+    }
+    if (subCatFromUrl) {
+      setSelectedSubCategory(subCatFromUrl);
+    }
+  }, [searchParams]);
   
   const filteredQuotes = useMemo(() => {
     let quotes = allQuotes;
