@@ -1,5 +1,4 @@
-
-"use client";
+'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -35,7 +34,6 @@ function MainNavigationLinks({ onLinkClick }: { onLinkClick?: () => void }) {
       <NavLink href="/projetos" icon={Clapperboard} label="Projetos" onClick={onLinkClick} />
       <NavLink href="/modelos" icon={LayoutTemplate} label="Modelos" onClick={onLinkClick} />
       <NavLink href="/galeria" icon={Library} label="Galeria" onClick={onLinkClick} />
-      <NavLink href="/assinatura" icon={PenSquare} label="Assinatura" onClick={onLinkClick} />
     </>
   );
 }
