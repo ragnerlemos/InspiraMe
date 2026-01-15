@@ -227,7 +227,7 @@ export default function Editor() {
   };
 
   return (
-    <div className="flex flex-col w-full bg-background font-body text-foreground h-full">
+    <div className="flex flex-col w-full bg-background font-body text-foreground h-full md:pb-0 pb-[64px]">
       <PanelGroup direction="horizontal" className="flex-1 min-h-0">
         <Panel defaultSize={30} minSize={25} maxSize={40} className="hidden md:flex flex-col">
           <Sidebar {...commonProps} />
@@ -237,11 +237,12 @@ export default function Editor() {
           <div className="flex-1 overflow-auto">
             <PreviewCanva {...previewProps} />
           </div>
-          <div className="md:hidden">
-            <MobileToolbar {...commonProps} />
-          </div>
         </Panel>
       </PanelGroup>
+
+      {!isDesktop && (
+          <MobileToolbar {...commonProps} />
+      )}
     </div>
   );
 }

@@ -906,7 +906,7 @@ export function MobileToolbar({
 
   return (
     <>
-      <div className="md:hidden fixed bottom-0 left-0 w-full z-10 bg-background border-t">
+      <div className="fixed bottom-0 left-0 w-full z-10 bg-background border-t h-16">
         {mainToolbar}
       </div>
 
