@@ -44,7 +44,7 @@ export function ModeloTwitter({
     const signatureTextColor = applyTextColorToSignature ? finalTextColor : '#FFFFFF';
 
     return (
-        <div className="relative w-full h-full p-12 flex items-center justify-center">
+        <div className="relative w-full h-full p-12 flex items-center justify-center overflow-hidden">
             <div className="w-full">
                  <div className="flex items-start gap-3">
                     <Avatar className="w-12 h-12 flex-shrink-0">
@@ -62,10 +62,10 @@ export function ModeloTwitter({
                     </div>
                 </div>
                 <div 
-                    className="mt-3 text-xl break-words" 
+                    className="mt-3 text-xl" 
                     style={{ ...dropShadowStyle }}
                 >
-                   <p style={combinedTextStyle}>{text}</p>
+                   <p style={combinedTextStyle} className="break-words">{text}</p>
                 </div>
                  {showDate && (
                     <div className="mt-4 text-sm flex items-center gap-2" style={{ color: signatureTextColor, opacity: 0.7 }}>
