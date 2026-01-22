@@ -1,10 +1,10 @@
 
 import { Suspense } from 'react';
-import { getSheetData, getAllQuotes } from '@/lib/dados';
+import { quotes as allQuotes } from '@/lib/quotes';
 import { FrasesClientPage } from './frases-client';
 import { Skeleton } from '@/components/ui/skeleton';
 
-// O componente de esqueleto para ser usado como fallback do Suspense.
+// The skeleton component for Suspense fallback.
 function FrasesLoadingSkeleton() {
   return (
     <div className="grid md:grid-cols-[280px_1fr] gap-8 md:items-start px-4">
@@ -29,30 +29,21 @@ function FrasesLoadingSkeleton() {
 }
 
 
-// This is a Server Component that fetches the initial data.
-export default async function FrasesPage() {
+// This is a Server Component that provides the initial data.
+export default function FrasesPage() {
   
-  // Fetch all quotes and categories at build time.
-  // The client component will handle all the dynamic filtering.
-  const allQuotes = await getAllQuotes();
-  // Usa getSheetData para obter a hierarquia completa
-  const sheetData = await getSheetData();
-
-  // Extrai as categorias principais e a hierarquia
-  const mainCategories = ['Todos'];
+  // Create category hierarchy from the static quotes data
+  const mainCategories = ['Todos', ...new Set(allQuotes.map(q => q.category))];
   const categories: { [mainCategory: string]: string[] } = {};
 
-  for (const sheetName in sheetData) {
-      for (const mainCat in sheetData[sheetName]) {
-          if (!mainCategories.includes(mainCat)) {
-              mainCategories.push(mainCat);
-          }
-          if (!categories[mainCat]) {
-              categories[mainCat] = [];
-          }
-          categories[mainCat] = [...new Set([...categories[mainCat], ...sheetData[sheetName][mainCat]])];
+  allQuotes.forEach(quote => {
+      if (!categories[quote.category]) {
+          categories[quote.category] = [];
       }
-  }
+      if (quote.subCategory && !categories[quote.category].includes(quote.subCategory)) {
+          categories[quote.category].push(quote.subCategory);
+      }
+  });
 
   return (
     <Suspense fallback={<FrasesLoadingSkeleton />}>
