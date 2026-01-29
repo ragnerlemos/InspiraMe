@@ -1,12 +1,14 @@
 
 import { google } from 'googleapis';
 
+const SPREADSHEET_ID = process.env.SPREADSHEET_ID;
+
 const auth = new google.auth.GoogleAuth({
   credentials: {
     client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
     private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
   },
-  scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+  scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'], // Use readonly scope for safety
 });
 
 const sheets = google.sheets({
@@ -31,23 +33,14 @@ export interface SheetHierarchy {
   [sheetName: string]: CategoriesHierarchy;
 }
 
-
-let cachedQuotes: QuoteWithAuthor[] | null = null;
-let lastFetchTime: number = 0;
-const CACHE_DURATION = 1; 
-
-let cachedSheetNames: string[] | null = null;
-let lastSheetNamesFetchTime: number = 0;
-
-
 const mapRowToQuote = (row: any[], index: number, sheetName: string): QuoteWithAuthor | null => {
     const quoteText = row[5];
-    if (!quoteText) {
+    if (!quoteText || typeof quoteText !== 'string' || quoteText.trim() === '') {
         return null;
     }
     return {
         id: `${sheetName}-${index}`,
-        quote: quoteText,
+        quote: quoteText.trim(),
         author: row[9] || undefined,
         category: row[3] || 'Geral',
         subCategory: row[2] || undefined,
@@ -55,90 +48,64 @@ const mapRowToQuote = (row: any[], index: number, sheetName: string): QuoteWithA
     };
 };
 
-export async function invalidateCache() {
-    cachedQuotes = null;
-    lastFetchTime = 0;
-    cachedSheetNames = null;
-    lastSheetNamesFetchTime = 0;
-}
-
-export async function getAllSheetNames(forceRefresh = false): Promise<string[]> {
-    const now = Date.now();
-
-    if (!forceRefresh && cachedSheetNames && (now - lastSheetNamesFetchTime < CACHE_DURATION)) {
-        return cachedSheetNames;
+export async function getAllSheetNames(): Promise<string[]> {
+    if (!SPREADSHEET_ID) {
+        console.error('SPREADSHEET_ID is not defined in the environment.');
+        return [];
     }
 
     try {
-        const spreadsheetId = process.env.SPREADSHEET_ID;
-        if (!spreadsheetId) {
-            console.error('SPREADSHEET_ID não está definido no ambiente.');
-            return [];
-        }
-
         const spreadsheetMeta = await sheets.spreadsheets.get({
-            spreadsheetId
+            spreadsheetId: SPREADSHEET_ID
         });
         
         const sheetNames = spreadsheetMeta.data.sheets
             ?.map(sheet => sheet.properties?.title)
-            .filter((title): title is string => !!title);
+            .filter((title): title is string => !!title && title !== 'Modelo'); // Exclude the template sheet
         
-        if (!sheetNames || sheetNames.length === 0) {
-            console.warn('Nenhuma aba válida encontrada na planilha.');
+        if (!sheetNames) {
+            console.warn('No sheets found in the spreadsheet.');
             return [];
         }
         
-        cachedSheetNames = sheetNames;
-        lastSheetNamesFetchTime = now;
         return sheetNames;
 
     } catch (error) {
-        console.error('Erro ao buscar nomes das abas:', error);
-        return [];
+        console.error('Error fetching sheet names:', error);
+        return []; // Return empty array on error
     }
 }
 
 
-export async function getAllQuotes(forceRefresh = false): Promise<QuoteWithAuthor[]> {
-    const now = Date.now();
-    if (forceRefresh) {
-        await invalidateCache();
-    }
-    
-    if (cachedQuotes && (now - lastFetchTime < CACHE_DURATION) && !forceRefresh) {
-        return cachedQuotes;
+export async function getAllQuotes(): Promise<QuoteWithAuthor[]> {
+    if (!SPREADSHEET_ID) {
+        console.error('SPREADSHEET_ID is not defined in the environment.');
+        return [];
     }
 
     try {
-        const spreadsheetId = process.env.SPREADSHEET_ID;
-        if (!spreadsheetId) {
-            console.error('SPREADSHEET_ID não está definido no ambiente.');
-            return [];
-        }
-
-        const sheetNames = await getAllSheetNames(forceRefresh);
-        if (!sheetNames || sheetNames.length === 0) {
+        const sheetNames = await getAllSheetNames();
+        if (sheetNames.length === 0) {
             return [];
         }
 
         const ranges = sheetNames.map(name => `'${name}'!A:J`);
         const response = await sheets.spreadsheets.values.batchGet({
-            spreadsheetId,
+            spreadsheetId: SPREADSHEET_ID,
             ranges,
         });
 
         const valueRanges = response.data.valueRanges;
         if (!valueRanges) {
+            console.warn('batchGet returned no valueRanges.');
             return [];
         }
         
         const quotes: QuoteWithAuthor[] = [];
-        valueRanges.forEach((range) => {
-            const sheetNameWithQuotes = range.range?.split('!')[0] || 'Desconhecida';
-            const sheetName = sheetNameWithQuotes.replace(/'/g, ''); 
-            
+        valueRanges.forEach((range, rangeIndex) => {
+            const sheetName = sheetNames[rangeIndex]; // More reliable way to get sheet name
             if (range.values) {
+                // Start at 1 to skip header row
                 for (let i = 1; i < range.values.length; i++) {
                     const quote = mapRowToQuote(range.values[i], i, sheetName);
                     if (quote) {
@@ -148,27 +115,23 @@ export async function getAllQuotes(forceRefresh = false): Promise<QuoteWithAutho
             }
         });
         
-        cachedQuotes = quotes;
-        lastFetchTime = now;
         return quotes;
 
     } catch (error) {
-        console.error('Erro ao buscar dados do Google Sheets:', error);
-        return [];
+        console.error('Error fetching data from Google Sheets:', error);
+        return []; // Return empty array on error
     }
 }
 
-export async function getSheetData(forceRefresh = false): Promise<SheetHierarchy> {
-    const quotes = await getAllQuotes(forceRefresh);
+export async function getSheetData(): Promise<SheetHierarchy> {
+    const quotes = await getAllQuotes();
     const sheetHierarchy: SheetHierarchy = {};
 
     quotes.forEach(quote => {
         if (!sheetHierarchy[quote.sheetName]) {
             sheetHierarchy[quote.sheetName] = {};
         }
-
         const sheetCategories = sheetHierarchy[quote.sheetName];
-
         if (quote.category) {
             if (!sheetCategories[quote.category]) {
                 sheetCategories[quote.category] = [];
