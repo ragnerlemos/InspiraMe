@@ -10,7 +10,7 @@ import { Capacitor } from '@capacitor/core';
 import { Clipboard } from '@capacitor/clipboard';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 import * as htmlToImage from 'html-to-image';
-import { Heart, RefreshCw, Loader2, MessageSquare, ImageDown, Smartphone, Copy as CopyIcon, MoreVertical } from 'lucide-react';
+import { Heart, RefreshCw, Loader2, MessageSquare, ImageDown, Smartphone, Copy as CopyIcon, MoreVertical, Download } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // --- Dados e Tipos ---
@@ -143,6 +143,25 @@ export default function TesteCompartilharPage() {
         reader.readAsDataURL(blob);
     });
   }
+  
+  const handleDownload = async () => {
+    setIsProcessing(true);
+    try {
+      const blob = await generateImageBlob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = FILENAME;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      toast({ title: 'Sucesso!', description: `Imagem baixada como ${FILENAME}` });
+    } catch (error) {
+      toast({ variant: 'destructive', title: 'Falha no Download', description: `${error}` });
+    }
+    setIsProcessing(false);
+  };
 
   // --- Funções de Teste ---
   const test_Image_WebAPI = async () => {
@@ -196,38 +215,18 @@ export default function TesteCompartilharPage() {
               {currentQuote.author && <p className="font-medium text-sm text-muted-foreground text-right w-full pr-2">- {currentQuote.author}</p>}
               
               <div className="flex justify-around items-center w-full pt-2">
-                {/* --- Ícones Funcionais (como na produção) --- */}
+                <Button variant="ghost" size="icon" onClick={handleDownload}>
+                    <Download className="h-5 w-5" />
+                </Button>
                 <Button variant="ghost" size="icon" onClick={() => handleCopy(currentQuote.quote, currentQuote.author)}>
                   <CopyIcon className="h-5 w-5" />
                 </Button>
                 <Button variant="ghost" size="icon" onClick={() => setIsFavorited(!isFavorited)}>
                   <Heart className={cn("h-5 w-5", isFavorited ? "text-red-500 fill-current" : "text-gray-400")} />
                 </Button>
-
-                {/* --- Botão de compartilhar texto com a lógica funcional --- */}
                 <Button variant="ghost" size="icon" className="text-primary" onClick={() => handleShare(currentQuote.quote, currentQuote.author)}>
                   <MessageSquare className="h-5 w-5" />
                 </Button>
-
-                 <Button variant="ghost" size="icon" className="text-primary" onClick={() => runTest('Imagem (Web API)', test_Image_WebAPI)}>
-                    <ImageDown className="h-5 w-5" />
-                </Button>
-
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="text-primary">
-                      <Smartphone className="h-5 w-5" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuLabel>Testar Imagem (Capacitor)</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => runTest('Imagem Cap. (App 1)', test_Image_Capacitor_App1)}>App 1 (Share URL)</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => runTest('Imagem Cap. (App 2)', test_Image_Capacitor_App2)}>App 2 (Share Files)</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-
-                {/* --- Ícone Visual (como na produção) --- */}
                 <Button variant="ghost" size="icon">
                   <MoreVertical className="h-5 w-5" />
                 </Button>
