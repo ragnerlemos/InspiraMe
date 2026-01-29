@@ -4,13 +4,12 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Share } from '@capacitor/share';
 import { Capacitor } from '@capacitor/core';
 import { Clipboard } from '@capacitor/clipboard';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 import * as htmlToImage from 'html-to-image';
-import { Heart, RefreshCw, Loader2, MessageSquare, ImageDown, Smartphone, Copy as CopyIcon, MoreVertical, Download } from 'lucide-react';
+import { Heart, RefreshCw, Loader2, MessageSquare, Smartphone, Copy as CopyIcon, MoreVertical, Download, Share2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // --- Dados e Tipos ---
@@ -114,18 +113,6 @@ export default function TesteCompartilharPage() {
     }
   };
 
-
-  const runTest = async (testName: string, testFn: () => Promise<string | void>) => {
-    setIsProcessing(true);
-    try {
-      const result = await testFn();
-      toast({ title: `Teste '${testName}' bem-sucedido!`, description: result || 'Ação concluída com sucesso.' });
-    } catch (error) {
-      toast({ variant: 'destructive', title: `Teste '${testName}' falhou!`, description: `${error}` });
-    }
-    setIsProcessing(false);
-  };
-
   const generateImageBlob = async (): Promise<Blob> => {
     if (!memeRef.current) throw new Error('Referência do meme não encontrada.');
     await document.fonts.ready;
@@ -163,26 +150,58 @@ export default function TesteCompartilharPage() {
     setIsProcessing(false);
   };
 
-  // --- Funções de Teste ---
-  const test_Image_WebAPI = async () => {
-    const blob = await generateImageBlob();
-    const file = new File([blob], FILENAME, { type: blob.type });
-    if (!navigator.canShare || !navigator.canShare({ files: [file] })) throw new Error('Web Share API não suporta compartilhamento de arquivos.');
-    await navigator.share({ files: [file], title: 'Meme Inspirador', text: 'Criado com o InspireMe' });
+  const handleShareImageWeb = async () => {
+    setIsProcessing(true);
+    try {
+        const blob = await generateImageBlob();
+        const file = new File([blob], FILENAME, { type: blob.type });
+
+        if (!navigator.share || !navigator.canShare || !navigator.canShare({ files: [file] })) {
+            throw new Error('Web Share API (arquivos) não é suportada neste navegador.');
+        }
+
+        await navigator.share({
+            files: [file],
+            title: 'Meme Inspirador',
+            text: 'Criado com o InspireMe',
+        });
+        toast({ title: 'Sucesso!', description: 'Imagem compartilhada via Web Share API.' });
+    } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') {
+             toast({ title: 'Cancelado', description: 'Compartilhamento cancelado pelo usuário.' });
+        } else {
+            toast({ variant: 'destructive', title: 'Falha ao Compartilhar (Web)', description: `${error}` });
+        }
+    }
+    setIsProcessing(false);
   };
-  const test_Image_Capacitor_App1 = async () => {
-    if (!Capacitor.isNativePlatform()) throw new Error('Não é um ambiente nativo Capacitor.');
-    const blob = await generateImageBlob();
-    const base64Data = await getBase64FromBlob(blob);
-    const { uri } = await Filesystem.writeFile({ path: FILENAME, data: base64Data, directory: Directory.Cache });
-    await Share.share({ url: uri, title: 'InspiraMe Meme', dialogTitle: 'Compartilhar Imagem' });
-  };
-  const test_Image_Capacitor_App2 = async () => {
-    if (!Capacitor.isNativePlatform()) throw new Error('Não é um ambiente nativo Capacitor.');
-    const blob = await generateImageBlob();
-    const base64Data = await getBase64FromBlob(blob);
-    const { uri } = await Filesystem.writeFile({ path: FILENAME, data: base64Data, directory: Directory.Cache });
-    await Share.share({ files: [uri], title: 'InspiraMe Meme', dialogTitle: 'Compartilhar Arquivo' });
+
+  const handleShareImageCapacitor = async () => {
+    setIsProcessing(true);
+    try {
+        if (!Capacitor.isNativePlatform()) {
+            throw new Error('Não está em um ambiente nativo Capacitor.');
+        }
+        const blob = await generateImageBlob();
+        const base64Data = await getBase64FromBlob(blob);
+        
+        const { uri } = await Filesystem.writeFile({
+            path: FILENAME,
+            data: base64Data,
+            directory: Directory.Cache,
+        });
+
+        await Share.share({
+            url: uri,
+            title: 'Meme Inspirador',
+            dialogTitle: 'Compartilhar Imagem',
+        });
+
+        toast({ title: 'Sucesso!', description: 'Imagem compartilhada via Capacitor.' });
+    } catch (error) {
+        toast({ variant: 'destructive', title: 'Falha ao Compartilhar (Capacitor)', description: `${error}` });
+    }
+    setIsProcessing(false);
   };
 
   return (
@@ -190,7 +209,7 @@ export default function TesteCompartilharPage() {
       {isProcessing && (
         <div className="fixed inset-0 bg-black/60 z-50 flex flex-col items-center justify-center gap-4">
           <Loader2 className="h-8 w-8 animate-spin text-white" />
-          <p className="text-white text-lg">Processando teste...</p>
+          <p className="text-white text-lg">Processando...</p>
         </div>
       )}
 
@@ -200,7 +219,7 @@ export default function TesteCompartilharPage() {
       </div>
 
       <div className="w-full max-w-md">
-          <h1 className="text-center text-2xl font-bold mb-2">Card de Teste Idêntico</h1>
+          <h1 className="text-center text-2xl font-bold mb-2">Card de Teste</h1>
           <p className="text-center text-muted-foreground mb-4">Use os ícones para testar cada função.</p>
           <Button onClick={getNewQuote} variant="outline" className="w-full mb-4">
               <RefreshCw className="mr-2 h-4 w-4" />
@@ -215,19 +234,25 @@ export default function TesteCompartilharPage() {
               {currentQuote.author && <p className="font-medium text-sm text-muted-foreground text-right w-full pr-2">- {currentQuote.author}</p>}
               
               <div className="flex justify-around items-center w-full pt-2">
-                <Button variant="ghost" size="icon" onClick={handleDownload}>
+                <Button variant="ghost" size="icon" onClick={handleDownload} title="Baixar Imagem">
                     <Download className="h-5 w-5" />
                 </Button>
-                <Button variant="ghost" size="icon" onClick={() => handleCopy(currentQuote.quote, currentQuote.author)}>
+                <Button variant="ghost" size="icon" onClick={() => handleCopy(currentQuote.quote, currentQuote.author)} title="Copiar Texto">
                   <CopyIcon className="h-5 w-5" />
                 </Button>
-                <Button variant="ghost" size="icon" onClick={() => setIsFavorited(!isFavorited)}>
+                <Button variant="ghost" size="icon" onClick={handleShareImageWeb} title="Compartilhar Imagem (Web)">
+                  <Share2 className="h-5 w-5 text-blue-500" />
+                </Button>
+                <Button variant="ghost" size="icon" onClick={handleShareImageCapacitor} title="Compartilhar Imagem (App)">
+                  <Smartphone className="h-5 w-5 text-green-500" />
+                </Button>
+                <Button variant="ghost" size="icon" onClick={() => setIsFavorited(!isFavorited)} title="Favoritar">
                   <Heart className={cn("h-5 w-5", isFavorited ? "text-red-500 fill-current" : "text-gray-400")} />
                 </Button>
-                <Button variant="ghost" size="icon" className="text-primary" onClick={() => handleShare(currentQuote.quote, currentQuote.author)}>
+                <Button variant="ghost" size="icon" className="text-primary" onClick={() => handleShare(currentQuote.quote, currentQuote.author)} title="Compartilhar Texto">
                   <MessageSquare className="h-5 w-5" />
                 </Button>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" title="Mais opções">
                   <MoreVertical className="h-5 w-5" />
                 </Button>
               </div>
