@@ -9,7 +9,7 @@ import { Capacitor } from '@capacitor/core';
 import { Clipboard } from '@capacitor/clipboard';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 import * as htmlToImage from 'html-to-image';
-import { Heart, RefreshCw, Loader2, MessageSquare, Smartphone, Copy as CopyIcon, MoreVertical, Download, Share2, Globe, Paperclip, Clipboard as ClipboardIcon, ArrowDownToLine, Tv, FileUp, Files, Image as ImageIcon, Camera, Plane } from 'lucide-react';
+import { Heart, RefreshCw, Loader2, MessageSquare, Smartphone, Copy as CopyIcon, MoreVertical, Download, Share2, Globe, Paperclip, Clipboard as ClipboardIcon, ArrowDownToLine, Tv, FileUp, Files, Image as ImageIcon, Camera, Plane, Rocket } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
@@ -544,26 +544,6 @@ export default function TesteCompartilharPage() {
                             <Globe className="mr-2 h-4 w-4" />
                             Compartilhar Imagem (Web)
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setProcessingAction('share-capacitor')}>
-                            <Smartphone className="mr-2 h-4 w-4" />
-                            App 1 (url/cache)
-                        </DropdownMenuItem>
-                         <DropdownMenuItem onClick={() => setProcessingAction('share-app-2')}>
-                            <Smartphone className="mr-2 h-4 w-4" />
-                            App 2 (url/data)
-                        </DropdownMenuItem>
-                         <DropdownMenuItem onClick={() => setProcessingAction('share-app-3')}>
-                            <FileUp className="mr-2 h-4 w-4" />
-                            App 3 (files/docs)
-                        </DropdownMenuItem>
-                         <DropdownMenuItem onClick={() => setProcessingAction('share-app-4')}>
-                            <FileUp className="mr-2 h-4 w-4" />
-                            App 4 (files/cache)
-                        </DropdownMenuItem>
-                         <DropdownMenuItem onClick={() => setProcessingAction('share-app-5')}>
-                            <ImageIcon className="mr-2 h-4 w-4" />
-                            App 5 (JPG/docs)
-                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => setProcessingAction('preview-and-share')}>
                             <Camera className="mr-2 h-4 w-4" />
                             Gerar e Compartilhar (Preview)
@@ -577,16 +557,31 @@ export default function TesteCompartilharPage() {
 
                  <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" title="Compartilhamento Experimental">
+                        <Button variant="ghost" size="icon" title="Testes de App 1-10">
                            <Plane className="h-5 w-5" />
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
+                         <DropdownMenuItem onClick={() => setProcessingAction('share-capacitor')}>App 1 (url/cache)</DropdownMenuItem>
+                         <DropdownMenuItem onClick={() => setProcessingAction('share-app-2')}>App 2 (url/data)</DropdownMenuItem>
+                         <DropdownMenuItem onClick={() => setProcessingAction('share-app-3')}>App 3 (files/docs)</DropdownMenuItem>
+                         <DropdownMenuItem onClick={() => setProcessingAction('share-app-4')}>App 4 (files/cache)</DropdownMenuItem>
+                         <DropdownMenuItem onClick={() => setProcessingAction('share-app-5')}>App 5 (JPG/docs)</DropdownMenuItem>
                          <DropdownMenuItem onClick={() => setProcessingAction('share-app-6')}>App 6 (url data-uri)</DropdownMenuItem>
                          <DropdownMenuItem onClick={() => setProcessingAction('share-app-7')}>App 7 (files data-uri)</DropdownMenuItem>
                          <DropdownMenuItem onClick={() => setProcessingAction('share-app-8')}>App 8 (b64/cache)</DropdownMenuItem>
                          <DropdownMenuItem onClick={() => setProcessingAction('share-app-9')}>App 9 (Clipboard/Texto)</DropdownMenuItem>
                          <DropdownMenuItem onClick={() => setProcessingAction('share-app-10')}>App 10 (Simular Download)</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" title="Testes de App 11-22">
+                           <Rocket className="h-5 w-5" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
                          <DropdownMenuItem onClick={() => setProcessingAction('share-app-11')}>App 11 (Blob URL)</DropdownMenuItem>
                          <DropdownMenuItem onClick={() => setProcessingAction('share-app-12')}>App 12 (Simplificado)</DropdownMenuItem>
                          <DropdownMenuItem onClick={() => setProcessingAction('share-app-13')}>App 13 (Debug Files)</DropdownMenuItem>
