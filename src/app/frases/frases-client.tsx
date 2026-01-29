@@ -3,7 +3,7 @@
 
 import { useState, useMemo, useRef, useEffect, ComponentType } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Heart, Search, Copy, Film, Share2, LayoutGrid, Download, MoreVertical, Sun, Calendar, Moon, MessageSquare, Quote, CircleDollarSign, PartyPopper, Gift, Egg, HeartHandshake, TestTube, ImageUp, Edit, ZoomIn, BookOpen, Loader2, ChevronRight } from 'lucide-react';
+import { Heart, Search, Copy, Film, Share2, LayoutGrid, Download, MoreVertical, Sun, Calendar, Moon, MessageSquare, Quote, CircleDollarSign, PartyPopper, Gift, Egg, HeartHandshake, TestTube, ImageUp, Edit, ZoomIn, BookOpen, Loader2, ChevronRight, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -43,6 +43,7 @@ type FrasesClientPageProps = {
   initialMainCategories: string[];
   initialSubCategories: CategoriesHierarchy;
   pageTitle?: string;
+  dataFetchError?: boolean;
 };
 
 function generateFilename(quote: QuoteWithAuthor, format: 'png' | 'jpeg'): string {
@@ -281,6 +282,7 @@ export function FrasesClientPage({
   initialMainCategories,
   initialSubCategories,
   pageTitle = "Inspire-se com Frases",
+  dataFetchError = false,
 }: FrasesClientPageProps) {
   const [allQuotes] = useState<QuoteWithAuthor[]>(initialQuotes);
   const [isLoading] = useState(false);
@@ -741,11 +743,23 @@ export function FrasesClientPage({
                 })}
               </div>
             ) : (
-              <div className="text-center py-20 bg-card border rounded-lg flex flex-col items-center">
-                <Search className="h-16 w-16 text-muted-foreground/50 mb-4" />
-                <h2 className="text-2xl font-semibold mb-2">Nenhuma frase encontrada</h2>
-                <p className="text-muted-foreground">Tente ajustar sua busca ou selecionar outra categoria.</p>
-              </div>
+              <>
+                {dataFetchError && !searchTerm && selectedMainCategory === 'Todos' && selectedSubCategory === 'Todos' ? (
+                  <div className="text-center py-20 bg-card border rounded-lg flex flex-col items-center max-w-2xl mx-auto">
+                    <AlertTriangle className="h-16 w-16 text-destructive mb-4" />
+                    <h2 className="text-2xl font-semibold mb-2">Erro ao Carregar Frases</h2>
+                    <p className="text-muted-foreground max-w-md mx-auto">
+                      Não foi possível buscar os dados da sua planilha. Verifique se as variáveis de ambiente (`SPREADSHEET_ID`, etc.) estão configuradas corretamente no arquivo `.env.local`.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="text-center py-20 bg-card border rounded-lg flex flex-col items-center">
+                    <Search className="h-16 w-16 text-muted-foreground/50 mb-4" />
+                    <h2 className="text-2xl font-semibold mb-2">Nenhuma frase encontrada</h2>
+                    <p className="text-muted-foreground">Tente ajustar sua busca ou selecionar outra categoria.</p>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
