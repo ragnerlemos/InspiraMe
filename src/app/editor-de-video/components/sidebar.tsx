@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useRef, useMemo } from "react";
@@ -694,7 +695,6 @@ export function Sidebar({
             const oldFg = fgColor;
             setBackgroundStyle({ type: 'solid', value: oldFg });
             setFgColor(oldBg);
-            // Também inverte as cores da assinatura
             onSignatureUsernameColorChange(oldBg);
             onSignatureSocialColorChange(oldBg);
         } else {

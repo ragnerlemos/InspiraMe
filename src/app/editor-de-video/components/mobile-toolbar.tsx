@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useRef, ComponentType, useMemo } from "react";
@@ -735,7 +736,6 @@ export function MobileToolbar({
             const oldFg = fgColor;
             setBackgroundStyle({ type: 'solid', value: oldFg });
             setFgColor(oldBg);
-            // Também inverte as cores da assinatura
             onSignatureUsernameColorChange(oldBg);
             onSignatureSocialColorChange(oldBg);
         } else {
