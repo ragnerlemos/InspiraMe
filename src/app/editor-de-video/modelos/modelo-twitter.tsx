@@ -41,7 +41,7 @@ export function ModeloTwitter({
     };
 
     return (
-        <div className="relative w-full h-full p-12 flex items-center justify-center bg-black">
+        <div className="relative w-full h-full p-12 flex items-center justify-center">
             <div className="w-full">
                  <div className="flex items-start gap-3">
                     <Avatar className="w-12 h-12 flex-shrink-0">
