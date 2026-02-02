@@ -47,7 +47,7 @@ const getInitialState = (): Omit<EditorState, 'text'> => ({
     signatureBgColor: "#000000",
     signatureBgOpacity: 30,
     signatureUsernameColor: "#FFFFFF",
-    signatureSocialColor: "#E5E7EB",
+    signatureSocialColor: "#FFFFFF",
     profileVerticalPosition: 25,
     showLogo: false,
     logoPositionX: 50,
