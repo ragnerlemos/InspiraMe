@@ -21,6 +21,7 @@ export function ModeloPadrao({
 }: ModeloPadraoProps) {
     const {
         text,
+        textColor,
         textVerticalPosition,
         applyEffectsToEmojis,
         showProfileSignature,
@@ -33,8 +34,6 @@ export function ModeloPadrao({
         showSignatureBackground,
         signatureBgColor,
         signatureBgOpacity,
-        signatureUsernameColor,
-        signatureSocialColor,
         showLogo,
         logoPositionX,
         logoPositionY,
@@ -92,7 +91,17 @@ export function ModeloPadrao({
                 </div>
             )}
             {showProfileSignature && (
-                <div className="absolute" style={{ zIndex: 2, top: `${signaturePositionY}%`, left: `${signaturePositionX}%`, transform: `translate(-50%, -50%) scale(${signatureScale / 100})`, transformOrigin: 'center center' }}>
+                <div 
+                  className="absolute" 
+                  style={{ 
+                    zIndex: 2, 
+                    top: `${signaturePositionY}%`, 
+                    left: `${signaturePositionX}%`, 
+                    transform: `translate(-50%, -50%) scale(${signatureScale / 100})`, 
+                    transformOrigin: 'center center',
+                    color: textColor
+                  }}
+                >
                     <AssinaturaPerfil 
                         profile={profile} 
                         showPhoto={showSignaturePhoto} 
@@ -101,8 +110,6 @@ export function ModeloPadrao({
                         showBackground={showSignatureBackground} 
                         bgColor={signatureBgColor} 
                         bgOpacity={signatureBgOpacity} 
-                        usernameColor={signatureUsernameColor}
-                        socialColor={signatureSocialColor}
                     />
                 </div>
             )}

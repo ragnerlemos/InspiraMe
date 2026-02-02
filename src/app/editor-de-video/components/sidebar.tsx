@@ -644,10 +644,6 @@ interface SidebarProps extends ControleAssinaturaProps, ControleLogoProps, Commo
     setFilmOpacity: (opacity: number) => void;
     fgColor: string;
     setFgColor: (color: string) => void;
-    signatureUsernameColor: string;
-    onSignatureUsernameColorChange: (color: string) => void;
-    signatureSocialColor: string;
-    onSignatureSocialColorChange: (color: string) => void;
     activeControl: string | null;
     setActiveControl: (control: string | null) => void;
     text: string;
@@ -673,10 +669,6 @@ export function Sidebar({
     setFilmOpacity,
     fgColor,
     setFgColor,
-    signatureUsernameColor,
-    onSignatureUsernameColorChange,
-    signatureSocialColor,
-    onSignatureSocialColorChange,
     updateState,
     ...props
 }: SidebarProps) {
@@ -698,8 +690,6 @@ export function Sidebar({
             updateState({
                 backgroundStyle: { type: 'solid', value: oldFg },
                 textColor: oldBg,
-                signatureUsernameColor: oldBg,
-                signatureSocialColor: oldBg,
             });
         } else {
             toast({
@@ -795,36 +785,6 @@ export function Sidebar({
                             <FlipHorizontal className="h-4 w-4" />
                             Inverter Cores
                         </Button>
-                        <Separator />
-                         <div>
-                            <h3 className="text-base font-medium mb-3">Cores da Assinatura</h3>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                     <Label className="text-left block">Nome de Usuário</Label>
-                                      <div className="relative h-10 w-full rounded-md border overflow-hidden">
-                                          <Input
-                                            type="color"
-                                            value={signatureUsernameColor}
-                                            onChange={e => onSignatureUsernameColorChange(e.target.value)}
-                                            className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer opacity-0"
-                                        />
-                                        <div className="w-full h-full" style={{ backgroundColor: signatureUsernameColor }} />
-                                    </div>
-                                </div>
-                                <div className="space-y-2">
-                                     <Label className="text-left block">Rede Social</Label>
-                                      <div className="relative h-10 w-full rounded-md border overflow-hidden">
-                                          <Input
-                                            type="color"
-                                            value={signatureSocialColor}
-                                            onChange={e => onSignatureSocialColorChange(e.target.value)}
-                                            className="absolute inset-0 w-full h-full p-0 border-none cursor-pointer opacity-0"
-                                        />
-                                        <div className="w-full h-full" style={{ backgroundColor: signatureSocialColor }} />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                  );
             case 'filtro':

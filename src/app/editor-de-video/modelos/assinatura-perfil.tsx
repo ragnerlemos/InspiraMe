@@ -11,8 +11,6 @@ interface AssinaturaPerfilProps {
   showBackground: boolean;
   bgColor: string;
   bgOpacity: number;
-  usernameColor: string;
-  socialColor: string;
 }
 
 function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
@@ -34,8 +32,6 @@ export function AssinaturaPerfil({
   showBackground,
   bgColor,
   bgOpacity,
-  usernameColor,
-  socialColor,
 }: AssinaturaPerfilProps) {
   const bgRgb = hexToRgb(bgColor);
   const backgroundColor = bgRgb ? `rgba(${bgRgb.r}, ${bgRgb.g}, ${bgRgb.b}, ${bgOpacity / 100})` : `rgba(0, 0, 0, ${bgOpacity / 100})`;
@@ -59,12 +55,12 @@ export function AssinaturaPerfil({
       {(showUsername || showSocial) && (
         <div className="flex flex-col justify-center space-y-0">
           {showUsername && (
-            <p className="font-bold text-sm leading-none" style={{ color: usernameColor }}>
+            <p className="font-bold text-sm leading-none">
               {profile.username}
             </p>
           )}
           {showSocial && (
-            <p className="text-xs leading-tight pt-0.5" style={{ color: socialColor, opacity: 0.9 }}>
+            <p className="text-xs leading-tight pt-0.5" style={{ opacity: 0.9 }}>
               {profile.social}
             </p>
           )}

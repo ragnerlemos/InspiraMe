@@ -45,8 +45,6 @@ export interface EditorState {
     showSignatureBackground: boolean;
     signatureBgColor: string;
     signatureBgOpacity: number;
-    signatureUsernameColor: string;
-    signatureSocialColor: string;
     profileVerticalPosition: number;
     showLogo: boolean;
     logoPositionX: number;
