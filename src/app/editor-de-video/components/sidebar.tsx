@@ -685,11 +685,12 @@ export function Sidebar({
     
     const handleInvertColors = () => {
         if (backgroundStyle.type === 'solid') {
-            const oldBg = backgroundStyle.value;
-            const oldFg = fgColor;
+            const newBgColor = fgColor;
+            const newFgColor = backgroundStyle.value;
+            
             updateState({
-                backgroundStyle: { type: 'solid', value: oldFg },
-                textColor: oldBg,
+                backgroundStyle: { type: 'solid', value: newBgColor },
+                textColor: newFgColor,
             });
         } else {
             toast({
