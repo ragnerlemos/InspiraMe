@@ -1,12 +1,12 @@
 'use client';
 
 import { Suspense } from 'react';
-import Editor from '@/components/editor-de-video/editor';
-import Loading from '@/components/editor-de-video/loading';
+import Editor from '@/app/editor-de-video/editor';
+import Loading from '@/app/editor-de-video/loading';
 import { PageHeader } from '@/components/page-header';
 import { ClientOnly } from '@/components/client-only';
-import { EditorActions } from '@/components/editor-de-video/components/editor-actions';
-import { useEditor } from '@/components/editor-de-video/contexts/editor-context';
+import { EditorActions } from '@/app/editor-de-video/components/editor-actions';
+import { useEditor } from '@/app/editor-de-video/contexts/editor-context';
 import { Button } from '@/components/ui/button';
 import { Share2 } from 'lucide-react';
 
@@ -15,8 +15,7 @@ function EditorHeaderActions() {
 
   const handleShare = () => {
     if (!isReady || !currentState) return;
-    // A função onExportPNG com `true` irá acionar o compartilhamento
-    onExportPNG(true);
+    onExportPNG();
   };
 
   return (
