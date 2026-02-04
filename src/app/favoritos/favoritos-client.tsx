@@ -24,8 +24,8 @@ import * as htmlToImage from 'html-to-image';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 import { ClientOnly } from '@/components/client-only';
 import { useProfile } from '@/hooks/use-profile';
-import { ModeloTwitter } from '@/components/editor-de-video/modelos/modelo-twitter';
-import type { EditorState, EstiloTexto } from '@/components/editor-de-video/tipos';
+import { ModeloTwitter } from '@/app/editor-de-video/modelos/modelo-twitter';
+import type { EditorState, EstiloTexto } from '@/app/editor-de-video/tipos';
 import type { QuoteWithAuthor } from '@/lib/types';
 
 
