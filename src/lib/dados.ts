@@ -1,5 +1,6 @@
 
 import { google } from 'googleapis';
+import type { QuoteWithAuthor, SheetHierarchy } from '@/lib/types';
 
 const auth = new google.auth.GoogleAuth({
   credentials: {
@@ -13,24 +14,6 @@ const sheets = google.sheets({
   version: 'v4',
   auth: auth,
 });
-
-export interface QuoteWithAuthor {
-    id: string;
-    quote: string;
-    author?: string;
-    category: string;
-    subCategory?: string;
-    sheetName: string; 
-}
-
-interface CategoriesHierarchy {
-  [mainCategory: string]: string[];
-}
-
-export interface SheetHierarchy {
-  [sheetName: string]: CategoriesHierarchy;
-}
-
 
 let cachedQuotes: QuoteWithAuthor[] | null = null;
 let lastFetchTime: number = 0;

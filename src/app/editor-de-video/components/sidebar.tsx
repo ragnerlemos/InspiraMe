@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useRef, useMemo } from "react";
@@ -18,7 +17,6 @@ import type { ProfileData } from "@/hooks/use-profile";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import type { EstiloFundo } from "../tipos";
 import { Switch } from "@/components/ui/switch";
-import { useRouter } from "next/navigation";
 
 
 const aspectRatios = [
@@ -669,7 +667,7 @@ export function Sidebar({
     setFgColor,
     ...props
 }: SidebarProps) {
-    const router = useRouter();
+
     const [activeSubControl, setActiveSubControl] = useState<string | null>(null);
 
     const handleSetControleAtivo = (controle: string | null) => {
@@ -825,7 +823,6 @@ export function Sidebar({
                 <BotaoRecurso icon={Paintbrush} label="Cores" onClick={() => handleSetControleAtivo('cores')} isActive={activeControl === 'cores'}/>
                 <BotaoRecurso icon={Film} label="Película" onClick={() => handleSetControleAtivo('filtro')} isActive={activeControl === 'filtro'} />
                 <BotaoRecurso icon={Wand2} label="Estilo" onClick={() => handleSetControleAtivo('estilo')} isActive={activeControl === 'estilo'}/>
-                <BotaoRecurso icon={LayoutTemplate} label="Modelos" onClick={() => router.push(`/modelos?quote=${encodeURIComponent(text)}`)} />
                 <BotaoRecurso icon={LayoutTemplate} label="Fundo" onClick={() => handleSetControleAtivo('fundo')} isActive={activeControl === 'fundo'}/>
                 <BotaoRecurso icon={UserCheck} label="Assinatura" onClick={() => handleSetControleAtivo('assinatura')} isActive={activeControl === 'assinatura'}/>
                 <BotaoRecurso icon={ImageUp} label="Logo" onClick={() => handleSetControleAtivo('logo')} isActive={activeControl === 'logo'}/>

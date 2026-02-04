@@ -26,15 +26,8 @@ import { ClientOnly } from '@/components/client-only';
 import { useProfile } from '@/hooks/use-profile';
 import { ModeloTwitter } from '@/app/editor-de-video/modelos/modelo-twitter';
 import type { EditorState, EstiloTexto } from '@/app/editor-de-video/tipos';
+import type { QuoteWithAuthor } from '@/lib/types';
 
-
-interface QuoteWithAuthor {
-    id: string;
-    quote: string;
-    author?: string;
-    category: string;
-    subCategory?: string;
-}
 
 interface FavoritesClientPageProps {
   allQuotes: QuoteWithAuthor[];
@@ -350,8 +343,6 @@ export function FavoritesClientPage({ allQuotes }: FavoritesClientPageProps) {
   const getMemeEditorState = (quote: QuoteWithAuthor): EditorState => {
     return {
         text: quote.quote,
-        category: quote.category,
-        subCategory: quote.subCategory,
         fontFamily: "Poppins",
         fontSize: profile.memeFontSize,
         fontWeight: "bold",
@@ -365,7 +356,6 @@ export function FavoritesClientPage({ allQuotes }: FavoritesClientPageProps) {
         textStrokeWidth: 0,
         textStrokeCornerStyle: 'rounded',
         applyEffectsToEmojis: true,
-        applyTextColorToSignature: false,
         letterSpacing: 0,
         lineHeight: 1.4,
         wordSpacing: 0,

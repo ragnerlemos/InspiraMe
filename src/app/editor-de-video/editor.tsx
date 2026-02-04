@@ -13,11 +13,11 @@ import { useSearchParams } from "next/navigation";
 import { useTemplates } from "@/hooks/use-templates";
 import { useEditor } from "./contexts/editor-context";
 import Loading from './loading';
+import type { QuoteWithAuthor } from '@/lib/types';
 
-const getInitialState = (): Omit<EditorState, 'text'> => ({
-    activeTemplateId: "template-twitter",
+const getInitialState = (): Omit<EditorState, 'activeTemplateId' | 'text'> => ({
     fontFamily: "Poppins",
-    fontSize: 0.9,
+    fontSize: 2.7,
     fontWeight: "bold",
     fontStyle: "normal",
     textColor: "#FFFFFF",
@@ -55,7 +55,7 @@ const getInitialState = (): Omit<EditorState, 'text'> => ({
 });
 
 
-export default function Editor() {
+export default function Editor({ allQuotes }: { allQuotes: QuoteWithAuthor[] }) {
   const { width } = useWindowSize();
   const isDesktop = width >= 768;
   const { profile, isLoaded: isProfileLoaded } = useProfile();
@@ -79,46 +79,35 @@ export default function Editor() {
   useEffect(() => {
     if (isReady || !isProfileLoaded || !areTemplatesLoaded) return;
 
-    const initialize = async () => {
+    const initialize = () => {
         const quoteParam = searchParams.get("quote");
         const templateIdParam = searchParams.get("templateId");
         
         let initialState: EditorState;
         const baseState = getInitialState();
 
-        let text = "A inspiração está a caminho...";
-        try {
-            const response = await fetch('/api/quotes');
-            if (response.ok) {
-                const allQuotes = await response.json();
-                if (allQuotes.length > 0) {
-                    text = allQuotes[Math.floor(Math.random() * allQuotes.length)].quote;
-                }
-            }
-        } catch (error) {
-            console.error("Failed to fetch quotes", error);
-        }
-
-        if (quoteParam) {
-            text = decodeURIComponent(quoteParam);
-        }
+        const text = quoteParam 
+            ? decodeURIComponent(quoteParam) 
+            : allQuotes.length > 0 
+                ? allQuotes[Math.floor(Math.random() * allQuotes.length)].quote
+                : "A inspiração está a caminho...";
         
         if (templateIdParam) {
           const template = allTemplates.find(t => t.id === templateIdParam);
           if (template) {
             initialState = { ...baseState, ...template.editorState, text, activeTemplateId: template.id };
           } else {
-            initialState = { ...baseState, text };
+            initialState = { ...baseState, text, activeTemplateId: null };
           }
         } else {
-            initialState = { ...baseState, text };
+            initialState = { ...baseState, text, activeTemplateId: null };
         }
         
         setInitialState(initialState);
     }
 
     initialize();
-  }, [searchParams, isProfileLoaded, areTemplatesLoaded, isReady, setInitialState, allTemplates]);
+  }, [searchParams, isProfileLoaded, areTemplatesLoaded, isReady, setInitialState, allTemplates, allQuotes]);
 
 
   useEffect(() => {

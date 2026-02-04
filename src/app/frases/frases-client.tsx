@@ -25,18 +25,8 @@ import type { EditorState, EstiloTexto } from '../editor-de-video/tipos';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import Link from 'next/link';
 import { Filesystem, Directory } from '@capacitor/filesystem';
+import type { QuoteWithAuthor, CategoriesHierarchy } from '@/lib/types';
 
-interface QuoteWithAuthor {
-    id: string;
-    quote: string;
-    author?: string;
-    category: string;
-    subCategory?: string;
-}
-
-interface CategoriesHierarchy {
-  [mainCategory: string]: string[];
-}
 
 type FrasesClientPageProps = {
   initialQuotes: QuoteWithAuthor[];
@@ -559,8 +549,6 @@ export function FrasesClientPage({
     const getMemeEditorState = (quote: QuoteWithAuthor): EditorState => {
         return {
             text: quote.quote,
-            category: quote.category,
-            subCategory: quote.subCategory,
             fontFamily: "Poppins",
             fontSize: profile.memeFontSize,
             fontWeight: "bold",
@@ -574,7 +562,6 @@ export function FrasesClientPage({
             textStrokeWidth: 0,
             textStrokeCornerStyle: 'rounded',
             applyEffectsToEmojis: true,
-            applyTextColorToSignature: false,
             letterSpacing: 0,
             lineHeight: 1.4,
             wordSpacing: 0,

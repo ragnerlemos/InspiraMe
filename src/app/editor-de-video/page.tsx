@@ -1,44 +1,26 @@
-'use client';
 
-import { Suspense } from 'react';
-import Editor from '@/app/editor-de-video/editor';
-import Loading from '@/app/editor-de-video/loading';
-import { PageHeader } from '@/components/page-header';
-import { ClientOnly } from '@/components/client-only';
-import { EditorActions } from '@/app/editor-de-video/components/editor-actions';
-import { useEditor } from '@/app/editor-de-video/contexts/editor-context';
-import { Button } from '@/components/ui/button';
-import { Share2 } from 'lucide-react';
+import { Suspense } from "react";
+import Editor from "./editor";
+import Loading from "./loading";
+import { PageHeader } from "@/components/page-header";
+import { ClientOnly } from "@/components/client-only";
+import { EditorActions } from "./components/editor-actions";
+import { getAllQuotes } from "@/lib/dados";
 
-function EditorHeaderActions() {
-  const { isReady, onExportPNG, currentState } = useEditor();
+export default async function EditorPage() {
+  const allQuotes = await getAllQuotes();
 
-  const handleShare = () => {
-    if (!isReady || !currentState) return;
-    onExportPNG();
-  };
-
-  return (
-    <div className="flex items-center gap-2">
-      <Button variant="ghost" size="icon" onClick={handleShare} disabled={!isReady}>
-        <Share2 className="h-5 w-5" />
-      </Button>
-      <EditorActions />
-    </div>
-  );
-}
-
-export default function EditorPage() {
   return (
     <div className="flex flex-col h-full">
       <ClientOnly>
+        {/* O PageHeader continua útil para o título e as ações específicas da página */}
         <PageHeader title="Editor" showBack>
-          <EditorHeaderActions />
+            <EditorActions />
         </PageHeader>
       </ClientOnly>
       <div className="flex-1 flex flex-col min-h-0">
         <Suspense fallback={<Loading />}>
-          <Editor />
+          <Editor allQuotes={allQuotes} />
         </Suspense>
       </div>
     </div>
