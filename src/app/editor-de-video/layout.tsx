@@ -4,19 +4,16 @@ import { EditorProvider } from '@/app/editor-de-video/contexts/editor-context';
 import { FirebaseClientProvider } from '@/firebase';
 import { useGoogleFonts } from '@/hooks/use-google-fonts';
 
-// O layout específico para o editor de vídeo.
+// Layout específico para a página do editor, que não possui o cabeçalho principal.
 export default function EditorLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   useGoogleFonts();
-
   return (
     <FirebaseClientProvider>
-      <EditorProvider>
-        <div className="h-full flex flex-col bg-background">{children}</div>
-      </EditorProvider>
+      <EditorProvider>{children}</EditorProvider>
     </FirebaseClientProvider>
   );
 }

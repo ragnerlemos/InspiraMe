@@ -1,10 +1,11 @@
+
 "use client";
 
 import React, { createContext, useContext, useState, useCallback, ReactNode, useMemo } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { useTemplates } from "@/hooks/use-templates";
 import type { EditorState, EstiloTexto } from '../tipos';
-import { captureAndDownload, captureThumbnail } from '../exportar';
+import { captureAndDownload, captureAndShare, captureThumbnail } from '../exportar';
 import { useProfile } from '@/hooks/use-profile';
 import { useWindowSize } from 'react-use';
 import { createStrokeStyle, createDropShadowStyle } from '../utils/text-style-utils';
@@ -23,7 +24,7 @@ export interface EditorContextType {
   setInitialState: (initialState: EditorState) => void;
   onSaveAsTemplate: () => Promise<void>;
   onExportJPG: () => void;
-  onExportPNG: () => void;
+  onExportPNG: (share?: boolean) => void;
   onExportMP4: () => void;
 }
 
@@ -109,9 +110,13 @@ export function EditorProvider({ children }: { children: ReactNode }) {
       captureAndDownload('jpeg', toast, currentState, profile, baseTextStyle, textEffectsStyle, dropShadowStyle);
   }, [toast, currentState, profile, baseTextStyle, textEffectsStyle, dropShadowStyle]);
   
-  const onExportPNG = useCallback(() => {
+  const onExportPNG = useCallback((share = false) => {
       if(!currentState || !profile) return;
-      captureAndDownload('png', toast, currentState, profile, baseTextStyle, textEffectsStyle, dropShadowStyle);
+      if (share) {
+          captureAndShare(toast, currentState);
+      } else {
+          captureAndDownload('png', toast, currentState, profile, baseTextStyle, textEffectsStyle, dropShadowStyle);
+      }
   }, [toast, currentState, profile, baseTextStyle, textEffectsStyle, dropShadowStyle]);
 
   const onExportMP4 = useCallback(() => {
