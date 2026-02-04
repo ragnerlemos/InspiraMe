@@ -8,7 +8,7 @@ import { useProjects } from '@/hooks/use-projects';
 import { useTemplates } from '@/hooks/use-templates';
 import { useProfile } from '@/hooks/use-profile';
 import { useToast } from '@/hooks/use-toast';
-import { ResizablePanelGroup, ResizablePanel, PanelResizeHandle } from '@/components/ui/resizable';
+import { PanelGroup, Panel, PanelResizeHandle } from '@/components/ui/resizable';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -206,9 +206,9 @@ export function Editor({ allQuotes }: { allQuotes: QuoteWithAuthor[] }) {
             </header>
 
             {/* Corpo Principal */}
-            <ResizablePanelGroup direction="horizontal" className="flex-1">
+            <PanelGroup direction="horizontal" className="flex-1">
                 {/* Painel de Controles */}
-                <ResizablePanel defaultSize={25} minSize={20} maxSize={40}>
+                <Panel defaultSize={25} minSize={20} maxSize={40}>
                     <Tabs defaultValue="text" className="h-full flex flex-col">
                         <TabsList className="grid w-full grid-cols-5">
                             <TabsTrigger value="text"><SlidersHorizontal /></TabsTrigger>
@@ -300,10 +300,10 @@ export function Editor({ allQuotes }: { allQuotes: QuoteWithAuthor[] }) {
                             </div>
                         </ScrollArea>
                     </Tabs>
-                </ResizablePanel>
+                </Panel>
                 <PanelResizeHandle />
                 {/* Painel de Pré-visualização */}
-                <ResizablePanel defaultSize={75}>
+                <Panel defaultSize={75}>
                     <div className="h-full flex items-center justify-center p-4 bg-muted/20">
                         <div ref={previewRef} className={cn("relative overflow-hidden bg-background shadow-lg container-snap", editorState.activeTemplateId === 'template-default' && 'flex items-center justify-center p-8')} style={{ ...backgroundStyle, aspectRatio: editorState.aspectRatio.replace(/\s/g, '') }}>
                              {/* Camada de película */}
@@ -340,8 +340,8 @@ export function Editor({ allQuotes }: { allQuotes: QuoteWithAuthor[] }) {
                             )}
                         </div>
                     </div>
-                </ResizablePanel>
-            </ResizablePanelGroup>
+                </Panel>
+            </PanelGroup>
         </div>
     );
 }
