@@ -17,6 +17,7 @@ import {
   PlusSquare,
   ChevronLeft,
   Edit,
+  TestTube,
 } from 'lucide-react';
 import { NavLink } from '@/components/ui/nav-link';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -40,6 +41,7 @@ function MainNavigationLinks({ onLinkClick }: { onLinkClick?: () => void }) {
 function SettingsNavigationLinks({ onLinkClick }: { onLinkClick?: () => void }) {
     return (
         <>
+            <NavLink href="/teste-compartilhar" icon={TestTube} label="Testes" onClick={onLinkClick} />
             <NavLink href="/cadastro" icon={PlusSquare} label="Cadastro" onClick={onLinkClick} />
             <NavLink href="/configuracoes" icon={Settings} label="Configurações" onClick={onLinkClick} />
             <NavLink href="/perfil" icon={UserIcon} label="Perfil" onClick={onLinkClick} />
@@ -65,7 +67,8 @@ export function AppHeader() {
         '/modelos',
         '/galeria',
         '/favoritos',
-        '/cadastro'
+        '/cadastro',
+        '/teste-compartilhar'
     ];
     setShowBack(backButtonPages.some(path => pathname.startsWith(path)));
   }, [pathname]);
