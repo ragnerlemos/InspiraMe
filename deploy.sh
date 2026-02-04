@@ -7,8 +7,8 @@ git add .
 # Define o fuso horário para Brasília (UTC-3)
 export TZ="America/Sao_Paulo"
 
-# Cria um commit com data e hora de Brasília
-COMMIT_MESSAGE="Salvo em $(date +'%Y-%m-%d %H:%M:%S')"
+# Cria um commit com a mensagem personalizada
+COMMIT_MESSAGE="feat: Implementa editor de vídeo completo e conexão com Planilha"
 echo "Criando commit com a mensagem: $COMMIT_MESSAGE"
 # O || true evita que o script pare se não houver nada para commitar
 git commit -m "$COMMIT_MESSAGE" || true
